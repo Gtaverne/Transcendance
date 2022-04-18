@@ -14,7 +14,7 @@ It is a fullstack web application.
 
 ### Technology used :
 - Frontend in react with typescrypt
-- Backend with nodejs and postgreSQL
+- Backend with nestjs, nodejs and postgreSQL
 
 ### Launch :
 ```
