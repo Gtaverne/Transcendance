@@ -5,7 +5,10 @@ nesg g module users 		//pour creer un module dans le dossier products, en gros u
 nest g service users		//la logique des controllers
 
 DTO: Data Transfer Object, nature de l'objet qu'on envoie au client
-
+Pipe: les fonctions ou classes pipe run avant les fonctions des controller. Utile pour transformer les input
+(validation pipe er parseint pipe)
+npm install class-validator
+Middleware: Utile aussi pour transformer les input, check des infos dessus
 -->
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
