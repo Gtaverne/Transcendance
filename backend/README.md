@@ -1,8 +1,10 @@
 <!--
 
-nest g controller users pour creer un dossier controller
+nest g controller users 	//pour creer un dossier controller, en gros avec toutes les routes
+nesg g module users 		//pour creer un module dans le dossier products, en gros un groupe de controllers
+nest g service users		//la logique des controllers
 
-
+DTO: Data Transfer Object, nature de l'objet qu'on envoie au client
 
 -->
 <p align="center">
