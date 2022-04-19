@@ -1,6 +1,6 @@
 export interface User {
   id: string;
   username: string;
-  sdmin: boolean;
+  admin: boolean;
   lvl: number;
 }
