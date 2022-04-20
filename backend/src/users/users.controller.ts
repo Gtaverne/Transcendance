@@ -23,6 +23,11 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersServices: UsersService) {}
 
+  @Get('/friends')
+  findFriend(): string {
+    return 'Friends in users';
+  }
+
   @Get('aCleanPlusTard')
   findAllTEST(
     @Req()
@@ -33,11 +38,6 @@ export class UsersController {
   ): any {
     console.log(request);
     return response.json({ msg: 'Find All in users' });
-  }
-
-  @Get()
-  async findAll(@Param() params): Promise<User[]> {
-    return this.usersServices.findAll();
   }
 
   @Get('docs') //ce bloc est juste un bloc demo a retirer
@@ -54,9 +54,9 @@ export class UsersController {
     return this.usersServices.findOne(params.id);
   }
 
-  @Get('/friends')
-  findFriend(): string {
-    return 'Friends in users';
+  @Get()
+  async findAll(@Param() params): Promise<User[]> {
+    return this.usersServices.findAll();
   }
 
   @Post()

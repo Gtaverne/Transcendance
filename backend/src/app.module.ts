@@ -7,9 +7,11 @@ import { GamesController } from './games/games.controller';
 import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { UsersController } from './users/users.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {config} from './orm.config'
 
 @Module({
-  imports: [UsersModule],
+  imports: [UsersModule, TypeOrmModule.forRoot(config)],
   controllers: [
     AppController,
     RoomsController,
