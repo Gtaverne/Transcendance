@@ -3,6 +3,7 @@
 nest g controller users 	//pour creer un dossier controller, en gros avec toutes les routes
 nesg g module users 		//pour creer un module dans le dossier products, en gros un groupe de controllers
 nest g service users		//la logique des controllers
+nest g mi Logger			//cree un middleware dans le dossier
 
 DTO: Data Transfer Object, nature de l'objet qu'on envoie au client
 Pipe: les fonctions ou classes pipe run avant les fonctions des controller. Utile pour transformer les input
