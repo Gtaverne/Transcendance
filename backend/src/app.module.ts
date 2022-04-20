@@ -26,6 +26,7 @@ export class AppModule {
     //   .forRoutes({ path: 'products', method: RequestMethod.GET });
     consumer
       .apply(LoggerMiddleware)
+      //Exclure le callback de Login
       .exclude({ path: 'users', method: RequestMethod.POST });
   }
 }

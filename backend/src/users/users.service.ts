@@ -23,4 +23,9 @@ export class UsersService {
     this.users.splice(index, 1);
     return this.users;
   }
+
+  //On met quoi ici pour la partie callback ?
+  login(): string {
+    return 'Yoloooo'
+  }
 }

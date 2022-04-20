@@ -23,6 +23,24 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersServices: UsersService) {}
 
+
+  @Get('/friends')
+  findFriend(): string {
+    console.log('findFriends activated')
+    return 'Friends in users';
+  }
+
+
+  //Pour le login depuis l'intra 42
+  @Get('/callback')
+  login() : string {
+    //Trouver la facon de retrouver les parametres de l'URL
+
+    console.log('It is almost working')
+    return 'Called by the intra 42'
+  }
+
+
   @Get('aCleanPlusTard')
   findAllTEST(
     @Req()
@@ -34,12 +52,7 @@ export class UsersController {
     console.log(request);
     return response.json({ msg: 'Find All in users' });
   }
-
-  @Get()
-  async findAll(@Param() params): Promise<User[]> {
-    return this.usersServices.findAll();
-  }
-
+  
   @Get('docs') //ce bloc est juste un bloc demo a retirer
   @Redirect('https://docs.nestjs.com', 302)
   getDocs(@Query('version') version) {
@@ -47,16 +60,16 @@ export class UsersController {
       return { url: 'https://docs.nestjs.com/v5/' };
     }
   }
-
+  
   //les param sont ceux du chemin de la requete
   @Get('/:id')
   async findOne(@Param() params): Promise<User> {
     return this.usersServices.findOne(params.id);
   }
-
-  @Get('/friends')
-  findFriend(): string {
-    return 'Friends in users';
+  
+  @Get()
+  async findAll(@Param() params): Promise<User[]> {
+    return this.usersServices.findAll();
   }
 
   @Post()
