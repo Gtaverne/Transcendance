@@ -80,13 +80,13 @@ export class UsersController {
     return this.usersServices.create(user);
   }
 
-  @Put()
-  update(): string {
-    return 'Update stuff in users';
+  @Put('/:id')
+  update(@Param() params, @Body() user: CreateUserDTO): Promise<UsersEntity> {
+	return this.usersServices.updatePost(params.id, user);
   }
 
   @Delete('/:id')
-  async delete(@Param() params): Promise<User[]> {
+  async delete(@Param() params): Promise<any> {
     return this.usersServices.delete(params.id);
   }
 }
