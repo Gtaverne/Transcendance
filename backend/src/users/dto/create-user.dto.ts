@@ -2,7 +2,7 @@ import { IsBoolean, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDTO {
   @IsNotEmpty()
-  @IsString()
+  @IsInt()
   readonly id: number;
   @IsNotEmpty()
   @IsString()
@@ -13,4 +13,6 @@ export class CreateUserDTO {
   @IsNotEmpty()
   @IsInt()
   readonly lvl: number;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
 }

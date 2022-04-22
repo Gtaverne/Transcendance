@@ -16,6 +16,7 @@ import {
 import { query, Request, Response } from 'express';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './interfaces/user.interface';
+import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
 //retourne le premier endpoint qui match la route
@@ -75,7 +76,7 @@ export class UsersController {
   @Post()
   //   @HttpCode(204)
   //   @Header('Authorization', 'Bearer XAOIFUAOSijfoIJASF')
-  async create(@Body() user: CreateUserDTO): Promise<User[]> {
+  async create(@Body() user: CreateUserDTO): Promise<UsersEntity> {
     return this.usersServices.create(user);
   }
 
