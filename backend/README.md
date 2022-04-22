@@ -10,6 +10,11 @@ Pipe: les fonctions ou classes pipe run avant les fonctions des controller. Util
 (validation pipe er parseint pipe)
 npm install class-validator
 Middleware: Utile aussi pour transformer les input, check des infos dessus
+
+pour les entity, nullable a true signifie qu'on peut rien laisser
+on peut mettre default: valeur_default
+
+c'est dans la partie interface qu'on structure la table en definitif
 -->
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>

@@ -14,11 +14,11 @@ export class UsersService {
     return this.users;
   }
 
-  findOne(id: string): User {
+  findOne(id: number): User {
     return this.users.find((u) => u.id === id);
   }
 
-  delete(id: string): User[] {
+  delete(id: number): User[] {
     const index = this.users.findIndex((u) => u.id === id);
     this.users.splice(index, 1);
     return this.users;

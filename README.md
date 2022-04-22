@@ -3,8 +3,7 @@ install postgres: https://www.enterprisedb.com/downloads/postgres-postgresql-dow
 npm install --save @nestjs/typeorm typeorm pg
 //better to set synchronize false if in production in orm.config
 
-pour les entity, nullable a true signifie qu'on peut rien laisser
-on peut mettre default: valeur_default
+
 -->
 # ft_transcendence
 

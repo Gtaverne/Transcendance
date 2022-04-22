@@ -1,6 +1,7 @@
 export interface User {
-  id: string;
+  id: number;
   username: string;
   admin: boolean;
   lvl: number;
 }
+//? avant les ?: pour les champs optionnels
