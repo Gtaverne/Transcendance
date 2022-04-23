@@ -17,6 +17,9 @@ on peut mettre default: valeur_default
 c'est dans la partie interface qu'on structure la table en definitif
 
 tuto bien cool: https://wanago.io/2020/05/18/api-nestjs-postgresql-typeorm/
+
+OneToMany et ManyToOne dans les tyepes d'entity a clean avant de scale
+array of int
 -->
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
