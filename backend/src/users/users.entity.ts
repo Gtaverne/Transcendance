@@ -1,7 +1,8 @@
 import { BaseEntity } from '../../base.entity';
-import { Column, Entity, JoinTable, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
+import { RoomsEntity } from 'src/rooms/rooms.entity';
 
 @Entity('users')
 export class UsersEntity extends BaseEntity {
@@ -32,4 +33,19 @@ export class UsersEntity extends BaseEntity {
 
   @OneToMany(() => MessagesEntity, messages => messages.owner)
   messagesList: MessagesEntity[];
+
+  @ManyToMany(() => RoomsEntity, room => room.accessList)
+  accessToList: RoomsEntity[];
+
+  @OneToMany(() => GamesEntity, game => game.user1)
+  gamePlayer1: GamesEntity[];
+
+  @OneToMany(() => GamesEntity, game => game.user2)
+  gamePlayer2: GamesEntity[];
+
+  @OneToMany(() => RoomsEntity, room => room.owner)
+  ownedRooms: RoomsEntity[];
+
+  @ManyToMany(() => RoomsEntity, room => room.admins)
+  administratingRooms: RoomsEntity[];
 }

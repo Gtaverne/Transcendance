@@ -7,7 +7,9 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
+import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { UsersEntity } from '../users.entity';
 
 export class CreateUserDTO {
@@ -50,4 +52,19 @@ export class CreateUserDTO {
   @IsArray()
   @IsOptional()
   readonly messagesList: MessagesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly accessToList: RoomsEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly gamePlayer1: GamesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly gamePlayer2: GamesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly ownedRooms: RoomsEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly administratingRooms: RoomsEntity[];
 }

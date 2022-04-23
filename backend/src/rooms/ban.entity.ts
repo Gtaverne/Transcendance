@@ -10,6 +10,5 @@ export class BanEntity extends BaseEntity {
   @ManyToOne(() => RoomsEntity, (rooms) => rooms.banList)
   baned: RoomsEntity;
   @OneToOne(() => UsersEntity)
-  @JoinColumn()
   banedUser: UsersEntity;
 }

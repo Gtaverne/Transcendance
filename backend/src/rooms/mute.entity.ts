@@ -10,6 +10,5 @@ export class MuteEntity extends BaseEntity {
   @ManyToOne(() => RoomsEntity, (rooms) => rooms.muteList)
   muted: RoomsEntity;
   @OneToOne(() => UsersEntity)
-  @JoinColumn()
   mutedUser: UsersEntity;
 }
