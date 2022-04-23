@@ -13,11 +13,23 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+import { strictEqual } from 'assert';
 import { query, Request, Response } from 'express';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './interfaces/user.interface';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
+
+import axios, {AxiosRequestConfig, AxiosResponse,
+  AxiosError,} from 'axios'
+import * as qs from 'qs'
+
+//On rangera tout ça plus proprement
+const INTRA_API = 'https://api.intra.42.fr/oauth/token'
+const Auth_URL = 'https://api.intra.42.fr/oauth/authorize'
+const Access_Token_URL = 'https://api.intra.42.fr/oauth/token'
+const Client_ID ='f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6'
+const Client_Secret = '1b5f67e46005d92cc5bac66cbaa79a6c133e37fea09ce10df2950ff85625e2cf'
 
 //retourne le premier endpoint qui match la route
 @Controller('users')
@@ -34,10 +46,36 @@ export class UsersController {
 
   //Pour le login depuis l'intra 42
   @Get('/callback')
-  login() : string {
-    //Trouver la facon de retrouver les parametres de l'URL
+  async login(@Query('code') code: Promise<string>) : Promise<string> {
 
-    console.log('It is almost working')
+    //On recupere le code, il faut maintenant s'en servir pour obtenir un token
+    console.log(code)
+
+    const data = qs.stringify({
+      'client_id': Client_ID,
+      'client_secret': Client_Secret,
+      'code': code,
+      'grant_type': 'authorization_code',
+      'redirect_uri': 'http://localhost:5050/users/callback' 
+    });
+
+    const config: AxiosRequestConfig = {
+      method: 'post',
+      url: Access_Token_URL,
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded', 
+      },
+      data : data,
+    };
+    
+    const token = await axios(config)
+    .then(function (response: AxiosResponse) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
     return 'Called by the intra 42'
   }
 

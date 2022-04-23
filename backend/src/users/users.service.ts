@@ -45,7 +45,7 @@ export class UsersService {
     return this.users;
   }
 
-  //On met quoi ici pour la partie callback ?
+  // On met quoi ici pour la partie callback ?
   login(): string {
     return 'Yoloooo';
   }
