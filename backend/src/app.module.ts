@@ -8,16 +8,23 @@ import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { UsersController } from './users/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {config} from './orm.config'
+import { config } from './orm.config';
+import { RoomsService } from './rooms/rooms.service';
+import { MessagesService } from './messages/messages.service';
+import { GamesService } from './games/games.service';
+import { GamesModule } from './games/games.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [UsersModule, TypeOrmModule.forRoot(config)],
-  controllers: [
-    AppController,
-    RoomsController,
-    MessagesController,
-    GamesController,
+  imports: [
+    UsersModule,
+    GamesModule,
+    RoomsModule,
+    MessagesModule,
+    TypeOrmModule.forRoot(config),
   ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
