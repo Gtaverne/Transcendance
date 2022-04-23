@@ -1,3 +1,6 @@
+import { MessagesEntity } from "src/messages/messages.entity";
+import { UsersEntity } from "../users.entity";
+
 export interface User {
   id: number;
   username: string;
@@ -7,7 +10,10 @@ export interface User {
   lvl: number;
   createdAt?: Date;
   updatedAt?: Date;
-  friendsList?: number[]
-  blockedUsers?: number[]
+  iFollowList?: UsersEntity[]
+  followingMeList?: UsersEntity[]
+  iBlockedList?: UsersEntity[]
+  blockedMeList?: UsersEntity[]
+  messagesList?: MessagesEntity[]
 }
 //? avant les ?: pour les champs optionnels

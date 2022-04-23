@@ -7,6 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { MessagesEntity } from 'src/messages/messages.entity';
+import { UsersEntity } from '../users.entity';
 
 export class CreateUserDTO {
   @IsNotEmpty()
@@ -35,8 +37,17 @@ export class CreateUserDTO {
   readonly email: string;
   @IsArray()
   @IsOptional()
-  readonly friendsList: number[];
+  readonly iFollowList: UsersEntity[];
   @IsArray()
   @IsOptional()
-  readonly blockedUsers: number[];
+  readonly followingMeList: UsersEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly iBlockedList: UsersEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly blockedMeList: UsersEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly messagesList: MessagesEntity[];
 }
