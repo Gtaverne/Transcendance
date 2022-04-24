@@ -35,6 +35,7 @@ export class UsersEntity extends BaseEntity {
   messagesList: MessagesEntity[];
 
   @ManyToMany(() => RoomsEntity, room => room.accessList)
+  @JoinTable()
   accessToList: RoomsEntity[];
 
   @OneToMany(() => GamesEntity, game => game.user1)

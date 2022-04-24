@@ -1,5 +1,5 @@
 import { BaseEntity } from '../../base.entity';
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { MuteEntity } from './mute.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { BanEntity } from './ban.entity';
@@ -26,5 +26,6 @@ export class RoomsEntity extends BaseEntity {
   @ManyToOne(() => UsersEntity, user => user.ownedRooms)
   owner: UsersEntity;
   @ManyToMany(() => UsersEntity, user => user.administratingRooms)
+  @JoinTable()
   admins: UsersEntity[];
 }
