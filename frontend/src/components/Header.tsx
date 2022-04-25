@@ -1,5 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import * as dotenv from 'dotenv'
+
+// dotenv.config({path: './.env'})
+// const API_42 = process.env.API_42
+
 
 function Header() {
   const navigate = useNavigate();
@@ -12,7 +17,7 @@ function Header() {
       </div>
       <ul>
         <li>
-          <Link to="/loginregister">LoginRegister</Link>
+          <a href="https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A5050%2Fusers%2Fcallback&response_type=code">LoginRegister</a>
         </li>
 		<li>
           <Link to="/game">Game</Link>

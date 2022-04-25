@@ -5,12 +5,9 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './interfaces/user.interface';
 import { UsersEntity } from './users.entity';
 import * as fs from 'fs'
-import * as dotenv from 'dotenv'
-
-
-import axios, {AxiosRequestConfig, AxiosResponse,
-  AxiosError,} from 'axios'
+import axios, {AxiosRequestConfig, AxiosResponse, AxiosError,} from 'axios'
 import * as qs from 'qs'
+import * as dotenv from 'dotenv'
 
 dotenv.config({path: './.env'})
 
