@@ -17,5 +17,8 @@
 	"bugs": {
 		"url": "https://github.com/Gtaverne/Transcendance/issues"
 	},
-	"homepage": "https://github.com/Gtaverne/Transcendance#readme"
+	"homepage": "https://github.com/Gtaverne/Transcendance#readme",
+	"dependencies": {
+		"react-dom": "^18.0.0"
+	}
 }
