@@ -5,6 +5,17 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './interfaces/user.interface';
 import { UsersEntity } from './users.entity';
 
+
+import axios, {AxiosRequestConfig, AxiosResponse,
+  AxiosError,} from 'axios'
+import * as qs from 'qs'
+
+const INTRA_API = 'https://api.intra.42.fr/oauth/token'
+const Auth_URL = 'https://api.intra.42.fr/oauth/authorize'
+const Access_Token_URL = 'https://api.intra.42.fr/oauth/token'
+const Client_ID ='f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6'
+const Client_Secret = '1b5f67e46005d92cc5bac66cbaa79a6c133e37fea09ce10df2950ff85625e2cf'
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -71,7 +82,71 @@ export class UsersService {
 */
 
   // On met quoi ici pour la partie callback ?
-  login(): string {
-    return 'Yoloooo';
+  async login(code: string) {
+
+    console.log(code)
+
+    const data = qs.stringify({
+      'client_id': Client_ID,
+      'client_secret': Client_Secret,
+      'code': code,
+      'grant_type': 'authorization_code',
+      'redirect_uri': 'http://localhost:5050/users/callback' 
+    });
+
+    const config: AxiosRequestConfig = {
+      method: 'post',
+      url: Access_Token_URL,
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded', 
+      },
+      data : data,
+    };
+    var token = ''
+    
+    await axios(config)
+    .then(function (response: AxiosResponse) {
+      token = response.data.access_token
+    })
+    .catch(function (error) {
+      //Voir où on renvoie l'user
+
+      // console.log(error);
+    });
+
+    if (token) {
+      this.getUserDataFrom42(token)
+    }
+
+    return 'Called by the intra 42'
   }
+
+  async getUserDataFrom42(token : string) {
+
+    var config : AxiosRequestConfig = {
+      method: 'get',
+      url: 'https://api.intra.42.fr/v2/me',
+      headers: { 
+        'Authorization': `Bearer ${token}`, 
+
+      }
+    };
+
+    
+    
+    await axios(config)
+    .then(function (response) {
+      // console.log(JSON.stringify(response.data.login));
+      // https://stackoverflow.com/questions/46745688/typeorm-upsert-create-if-not-exist
+      
+
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  }
+
+
 }

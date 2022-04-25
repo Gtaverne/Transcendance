@@ -46,37 +46,10 @@ export class UsersController {
 
   //Pour le login depuis l'intra 42
   @Get('/callback')
-  async login(@Query('code') code: Promise<string>) : Promise<string> {
+  async callback(@Query('code') code: Promise<string>) : Promise<string> {
+    const cd = await code
 
-    //On recupere le code, il faut maintenant s'en servir pour obtenir un token
-    console.log(code)
-
-    const data = qs.stringify({
-      'client_id': Client_ID,
-      'client_secret': Client_Secret,
-      'code': code,
-      'grant_type': 'authorization_code',
-      'redirect_uri': 'http://localhost:5050/users/callback' 
-    });
-
-    const config: AxiosRequestConfig = {
-      method: 'post',
-      url: Access_Token_URL,
-      headers: { 
-        'Content-Type': 'application/x-www-form-urlencoded', 
-      },
-      data : data,
-    };
-    
-    const token = await axios(config)
-    .then(function (response: AxiosResponse) {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-
-    return 'Called by the intra 42'
+    return this.usersServices.login(cd)
   }
 
 
