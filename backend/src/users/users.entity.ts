@@ -17,6 +17,7 @@ export class UsersEntity extends BaseEntity {
   @Column({ type: 'integer', default: 0, nullable: false })
   lvl: number;
 
+  //Penser à ajouter un default type
   @OneToMany(() => UsersEntity, (user) => user.followingMeList)
   iFollowList: UsersEntity[];
 

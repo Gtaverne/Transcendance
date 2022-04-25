@@ -88,8 +88,6 @@ export class UsersService {
   // 4- Login de l'user et EVENTUELLEMENT creation de son compte user
   async login(code: string) {
 
-    console.log(code)
-
     const data = qs.stringify({
       'client_id': Client_ID,
       'client_secret': Client_Secret,
@@ -115,7 +113,7 @@ export class UsersService {
     .catch(function (error) {
       //Voir où on renvoie l'user
 
-      // console.log(error);
+      return 'We have a login problem'
     });
 
     if (token) {
@@ -124,7 +122,7 @@ export class UsersService {
       console.log('No token provided')
     }
 
-    return 'Called by the intra 42'
+    return 'Successfull login'
   }
 
 
@@ -162,7 +160,6 @@ export class UsersService {
 
     //Here we check if the user already exists
     const res = await this.usersRepository.find({where: {email : loggedProfile.email}})
-    // console.log(res)
 
     if (res.length === 0) {
       console.log('Creating profile')
@@ -189,8 +186,5 @@ export class UsersService {
     }
 
     return res.length
-
   }
-
-
 }

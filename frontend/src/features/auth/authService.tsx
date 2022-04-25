@@ -1,11 +1,40 @@
-import React from 'react'
+import axios from 'axios'
 
-type Props = {}
+const API_URL = '/api/users/'
 
-function authService({}: Props) {
-  return (
-    <div>authService</div>
-  )
+
+/*
+//Register user
+const register = async (userData: any) => {
+    const response = await axios.post(API_URL, userData)
+
+    if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data))
+    }
+
+    return response.data
+}
+*/
+
+//Login user
+const login = async (userData: any) => {
+  //Checking if user is logged
+    const response = await axios.post(API_URL + 'login' , userData)
+
+    if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data))
+    }
+
+    return response.data
+}
+
+// Logout user
+const logout = () => localStorage.removeItem('user')
+
+const authService = {
+    //register,
+    login,
+    logout,
 }
 
 export default authService

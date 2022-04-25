@@ -39,10 +39,17 @@ export class UsersController {
 
   //Pour le login depuis l'intra 42
   @Get('/callback')
-  async callback(@Query('code') code: Promise<string>) : Promise<string> {
+  //Replace it by site address
+  @Redirect('http://localhost:3000', 302)
+  async callback(@Res() response: Response,
+    @Query('code') code: Promise<string>) : Promise<any> {
     const cd = await code
 
-    return this.usersServices.login(cd)
+    this.usersServices.login(cd)
+
+    // response.cookie('kingPong', 'soon, it will be a jwt')
+
+    return 'It should be ok'
   }
 
 

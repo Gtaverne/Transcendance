@@ -1,4 +1,7 @@
 <!--
+Penser à ajouter un default type a user entity
+
+
 
 nest g controller users 	//pour creer un dossier controller, en gros avec toutes les routes
 nesg g module users 		//pour creer un module dans le dossier products, en gros un groupe de controllers
