@@ -20,12 +20,12 @@ const Client_Secret = '1b5f67e46005d92cc5bac66cbaa79a6c133e37fea09ce10df2950ff85
 export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
-    private postsRepository: Repository<UsersEntity>,
+    private usersRepository: Repository<UsersEntity>,
   ) {}
 
   async create(user: UsersEntity) {
-    const newUser = await this.postsRepository.create(user);
-    await this.postsRepository.save(newUser);
+    const newUser = await this.usersRepository.create(user);
+    await this.usersRepository.save(newUser);
     console.log('We added to the db:', newUser);
     return newUser;
     // return JSON.stringify(newUser);
@@ -33,25 +33,25 @@ export class UsersService {
   }
 
   findAll() {
-    return this.postsRepository.find();
+    return this.usersRepository.find();
   }
 
   async findOne(id: number) {
-    const post = await this.postsRepository.findOne(id);
+    const post = await this.usersRepository.findOne(id);
     return post;
   }
 
   async updatePost(id: number, user: UsersEntity) {
     if (id !== user.id)
       return;
-    await this.postsRepository.update(id, user);
-    const updatedPost = await this.postsRepository.findOne(id);
+    await this.usersRepository.update(id, user);
+    const updatedPost = await this.usersRepository.findOne(id);
     console.log(updatedPost);
     return updatedPost;
   }
 
   async delete(id: number) {
-	const deleteResponse = await this.postsRepository.delete(id);
+	const deleteResponse = await this.usersRepository.delete(id);
 	return deleteResponse;
   }
 

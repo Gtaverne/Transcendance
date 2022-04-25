@@ -1,0 +1,21 @@
+{
+	"name": "ft_transcendence",
+	"version": "1.0.0",
+	"description": "Pong Fullstack App Final Project 42 School",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"client": "npm start --prefix frontend",
+		"server": "npm run start:dev --prefix backend"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Gtaverne/Transcendance.git"
+	},
+	"author": "gtaverne, ttranche & bmerchin",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Gtaverne/Transcendance/issues"
+	},
+	"homepage": "https://github.com/Gtaverne/Transcendance#readme"
+}

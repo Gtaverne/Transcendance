@@ -7,6 +7,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { GamesEntity } from 'src/games/games.entity';
+import { MessagesEntity } from 'src/messages/messages.entity';
+import { RoomsEntity } from 'src/rooms/rooms.entity';
+import { UsersEntity } from '../users.entity';
 
 export class CreateUserDTO {
   @IsNotEmpty()
@@ -35,8 +39,32 @@ export class CreateUserDTO {
   readonly email: string;
   @IsArray()
   @IsOptional()
-  readonly friendsList: number[];
+  readonly iFollowList: UsersEntity[];
   @IsArray()
   @IsOptional()
-  readonly blockedUsers: number[];
+  readonly followingMeList: UsersEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly iBlockedList: UsersEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly blockedMeList: UsersEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly messagesList: MessagesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly accessToList: RoomsEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly gamePlayer1: GamesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly gamePlayer2: GamesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly ownedRooms: RoomsEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly administratingRooms: RoomsEntity[];
 }
