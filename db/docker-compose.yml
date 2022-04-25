@@ -9,18 +9,9 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: test_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-  pgadmin:
-    container_name: pgadmin4_container
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - "4999:80"
 
 volumes:
   pgdata:
@@ -28,4 +19,4 @@ volumes:
     driver_opts: 
       type: 'none'
       o: 'bind'
-      device: './postgresdata'
+      # device: './postgresdata'
