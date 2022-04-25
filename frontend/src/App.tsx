@@ -6,6 +6,7 @@ import Game from './pages/Game';
 import Home from './pages/Home';
 import LoginRegister from './pages/LoginRegister';
 
+
 function App() {
   return (
     <>
