@@ -6,6 +6,8 @@ export class BaseEntity {
   id: number;
   @CreateDateColumn({ nullable: true })
   createdAt?: Date;
+
+  //Now let us check where is this used
   @CreateDateColumn({ nullable: true })
-  updaterdAt?: Date;
+  updatedAt?: Date;
 }

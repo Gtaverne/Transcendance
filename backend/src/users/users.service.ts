@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Timestamp } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './interfaces/user.interface';
 import { UsersEntity } from './users.entity';
+import * as fs from 'fs'
+import * as dotenv from 'dotenv'
 
 
 import axios, {AxiosRequestConfig, AxiosResponse,
   AxiosError,} from 'axios'
 import * as qs from 'qs'
 
-const INTRA_API = 'https://api.intra.42.fr/oauth/token'
-const Auth_URL = 'https://api.intra.42.fr/oauth/authorize'
-const Access_Token_URL = 'https://api.intra.42.fr/oauth/token'
-const Client_ID ='f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6'
-const Client_Secret = '1b5f67e46005d92cc5bac66cbaa79a6c133e37fea09ce10df2950ff85625e2cf'
+dotenv.config({path: './.env'})
+
+const INTRA_API = process.env.INTRA_API
+const Auth_URL = process.env.Auth_URL
+const Access_Token_URL = process.env.Access_Token_URL
+const Client_ID = process.env.Client_ID
+const Client_Secret = process.env.Client_Secret
 
 @Injectable()
 export class UsersService {
@@ -81,7 +85,10 @@ export class UsersService {
   }
 */
 
-  // On met quoi ici pour la partie callback ?
+  // 1- Recuperation d'un code via la page de login de l'intra
+  // 2- Traduction de ce code en token
+  // 3- Recuperation des donnees de la personne sur la base de ce code
+  // 4- Login de l'user et EVENTUELLEMENT creation de son compte user
   async login(code: string) {
 
     console.log(code)
@@ -116,11 +123,15 @@ export class UsersService {
 
     if (token) {
       this.getUserDataFrom42(token)
+    } else {
+      console.log('No token provided')
     }
 
     return 'Called by the intra 42'
   }
 
+
+  //Gets the user data from API 42
   async getUserDataFrom42(token : string) {
 
     var config : AxiosRequestConfig = {
@@ -128,23 +139,59 @@ export class UsersService {
       url: 'https://api.intra.42.fr/v2/me',
       headers: { 
         'Authorization': `Bearer ${token}`, 
-
       }
     };
+    var resp = {}
 
-    
-    
     await axios(config)
     .then(function (response) {
       // console.log(JSON.stringify(response.data.login));
       // https://stackoverflow.com/questions/46745688/typeorm-upsert-create-if-not-exist
-      
-
-
+      resp = response.data      
     })
     .catch(function (error) {
       console.log(error);
     });
+
+    if (resp) {
+      const res = await this.userCreate(resp) 
+      if (res > 1) {
+        console.log('We have duplicate users')
+      }
+    } 
+  }
+
+  async userCreate(loggedProfile: any) : Promise<number> {
+
+    //Here we check if the user already exists
+    const res = await this.usersRepository.find({where: {email : loggedProfile.email}})
+    // console.log(res)
+
+    if (res.length === 0) {
+      console.log('Creating profile')
+      await this.create({
+        id: 0,
+        username: loggedProfile.login,
+        avatar: loggedProfile.image_url,
+        email: loggedProfile.email,
+        doublefa: false,
+        lvl: 0,
+        iFollowList: [],
+        followingMeList: [],
+        iBlockedList: [],
+        blockedMeList: [],
+        messagesList: [],
+        accessToList: [],
+        gamePlayer1: [],
+        gamePlayer2: [],
+        ownedRooms: [],
+        administratingRooms: [],
+      })
+    } else {
+      console.log(`Welcome back, ${loggedProfile.login}`)
+    }
+
+    return res.length
 
   }
 

@@ -1,14 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv'
+dotenv.config({path: './.env'})
+
 
 export const config: TypeOrmModuleOptions = {
   type: 'postgres',
-  username: 'postgres',
-  // See how to change pw
-  password: 'postgres',
-  // password: '123',
-  port: 5432,
-  host: 'localhost',
-  database: 'transcendance_db',
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  port: +process.env.POSTGRES_PORT,
+  host: process.env.POSTGRES_HOST,
+  database: process.env.POSTGRES_DATABASE,
   synchronize: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
 };

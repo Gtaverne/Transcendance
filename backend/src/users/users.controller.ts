@@ -24,13 +24,6 @@ import axios, {AxiosRequestConfig, AxiosResponse,
   AxiosError,} from 'axios'
 import * as qs from 'qs'
 
-//On rangera tout ça plus proprement
-const INTRA_API = 'https://api.intra.42.fr/oauth/token'
-const Auth_URL = 'https://api.intra.42.fr/oauth/authorize'
-const Access_Token_URL = 'https://api.intra.42.fr/oauth/token'
-const Client_ID ='f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6'
-const Client_Secret = '1b5f67e46005d92cc5bac66cbaa79a6c133e37fea09ce10df2950ff85625e2cf'
-
 //retourne le premier endpoint qui match la route
 @Controller('users')
 export class UsersController {
