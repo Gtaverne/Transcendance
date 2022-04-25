@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Bellow, Stuff I Added, don't remove. Above it is the template, you can remove or edit*/
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-header ul,
+.site-header li {
+  display: inline;
+  margin: 1rem;
+}
