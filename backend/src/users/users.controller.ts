@@ -15,8 +15,7 @@ import {
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { query, Request, Response } from 'express';
-import { CreateUserDTO } from './dto/create-user.dto';
-import { User } from './interfaces/user.interface';
+import { CreateUserDTO } from './create-user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
@@ -96,7 +95,7 @@ export class UsersController {
 
   @Put('/:id')
   update(@Param() params, @Body() user: CreateUserDTO): Promise<UsersEntity> {
-	return this.usersServices.updatePost(params.id, user);
+	return this.usersServices.updateUser(params.id, user);
   }
 
   @Delete('/:id')

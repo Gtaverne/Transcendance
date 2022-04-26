@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Timestamp } from 'typeorm';
-import { CreateUserDTO } from './dto/create-user.dto';
-import { User } from './interfaces/user.interface';
+import { CreateUserDTO } from './create-user.dto';
 import { UsersEntity } from './users.entity';
 import * as fs from 'fs'
 import axios, {AxiosRequestConfig, AxiosResponse, AxiosError,} from 'axios'
@@ -43,7 +42,7 @@ export class UsersService {
     return post;
   }
 
-  async updatePost(id: number, user: UsersEntity) {
+  async updateUser(id: number, user: UsersEntity) {
     if (id !== user.id)
       return;
     await this.usersRepository.update(id, user);

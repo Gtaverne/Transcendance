@@ -10,7 +10,7 @@ import {
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
-import { UsersEntity } from '../users.entity';
+import { UsersEntity } from './users.entity';
 
 export class CreateUserDTO {
   @IsNotEmpty()
