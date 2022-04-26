@@ -1,10 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-{
-  /* Mettre ce lien dans le .env ? */
-}
-const intraUrl =
-  'https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A5050%2Fusers%2Fcallback&response_type=code';
+import {RootStateOrAny, useSelector, useDispatch } from 'react-redux';
+import {login, logout, reset} from '../features/auth/authSlice'
 
 /*
 import * as dotenv from 'dotenv'
@@ -16,7 +12,13 @@ const API_42 = process.env.API_42
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const {user} = useSelector((state) => state.auth)
+  const {user} = useSelector((state: RootStateOrAny) => state.auth)
+
+  const onLogout = () => {
+    dispatch(logout())
+    dispatch(reset())
+    navigate('/')
+  }
 
   return (
     <header className="site-header">
@@ -25,14 +27,29 @@ function Header() {
       </div>
       <ul>
         <li>
-          <a href={intraUrl}>Login</a>
+        <Link to="/game">Game</Link>
         </li>
         <li>
-          <Link to="/game">Game</Link>
+        <Link to="/chat">Chat</Link>
         </li>
+        {user && user.username ? 
+          <>
         <li>
-          <Link to="/chat">Chat</Link>
-        </li>
+          <img className='profilepic' src={user.avatar}  />
+          {user.username}
+          </li>
+          <li>
+            <button  onClick={onLogout} >Logout</button> 
+          </li>
+          </> :
+           <li >
+          <a href="https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code"
+          >Login</a>
+          </li>
+         }
+
+
+
       </ul>
     </header>
   );

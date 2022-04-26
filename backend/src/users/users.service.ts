@@ -8,6 +8,7 @@ import * as fs from 'fs'
 import axios, {AxiosRequestConfig, AxiosResponse, AxiosError,} from 'axios'
 import * as qs from 'qs'
 import * as dotenv from 'dotenv'
+import { response } from 'express';
 
 dotenv.config({path: './.env'})
 
@@ -86,14 +87,36 @@ export class UsersService {
   // 2- Traduction de ce code en token
   // 3- Recuperation des donnees de la personne sur la base de ce code
   // 4- Login de l'user et EVENTUELLEMENT creation de son compte user
-  async login(code: string) {
+  async login(code: string) : Promise<UsersEntity> {
+
+
+    var userData : UsersEntity = {id: 0,
+      username: '',
+      avatar: '',
+      email: 'dude@test.fr',
+      doublefa: false,
+      lvl: 0,
+      iFollowList: [],
+      followingMeList: [],
+      iBlockedList: [],
+      blockedMeList: [],
+      messagesList: [],
+      accessToList: [],
+      gamePlayer1: [],
+      gamePlayer2: [],
+      ownedRooms: [],
+      administratingRooms: [],}
+
+    var token = ''
+
+    //console.log('code from params: '+  code)
 
     const data = qs.stringify({
       'client_id': Client_ID,
       'client_secret': Client_Secret,
       'code': code,
       'grant_type': 'authorization_code',
-      'redirect_uri': 'http://localhost:5050/users/callback' 
+      'redirect_uri': 'http://localhost:3000/login' 
     });
 
     const config: AxiosRequestConfig = {
@@ -104,30 +127,33 @@ export class UsersService {
       },
       data : data,
     };
-    var token = ''
-    
+
+    console.log('ready to do the axios request')
+     
     await axios(config)
     .then(function (response: AxiosResponse) {
       token = response.data.access_token
+      console.log('show me the token from 42: ' + token)
+      console.log('Status: ' + response.status)
     })
     .catch(function (error) {
-      //Voir où on renvoie l'user
-
-      return 'We have a login problem'
+      console.log('Axios request failed: ' + response.status)
     });
 
+
     if (token) {
-      this.getUserDataFrom42(token)
+      userData = await this.getUserDataFrom42(token)
+      console.log('We have a token, here is the name: ' + userData.username)
+      return userData
     } else {
       console.log('No token provided')
     }
-
-    return 'Successfull login'
+    return userData
   }
 
 
   //Gets the user data from API 42
-  async getUserDataFrom42(token : string) {
+  async getUserDataFrom42(token : string) : Promise<any> {
 
     var config : AxiosRequestConfig = {
       method: 'get',
@@ -140,30 +166,41 @@ export class UsersService {
 
     await axios(config)
     .then(function (response) {
-      // console.log(JSON.stringify(response.data.login));
-      // https://stackoverflow.com/questions/46745688/typeorm-upsert-create-if-not-exist
       resp = response.data      
     })
     .catch(function (error) {
       console.log(error);
     });
-
-    if (resp) {
-      const res = await this.userCreate(resp) 
-      if (res > 1) {
-        console.log('We have duplicate users')
-      }
-    } 
+    const res = await this.userFromDB(resp) 
+    return res
   }
 
-  async userCreate(loggedProfile: any) : Promise<number> {
+  async userFromDB(loggedProfile: any) : Promise<UsersEntity> {
 
     //Here we check if the user already exists
     const res = await this.usersRepository.find({where: {email : loggedProfile.email}})
 
+    var dude : UsersEntity = {id: 0,
+      username: '',
+      avatar: '',
+      email: 'dude@test.fr',
+      doublefa: false,
+      lvl: 0,
+      iFollowList: [],
+      followingMeList: [],
+      iBlockedList: [],
+      blockedMeList: [],
+      messagesList: [],
+      accessToList: [],
+      gamePlayer1: [],
+      gamePlayer2: [],
+      ownedRooms: [],
+      administratingRooms: [],}
+
     if (res.length === 0) {
       console.log('Creating profile')
-      await this.create({
+
+      dude = {
         id: 0,
         username: loggedProfile.login,
         avatar: loggedProfile.image_url,
@@ -180,11 +217,13 @@ export class UsersService {
         gamePlayer2: [],
         ownedRooms: [],
         administratingRooms: [],
-      })
+      }
+      await this.create(dude)
     } else {
-      console.log(`Welcome back, ${loggedProfile.login}`)
+      dude = res[0]
+      console.log(`Welcome back, ${dude.username}`)
     }
 
-    return res.length
+    return dude
   }
 }

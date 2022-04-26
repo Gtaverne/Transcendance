@@ -20,9 +20,7 @@ import { User } from './interfaces/user.interface';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
-import axios, {AxiosRequestConfig, AxiosResponse,
-  AxiosError,} from 'axios'
-import * as qs from 'qs'
+
 
 //retourne le premier endpoint qui match la route
 @Controller('users')
@@ -40,14 +38,19 @@ export class UsersController {
   //Pour le login depuis l'intra 42
   @Get('/callback')
   //Replace it by site address
-  @Redirect('http://localhost:3000', 302)
-  async callback(@Res() response: Response,
+  // @Redirect('http://localhost:3000', 302)
+  async callback(
+    @Req() request: Request,
+    @Res() response: Response,
     @Query('code') code: Promise<string>) : Promise<any> {
     const cd = await code
 
-    this.usersServices.login(cd)
-
+    const user = await this.usersServices.login(cd)
+    
     // response.cookie('kingPong', 'soon, it will be a jwt')
+    response.header({"Access-Control-Allow-Origin": "http://localhost:3000"})
+    console.log('Here is the response: '  + user.username)
+    response.json(user)
 
     return 'It should be ok'
   }

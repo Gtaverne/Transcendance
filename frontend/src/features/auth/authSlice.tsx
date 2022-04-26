@@ -3,7 +3,7 @@ import authService from './authService'
 
 
 //Get user from localstorage
-const user = JSON.parse(localStorage.getItem('user') || '' )
+const user = JSON.parse(localStorage.getItem('user') || '{}' )
 
 
 interface userInterface {
@@ -15,7 +15,7 @@ interface userInterface {
 }
 
 const initialState : userInterface = {
-    user: user ? user : null,
+    user: user ? user : {},
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -23,14 +23,15 @@ const initialState : userInterface = {
 }
 
 //Login User
-export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
-    // console.log(user);
+export const login = createAsyncThunk('auth/login', async (code : string, thunkAPI) => {
+    // console.log(code);
     try {
-        return await authService.login(user)
+        return await authService.login(code)
     } catch (error) {
         // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        console.log('We caught an error');
 
-        return thunkAPI.rejectWithValue('message')
+        return thunkAPI.rejectWithValue('Could not login')
     }
 })
 
