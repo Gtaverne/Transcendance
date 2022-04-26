@@ -75,12 +75,12 @@ export class UsersController {
   
   //les param sont ceux du chemin de la requete
   @Get('/:id')
-  async findOne(@Param() params): Promise<User> {
+  async findOne(@Param() params): Promise<UsersEntity> {
     return this.usersServices.findOne(params.id);
   }
   
   @Get()
-  async findAll(@Param() params): Promise<User[]> {
+  async findAll(@Param() params): Promise<UsersEntity[]> {
     return this.usersServices.findAll();
   }
 

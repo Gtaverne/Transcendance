@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { UsersEntity } from 'src/users/users.entity';
 
 export class CreateGameDTO {
   @IsNotEmpty()
@@ -16,11 +17,9 @@ export class CreateGameDTO {
   @IsString()
   readonly status: string;
   @IsNotEmpty()
-  @IsInt()
-  readonly user1: number;
+  readonly user1: UsersEntity;
   @IsNotEmpty()
-  @IsInt()
-  readonly user2: number;
+  readonly user2: UsersEntity;
   @IsOptional()
   @IsInt()
   readonly score1: number;

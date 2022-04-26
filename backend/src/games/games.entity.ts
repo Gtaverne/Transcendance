@@ -7,9 +7,9 @@ export class GamesEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   status: string;
   @ManyToOne(() => UsersEntity, user => user.gamePlayer1)
-  user1: number;
+  user1: UsersEntity;
   @ManyToOne(() => UsersEntity, user => user.gamePlayer2)
-  user2: number;
+  user2: UsersEntity;
   @Column({ type: 'integer', nullable: false })
   score1: number;
   @Column({ type: 'integer', nullable: false })
