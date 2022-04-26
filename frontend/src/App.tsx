@@ -4,7 +4,8 @@ import Header from './components/Header';
 import Chat from './pages/Chat';
 import Game from './pages/Game';
 import Home from './pages/Home';
-import LoginRegister from './pages/LoginRegister';
+import UserProfile from './pages/UserProfile';
+import Login from './pages/Login';
 
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/loginregister" element={<LoginRegister />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/userprofile" element={<UserProfile />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/game" element={<Game />} />
           </Routes>
