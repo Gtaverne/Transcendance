@@ -14,6 +14,12 @@ function Header() {
   const dispatch = useDispatch();
   const {user} = useSelector((state: RootStateOrAny) => state.auth)
 
+  const onLogout = () => {
+    dispatch(logout())
+    dispatch(reset())
+    navigate('/')
+  }
+
   return (
     <header className='site-header'>
       <div>
@@ -26,19 +32,24 @@ function Header() {
         <li>
         <Link to="/chat">Chat</Link>
         </li>
-        {
+        {user && user.username ? 
           <>
-          <li>
+        <li>
           <img className='profilepic' src={user.avatar}  />
-          {user.username}</li>
-
-
-          <li >
+          {user.username}
+          </li>
+          <li>
+            <button  onClick={onLogout} >Logout</button> 
+          </li>
+          </> :
+           <li >
           <a href="https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code"
           >Login</a>
           </li>
-          </>
-        }
+         }
+
+
+
       </ul>
     </header>
   );

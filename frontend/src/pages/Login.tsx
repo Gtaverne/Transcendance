@@ -18,9 +18,10 @@ function Login({}: Props) {
         (state : RootStateOrAny) => state.auth
         )
 
+        console.log('Noloop: ' + noloop);
 
     useEffect(() => {
-        if (profileLoaded === false && user.username === '' && noloop === 0) {
+        if (profileLoaded === false && noloop === 0) {
             noloop = noloop + 1
                 setProfileLoaded(true)
                 console.log('Loading a profile');
