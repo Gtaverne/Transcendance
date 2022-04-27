@@ -35,8 +35,11 @@ function Header() {
         {user && user.username ? 
           <>
         <li>
+        <Link to={"/userprofile/"+ user.id}>
+
           <img className='profilepic' src={user.avatar}  />
           {user.username}
+        </Link>
           </li>
           <li>
             <button  onClick={onLogout} >Logout</button> 

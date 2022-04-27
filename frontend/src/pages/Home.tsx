@@ -7,9 +7,12 @@ function Home() {
 
   const {user} = useSelector((state: RootStateOrAny) => state.auth)
 
+
+
   return (<>
     <div>Home</div>
     <div>{user && "Hey buddy "}{user && user.username}</div>
+
   </>
     )
 }

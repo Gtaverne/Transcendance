@@ -37,5 +37,11 @@ export class AppModule {
       .apply(LoggerMiddleware)
       //Exclure le callback de Login
       .exclude({ path: 'users', method: RequestMethod.POST });
+
+
+
+      
+
+
   }
 }
