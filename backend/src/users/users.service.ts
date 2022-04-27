@@ -18,10 +18,10 @@ const Client_Secret = process.env.Client_Secret
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(UsersEntity)
-    private usersRepository: Repository<UsersEntity>,
-  ) {}
+	constructor(
+	  @InjectRepository(UsersEntity)
+	  private usersRepository: Repository<UsersEntity>,
+	) {}
 
   //For testing, we seed the db with dummy users
   async seed() {
@@ -59,8 +59,8 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const post = await this.usersRepository.findOne(id);
-    return post;
+    const user = await this.usersRepository.findOne(id);
+    return user;
   }
 
   async updateUser(id: number, user: UsersEntity) {

@@ -47,7 +47,7 @@ export class RoomDTO {
   @IsOptional()
   readonly accessList: UsersEntity[];
   @IsOptional()
-  owner: UsersEntity;
+  readonly owner: UsersEntity;
   @IsArray()
   @IsOptional()
   readonly admins: UsersEntity[];
