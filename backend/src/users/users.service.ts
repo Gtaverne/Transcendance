@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Timestamp } from 'typeorm';
-import { CreateUserDTO } from './create-user.dto';
 import { UsersEntity } from './users.entity';
 import * as fs from 'fs'
 import axios, {AxiosRequestConfig, AxiosResponse, AxiosError,} from 'axios'

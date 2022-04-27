@@ -9,10 +9,10 @@ import { UsersEntity } from 'src/users/users.entity';
 export class RoomsEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   channelName: string;
-  @Column({ type: 'varchar', length: 300, nullable: true })
+  @Column({ type: 'varchar', length: 300, default: true, nullable: true })
   password: string;
   @Column({ type: 'varchar', length: 300, nullable: true })
-  status: string;
+  category: string;
   @Column({ type: 'boolean', default: true, nullable: true })
   isDm: boolean;
   @OneToMany(() => MuteEntity, (mute) => mute.muted)

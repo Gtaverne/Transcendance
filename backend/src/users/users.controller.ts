@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { query, Request, Response } from 'express';
-import { CreateUserDTO } from './create-user.dto';
+import { UserDTO } from './dto/user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
@@ -89,12 +89,12 @@ export class UsersController {
   @Post()
   //   @HttpCode(204)
   //   @Header('Authorization', 'Bearer XAOIFUAOSijfoIJASF')
-  async create(@Body() user: CreateUserDTO): Promise<UsersEntity> {
+  async create(@Body() user: UserDTO): Promise<UsersEntity> {
     return this.usersServices.create(user);
   }
 
   @Put('/:id')
-  update(@Param() params, @Body() user: CreateUserDTO): Promise<UsersEntity> {
+  update(@Param() params, @Body() user: UserDTO): Promise<UsersEntity> {
 	return this.usersServices.updateUser(params.id, user);
   }
 

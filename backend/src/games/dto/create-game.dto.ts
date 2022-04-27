@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { UsersEntity } from 'src/users/users.entity';
 
-export class CreateGameDTO {
+export class GameDTO {
   @IsNotEmpty()
   @IsInt()
   readonly id: number;
