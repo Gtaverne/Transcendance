@@ -33,6 +33,13 @@ export class UsersController {
     return 'Friends in users';
   }
 
+  @Get('/seed')
+  async seed(): Promise<string> {
+    console.log('Seeding')
+    await this.usersServices.seed()
+    return 'Seeding';
+  }
+
 
   //Pour le login depuis l'intra 42
   @Get('/callback')
@@ -48,7 +55,7 @@ export class UsersController {
     
     // response.cookie('kingPong', 'soon, it will be a jwt')
     response.header({"Access-Control-Allow-Origin": "http://localhost:3000"})
-    console.log('Here is the response: '  + user.username)
+
     response.json(user)
 
     return 'It should be ok'

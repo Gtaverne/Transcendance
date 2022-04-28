@@ -10,11 +10,11 @@ import { response } from 'express';
 
 dotenv.config({ path: './.env' });
 
-const INTRA_API = process.env.INTRA_API;
-const Auth_URL = process.env.Auth_URL;
-const Access_Token_URL = process.env.Access_Token_URL;
-const Client_ID = process.env.Client_ID;
-const Client_Secret = process.env.Client_Secret;
+// const INTRA_API = process.env.INTRA_API
+// const Auth_URL = process.env.Auth_URL
+const Access_Token_URL = process.env.Access_Token_URL
+const Client_ID = process.env.Client_ID
+const Client_Secret = process.env.Client_Secret
 
 @Injectable()
 export class UsersService {
@@ -22,6 +22,28 @@ export class UsersService {
     @InjectRepository(UsersEntity)
     private usersRepository: Repository<UsersEntity>,
   ) {}
+
+  //For testing, we seed the db with dummy users
+  async seed() {
+
+    const newUser = new UsersEntity
+
+    console.log('Seeding new users')
+
+    newUser.email = 'dudule@dudule.fr'
+    newUser.username = 'dudule'
+    newUser.avatar = 'https://i.kym-cdn.com/entries/icons/original/000/001/030/DButt.jpg'
+    const dudule = this.usersRepository.create(newUser)
+    await this.usersRepository.save(dudule)
+
+    newUser.email = 'ddecourt@student.42.fr'
+    newUser.username = 'ddecourt'
+    newUser.avatar = 'https://media-exp1.licdn.com/dms/image/C4E22AQFnNQdXvgJMfA/feedshare-shrink_800/0/1646749757724?e=2147483647&v=beta&t=XhcJvjso7gO-wOYtcABGUR0jcLLnWLgpQ9o0WHFRvZM'
+    const diane = this.usersRepository.create(newUser)
+    await this.usersRepository.save(diane)
+
+
+  }
 
   async create(user: UsersEntity) {
     const newUser = await this.usersRepository.create(user);
@@ -93,27 +115,11 @@ export class UsersService {
   // 2- Traduction de ce code en token
   // 3- Recuperation des donnees de la personne sur la base de ce code
   // 4- Login de l'user et EVENTUELLEMENT creation de son compte user
-  async login(code: string): Promise<UsersEntity> {
-    var userData: UsersEntity = {
-      id: 0,
-      username: '',
-      avatar: '',
-      email: 'dude@test.fr',
-      doublefa: false,
-      lvl: 0,
-      iFollowList: [],
-      followingMeList: [],
-      iBlockedList: [],
-      blockedMeList: [],
-      messagesList: [],
-      accessToList: [],
-      gamePlayer1: [],
-      gamePlayer2: [],
-      ownedRooms: [],
-      administratingRooms: [],
-    };
+  async login(code: string) : Promise<UsersEntity> {
 
-    var token = '';
+
+    var userData = new UsersEntity 
+    var token = ''
 
     //console.log('code from params: '+  code)
 
@@ -134,7 +140,18 @@ export class UsersService {
       data: data,
     };
 
-    console.log('ready to do the axios request');
+    // console.log('ready to do the axios request')
+
+
+    
+     
+    await axios(config)
+    .then(function (response: AxiosResponse) {
+      token = response.data.access_token
+    })
+    .catch(function (error) {
+      console.log('Axios request failed: ' + error.response.status)
+    });
 
     await axios(config)
       .then(function (response: AxiosResponse) {
@@ -147,9 +164,8 @@ export class UsersService {
       });
 
     if (token) {
-      userData = await this.getUserDataFrom42(token);
-      console.log('We have a token, here is the name: ' + userData.username);
-      return userData;
+      userData = await this.getUserDataFrom42(token)
+      return userData
     } else {
       console.log('No token provided');
     }
@@ -184,47 +200,15 @@ export class UsersService {
       where: { email: loggedProfile.email },
     });
 
-    var dude: UsersEntity = {
-      id: 0,
-      username: '',
-      avatar: '',
-      email: 'dude@test.fr',
-      doublefa: false,
-      lvl: 0,
-      iFollowList: [],
-      followingMeList: [],
-      iBlockedList: [],
-      blockedMeList: [],
-      messagesList: [],
-      accessToList: [],
-      gamePlayer1: [],
-      gamePlayer2: [],
-      ownedRooms: [],
-      administratingRooms: [],
-    };
+    var dude = new UsersEntity
 
     if (res.length === 0) {
-      console.log('Creating profile');
+      console.log('Creating profile')
+      dude.username = loggedProfile.login
+      dude.avatar = loggedProfile.image_url
+      dude.email = loggedProfile.email
 
-      dude = {
-        id: 0,
-        username: loggedProfile.login,
-        avatar: loggedProfile.image_url,
-        email: loggedProfile.email,
-        doublefa: false,
-        lvl: 0,
-        iFollowList: [],
-        followingMeList: [],
-        iBlockedList: [],
-        blockedMeList: [],
-        messagesList: [],
-        accessToList: [],
-        gamePlayer1: [],
-        gamePlayer2: [],
-        ownedRooms: [],
-        administratingRooms: [],
-      };
-      await this.create(dude);
+      await this.create(dude)
     } else {
       dude = res[0];
       console.log(`Welcome back, ${dude.username}`);
@@ -233,3 +217,6 @@ export class UsersService {
     return dude;
   }
 }
+
+
+
