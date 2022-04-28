@@ -15,13 +15,14 @@ function Chat() {
   }
 
   useEffect(() => {
-    // const getConversations = async () => {
-    //   const res = await axios.get(
-    //     process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
-    //   );
-    // };
-    // getConversations();
-  }, [user]);
+    const getConversations = async () => {
+      const res = await axios.get(
+        process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
+      );
+      setConversations(res.data);
+    };
+    getConversations();
+  }, []);
 
   return (
     <>
@@ -29,9 +30,9 @@ function Chat() {
         <div className="chatMenu">
           <div className="chatMenuWrapper">
             <input placeholder="Search For Friends" className="chatMenuInput" />
-            <Conversation />
-            <Conversation />
-            <Conversation />
+            {conversations.map((c, i) => (
+              <Conversation key={i} conversation={c} currentUser={user}/>
+            ))}
           </div>
         </div>
         <div className="chatBox">

@@ -47,11 +47,19 @@ export class RoomsService {
   }
 
   async findRooms(userId: number) {
-	return this.usersService.accessList(userId);
+    return this.usersService.accessList(userId);
   }
 
   async findOne(id: number) {
     const user = await this.roomsRepository.findOne(id);
     return user;
+  }
+
+  async findRoomUsers(roomId: number) {
+    const users = await this.roomsRepository.findOne({
+      where: { id: roomId },
+      relations: ['accessList'],
+    });
+    return users.accessList;
   }
 }

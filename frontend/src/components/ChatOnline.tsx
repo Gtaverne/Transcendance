@@ -11,14 +11,14 @@ function ChatOnline() {
         </div>
         <span className="chatOnlineName">Norminet</span>
       </div>
-	  <div className="chatOnlineFriend">
+      <div className="chatOnlineFriend">
         <div className="chatOnlineImgContainer">
           <img className="chatOnlineImg" src={imageURL} alt="" />
           <div className="chatOnlineBadge"></div>
         </div>
         <span className="chatOnlineName">Norminet</span>
       </div>
-	  <div className="chatOnlineFriend">
+      <div className="chatOnlineFriend">
         <div className="chatOnlineImgContainer">
           <img className="chatOnlineImg" src={imageURL} alt="" />
           <div className="chatOnlineBadge"></div>
