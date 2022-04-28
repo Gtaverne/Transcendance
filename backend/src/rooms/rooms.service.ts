@@ -47,13 +47,7 @@ export class RoomsService {
   }
 
   async findRooms(userId: number) {
-    // const p1 = await this.roomsRepository.find({ accessList: {$in: userId} });
-    const p1 = await this.roomsRepository.find({ where: { isDm: true } });
-    // const p2 = await this.roomsRepository.find({ category: 'public' });
-    // return p1.concat(p2);
-    // const query = this.roomsRepository.createQueryBuilder('room').leftJoinAndSelect('room.admins', 'admins').where('users.id = :id', { id: userId })
-
-    return p1;
+	return this.usersService.accessList(userId);
   }
 
   async findOne(id: number) {
