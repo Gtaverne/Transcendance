@@ -3,8 +3,6 @@ import axios, {AxiosRequestConfig, AxiosResponse, AxiosError,} from 'axios'
 
 // import * as dotenv from 'dotenv'
 // dotenv.config({path: './.env'})
-
-
 const URL_BACK = 'http://localhost:5050/'
 
 async function apiGetter(route: string) : Promise<any> {
@@ -13,7 +11,7 @@ async function apiGetter(route: string) : Promise<any> {
 
     await axios.get(URL_BACK + route)
     .then(function (response : AxiosResponse) {
-        console.log('We have a response: ' + response.data);
+        console.log('We have a response: ' + response.data.username);
         return response.data
     })
     .catch(function (error : AxiosError) {

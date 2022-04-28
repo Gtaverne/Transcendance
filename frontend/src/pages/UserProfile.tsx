@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import {useState, useEffect} from 'react'
 import apiGetter from '../features/apicalls/apiGetter'
 
+import * as qs from 'qs'
+
+
 import React from 'react'
 
 type Props = {}
@@ -20,6 +23,7 @@ const UserProfile = (props: Props) => {
   const [queryData, setQueryData] = useState({
     query: ''
   })
+  const [results, setResults] = useState('')
 
 
   const params = useParams()
@@ -39,16 +43,16 @@ const UserProfile = (props: Props) => {
     }
   }, [params.login])
 
-
   console.log(fetchedProfile && 'id: ' + fetchedProfile.id);
-
 
   const onSubmit = async(e :any) => {
     e.preventDefault()
+    let str = qs.stringify(await apiGetter(queryData.query))
     console.log('Query launched')
-    const results = await apiGetter(queryData.query)
 
-    console.log(results);
+    setResults(str)
+    console.log('Results: ' + results);
+
   }
 
   const onChange = async(e :any) => {
@@ -67,10 +71,11 @@ const UserProfile = (props: Props) => {
     <div>
       <form onSubmit={onSubmit}>
         <input type='string' placeholder='route to query' id = 'query' onChange={onChange} />
-
-
       </form>
       <button onClick={onSubmit} >Send Request</button>
+    </div>
+    <div>
+      {results && {results}}
     </div>
     </>
   )
