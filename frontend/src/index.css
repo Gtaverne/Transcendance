@@ -24,10 +24,33 @@ code {
 .site-header li {
   display: inline;
   margin: 1rem;
+  text-align: center;
+}
+
+.site-header ul a {
+  text-decoration: none;
+}
+
+.homeButton {
+  text-decoration: none;
+  margin-left: 1rem;
 }
 
 .profilepic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  vertical-align: middle;
+  position: relative;
+  right: 5px;
+}
+
+.logButton {
+  width: 70px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1877f2;
+  color: white;
 }

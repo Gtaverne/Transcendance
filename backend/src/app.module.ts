@@ -15,6 +15,7 @@ import { GamesService } from './games/games.service';
 import { GamesModule } from './games/games.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { MessagesModule } from './messages/messages.module';
+import { TutoModule } from './tuto/tuto.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MessagesModule } from './messages/messages.module';
     RoomsModule,
     MessagesModule,
     TypeOrmModule.forRoot(config),
+    TutoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

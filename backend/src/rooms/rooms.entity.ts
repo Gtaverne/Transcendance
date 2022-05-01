@@ -15,6 +15,7 @@ export class RoomsEntity extends BaseEntity {
   category: string;
   @Column({ type: 'boolean', default: true, nullable: true })
   isDm: boolean;
+
   @OneToMany(() => MuteEntity, (mute) => mute.muted)
   muteList: MuteEntity[];
   @OneToMany(() => BanEntity, (ban) => ban.baned)

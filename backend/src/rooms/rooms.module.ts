@@ -7,6 +7,7 @@ import { BanEntity } from './ban.entity';
 import { MuteEntity } from './mute.entity';
 import { RoomsController } from './rooms.controller';
 import { RoomsEntity } from './rooms.entity';
+import { RoomsGateway } from './rooms.gateway';
 import { RoomsService } from './rooms.service';
 
 @Module({
@@ -15,6 +16,6 @@ import { RoomsService } from './rooms.service';
     UsersModule,
   ],
   controllers: [RoomsController],
-  providers: [RoomsService, UsersService],
+  providers: [RoomsService, UsersService, RoomsGateway],
 })
 export class RoomsModule {}

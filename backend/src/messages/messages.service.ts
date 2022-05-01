@@ -31,6 +31,6 @@ export class MessagesService {
   async findMessages(roomId: number) {
     const room = await this.roomsService.findOne(roomId);
     const res = await this.messagesRepository.find({ where: { room: room }, relations: ["owner"] });
-    return res;
+    return res.reverse();
   }
 }

@@ -20,6 +20,7 @@
 	},
 	"homepage": "https://github.com/Gtaverne/Transcendance#readme",
 	"dependencies": {
-		"react-dom": "^18.0.0"
+		"react-dom": "^18.0.0",
+		"timeago.js": "^4.0.2"
 	}
 }

@@ -23,7 +23,7 @@ function Header() {
   return (
     <header className="site-header">
       <div>
-        <Link to="/">Home</Link>
+        <Link to="/" className='homeButton'>Home</Link>
       </div>
       <ul>
         <li>
@@ -42,7 +42,7 @@ function Header() {
         </Link>
           </li>
           <li>
-            <button  onClick={onLogout} >Logout</button> 
+            <button className='logButton' onClick={onLogout} >Logout</button> 
           </li>
           </> :
            <li >
