@@ -2,12 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import {login, logout, reset} from '../features/auth/authSlice'
 
-/*
-import * as dotenv from 'dotenv'
-
-dotenv.config({path: './.env'})
-const API_42 = process.env.API_42
-*/
+const API_42 = process.env.REACT_APP_API_42
 
 function Header() {
   const navigate = useNavigate();

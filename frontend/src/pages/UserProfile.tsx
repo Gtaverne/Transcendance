@@ -1,84 +1,101 @@
-import {RootStateOrAny, useSelector, useDispatch} from 'react-redux'
-import { useParams, Link } from 'react-router-dom'
-import {useState, useEffect} from 'react'
-import apiGetter from '../features/apicalls/apiGetter'
+import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
+import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import apiGetter from '../features/apicalls/apiGetter';
+import { login, reset } from '../features/auth/authSlice';
 
-import * as qs from 'qs'
+import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
 
+import React from 'react';
 
-import React from 'react'
+import * as qs from 'qs';
 
-type Props = {}
+type Props = {};
 
 const UserProfile = (props: Props) => {
-  let noloop = 0;
+  let noloop = 0; //Not required in production
+  const dispatch = useDispatch();
+  const [editProfile, setEditProfile] = useState(false);
 
+  const { user, isError, isLoading, isSuccess, message } = useSelector(
+    (state: RootStateOrAny) => state.auth,
+  );
 
-  const {user, isError, isLoading, isSuccess, message} = useSelector(
-    (state : RootStateOrAny) => state.auth
-    )
-
-  var profile = user
-  const [fetchedProfile, setfetchedProfile] = useState(profile)
+  var profile = user;
+  const [fetchedProfile, setfetchedProfile] = useState(profile);
   const [queryData, setQueryData] = useState({
-    query: ''
-  })
-  const [results, setResults] = useState('')
+    query: '',
+  });
 
+  const [results, setResults] = useState('');
 
-  const params = useParams()
+  const params = useParams();
 
   useEffect(() => {
     if (noloop === 0) {
-      noloop = 1
+      noloop = 1;
 
-      const fetchUser = async() => {
-        console.log('We try to fetch this profile: ' + params.id);
-        const userData = await apiGetter('users/' + params.id )
-        console.log('Fetched username: ' + userData.username);
-        setfetchedProfile(userData)
-      }
-      fetchUser()
-      console.log('We fetched: ' + fetchedProfile.username);
+      const fetchUser = async () => {
+        const userData = await apiGetter('users/' + params.id);
+        if (userData) {
+          setfetchedProfile({ ...userData });
+        }
+      };
+      fetchUser();
     }
-  }, [params.login])
+  }, [params, login, user]);
 
-  console.log(fetchedProfile && 'id: ' + fetchedProfile.id);
-
-  const onSubmit = async(e :any) => {
-    e.preventDefault()
-    let str = qs.stringify(await apiGetter(queryData.query))
-    console.log('Query launched')
-
-    setResults(str)
-    console.log('Results: ' + results);
-
-  }
-
-  const onChange = async(e :any) => {
-    e.preventDefault()
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
     setQueryData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
-    }))
+    }));
+  };
+
+  const onBlock = async () => {
+
+  }
+
+  const onFollow = async () => {
+    
   }
 
   return (
     <>
-    <div></div>
-    <div>User Profile account</div>
+      <div></div>
+      {user && user.id && user.id === fetchedProfile.id ? (
+        <>
+          <h2>Welcome home</h2>
+          <button className="logButton" color="#f194ff" onClick={() => {
+          editProfile && console.log('ready to edit')
+          setEditProfile((prevState) => !prevState)
+        }}>
+            <FaSignOutAlt />
+            Edit
+          </button>
+        </>
+      ) : (
+        <>
+          <h2>Add as contact</h2>
+          <button className="logButton" onClick={onFollow}>
+            <FaUser />
+            Follow
+          </button>
+          <button className="logButton" onClick={onBlock}>
+            <FaSignOutAlt />
+            Block
+          </button>
+        </>
+      )}
 
-    <div>
-      <form onSubmit={onSubmit}>
-        <input type='string' placeholder='route to query' id = 'query' onChange={onChange} />
-      </form>
-      <button onClick={onSubmit} >Send Request</button>
-    </div>
-    <div>
-      {results && {results}}
-    </div>
+      <div></div>
+      <img className="profilepage" src={fetchedProfile.avatar} />
+
+      <div>Username: {fetchedProfile.username}</div>
+      <div>email: {fetchedProfile.email}</div>
     </>
-  )
-}
+  );
+};
 
-export default UserProfile
+export default UserProfile;

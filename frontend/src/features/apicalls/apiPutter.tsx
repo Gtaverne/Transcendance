@@ -4,9 +4,9 @@ import axios from 'axios'
 
 // import * as dotenv from 'dotenv'
 // dotenv.config({path: './.env'})
-const URL_BACK = 'http://localhost:5050/'
+const URL_BACK = process.env.REACT_APP_URL_BACK
 
-async function apiGetter(route: string) : Promise<any> {
+async function apiPutter(route: string) : Promise<any> {
 
     console.log('We get in apiGetter, route is: ' + route);
 
@@ -16,4 +16,4 @@ async function apiGetter(route: string) : Promise<any> {
 
 }
 
-export default apiGetter
+export default apiPutter
