@@ -55,6 +55,10 @@ export class RoomsService {
     return user;
   }
 
+  findAll() {
+    return `This action returns all tuto`;
+  }
+
   async findRoomUsers(roomId: number) {
     const users = await this.roomsRepository.findOne({
       where: { id: roomId },

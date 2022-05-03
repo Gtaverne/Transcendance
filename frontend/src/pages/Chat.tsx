@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import ChatOnline from '../components/ChatOnline';
 import Conversation from '../components/Conversation';
@@ -7,6 +7,12 @@ import Message from '../components/Message';
 import MessageInterface from '../interfaces/MessageInterface';
 import RoomInterface from '../interfaces/RoomInterface';
 import './chat.css';
+import { io } from 'socket.io-client';
+
+// export type Abc = {
+//   userId: number;
+//   socketId: string;
+// };
 
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
@@ -15,9 +21,33 @@ function Chat() {
   const [newMessage, setNewMessage] = useState('');
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const socket = useRef(io());
+
+  useEffect(() => {
+    socket.current = io('ws://localhost:5050');
+  }, []);
+
+  useEffect(() => {
+    socket.current.emit('addUser', user.id);
+    socket.current.on('getUsers', (users) => {
+      console.log(1234, users);
+    });
+  }, [user]);
+
+  //   const [socket, setSocket] = useState<any>(null);
+  //   useEffect(() => {
+  //     setSocket(io('ws://localhost:5050'));
+  //   }, []);
+
+  //   useEffect(() => {
+  //     socket?.on('message', (message: any) => {
+  //       console.log(message);
+  //     });
+  //   }, [socket]);
+  //   console.log(socket);
 
   if (!user) {
-    console.log("Don't forgot to login");
+    console.log("Don't forget to login");
   }
 
   useEffect(() => {
