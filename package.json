@@ -9,7 +9,6 @@
 		"server": "npm run start:dev --prefix backend",
 		"i": "cd frontend && npm i && cd .. && cd backend && npm i && cd ..",
 		"dev": "concurrently \"npm run server\" \"npm run client\""
-
 	},
 	"repository": {
 		"type": "git",

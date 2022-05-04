@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
 import { login, reset } from '../features/auth/authSlice';
 
-import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import {
+  FaSignOutAlt, FaUser } from 'react-icons/fa';
 
 import React from 'react';
 
