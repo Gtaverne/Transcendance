@@ -45,6 +45,16 @@ code {
   right: 5px;
 }
 
+.profilepage {
+  width: 100px;
+  height: 100px;
+  border-radius: 5%;
+  vertical-align: middle;
+  position: relative;
+  margin-left: 1rem;
+  right: 5px;
+}
+
 .logButton {
   width: 70px;
   height: 30px;
