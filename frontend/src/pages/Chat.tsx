@@ -8,6 +8,7 @@ import MessageInterface from '../interfaces/MessageInterface';
 import RoomInterface from '../interfaces/RoomInterface';
 import './chat.css';
 import { io } from 'socket.io-client';
+import UserInterface from '../interfaces/UserInterface';
 
 // export type Abc = {
 //   userId: number;
@@ -19,18 +20,29 @@ function Chat() {
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [arrivalMessage, setArrivalMessage] = useState('');
+  const [onlineUsers, setOnlineUsers] = useState<UserInterface[]>([]);
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   const scrollRef = useRef<HTMLDivElement>(null);
   const socket = useRef(io());
 
   useEffect(() => {
     socket.current = io('ws://localhost:5050');
+    socket.current.on('getMessage', (data) => {
+      setArrivalMessage(data);
+    });
   }, []);
+
+  useEffect(() => {
+    // arrivalMessage &&
+    //   currentChat?.members.include(arrivalMessage.sender) &&
+    //   setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
     socket.current.emit('addUser', user.id);
     socket.current.on('getUsers', (users) => {
-      console.log(1234, users);
+      setOnlineUsers(users);
     });
   }, [user]);
 
@@ -52,10 +64,14 @@ function Chat() {
 
   useEffect(() => {
     const getConversations = async () => {
-      const res = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
-      );
-      setConversations(res.data);
+      try {
+        const res = await axios.get(
+          process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
+        );
+        setConversations(res.data);
+      } catch (err) {
+        console.log(err);
+      }
     };
     getConversations();
   }, [user.id]);
@@ -63,10 +79,14 @@ function Chat() {
   useEffect(() => {
     const getMessages = async () => {
       if (currentChat.length > 0) {
-        const res = await axios.get(
-          process.env.REACT_APP_URL_BACK + 'messages/' + currentChat[0].id,
-        );
-        setMessages(res.data);
+        try {
+          const res = await axios.get(
+            process.env.REACT_APP_URL_BACK + 'messages/' + currentChat[0].id,
+          );
+          setMessages(res.data);
+        } catch (err) {
+          console.log(err);
+        }
       }
     };
     getMessages();
@@ -79,6 +99,14 @@ function Chat() {
       channelId: currentChat[0].id,
       message: newMessage,
     };
+
+    // const receiverIds = currentChat[0].accessList;
+
+    // socket.current.emit("sendMessage", {
+    // 	senderId: user.id,
+    // 	receiverId:
+    // })
+
     const res = await axios.post(
       process.env.REACT_APP_URL_BACK + 'messages/',
       msg,
@@ -140,7 +168,7 @@ function Chat() {
         </div>
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
-            <ChatOnline />
+            <ChatOnline onlineUsers={onlineUsers} currentId={user.id} setCurrentChat={setCurrentChat}/>
           </div>
         </div>
       </div>

@@ -19,27 +19,23 @@ import { UserDTO } from './dto/user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
-
-
 //retourne le premier endpoint qui match la route
 @Controller('users')
 export class UsersController {
   constructor(private usersServices: UsersService) {}
 
-
   @Get('/friends')
   findFriend(): string {
-    console.log('findFriends activated')
+    console.log('findFriends activated');
     return 'Friends in users';
   }
 
   @Get('/seed')
   async seed(): Promise<string> {
-    console.log('Seeding')
-    await this.usersServices.seed()
+    console.log('Seeding');
+    await this.usersServices.seed();
     return 'Seeding';
   }
-
 
   //Pour le login depuis l'intra 42
   @Get('/callback')
@@ -48,19 +44,19 @@ export class UsersController {
   async callback(
     @Req() request: Request,
     @Res() response: Response,
-    @Query('code') code: Promise<string>) : Promise<any> {
-    const cd = await code
+    @Query('code') code: Promise<string>,
+  ): Promise<any> {
+    const cd = await code;
 
-    const user = await this.usersServices.login(cd)
-    
+    const user = await this.usersServices.login(cd);
+
     // response.cookie('kingPong', 'soon, it will be a jwt')
-    response.header({"Access-Control-Allow-Origin": "http://localhost:3000"})
+    response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
 
-    response.json(user)
+    response.json(user);
 
-    return 'It should be ok'
+    return 'It should be ok';
   }
-
 
   @Get('aCleanPlusTard')
   findAllTEST(
@@ -73,7 +69,7 @@ export class UsersController {
     console.log(request);
     return response.json({ msg: 'Find All in users' });
   }
-  
+
   @Get('docs') //ce bloc est juste un bloc demo a retirer
   @Redirect('https://docs.nestjs.com', 302)
   getDocs(@Query('version') version) {
@@ -81,13 +77,19 @@ export class UsersController {
       return { url: 'https://docs.nestjs.com/v5/' };
     }
   }
-  
+
+  @Get('/allusers')
+  async accessAllUsers(@Param() params): Promise<UsersEntity[]> {
+	// return this.usersServices.findAll();
+	return this.usersServices.accessAllUsers();
+  }
+
   //les param sont ceux du chemin de la requete
   @Get('/:id')
   async findOne(@Param() params): Promise<UsersEntity> {
     return this.usersServices.findOne(params.id);
   }
-  
+
   @Get()
   async findAll(@Param() params): Promise<UsersEntity[]> {
     return this.usersServices.findAll();
@@ -102,7 +104,7 @@ export class UsersController {
 
   @Put('/:id')
   update(@Param() params, @Body() user: UserDTO): Promise<UsersEntity> {
-	return this.usersServices.updateUser(params.id, user);
+    return this.usersServices.updateUser(params.id, user);
   }
 
   @Delete('/:id')

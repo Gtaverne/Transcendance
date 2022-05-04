@@ -1,7 +1,16 @@
+import RoomInterface from '../interfaces/RoomInterface';
+import UserInterface from '../interfaces/UserInterface';
 import './chatOnline.css';
 const imageURL = 'https://cdn.intra.42.fr/users/small_ttranche.jpg';
 
-function ChatOnline() {
+type ChatOnlineProps = {
+  onlineUsers: UserInterface[];
+  currentId: number;
+  setCurrentChat: React.Dispatch<React.SetStateAction<RoomInterface[]>>;
+};
+
+function ChatOnline({ onlineUsers, currentId, setCurrentChat }: ChatOnlineProps) {
+	
   return (
     <div className="chatOnline">
       <div className="chatOnlineFriend">
