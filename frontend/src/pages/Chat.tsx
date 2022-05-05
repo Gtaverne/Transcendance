@@ -19,7 +19,7 @@ function Chat() {
     id: -1,
     message: '',
   });
-  const [onlineUsers, setOnlineUsers] = useState<UserInterface[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   const scrollRef = useRef<HTMLDivElement>(null);
   const socket = useRef(io());
@@ -42,7 +42,10 @@ function Chat() {
 
   useEffect(() => {
     if (arrivalMessage) {
-      if (arrivalMessage.id !== -1 && arrivalMessage.room?.id === currentChat[0].id) {
+      if (
+        arrivalMessage.id !== -1 &&
+        arrivalMessage.room?.id === currentChat[0].id
+      ) {
         let foundId = false;
         for (let i = 0; i < messages.length; i++) {
           if (messages[i].id === arrivalMessage.id) {
@@ -59,10 +62,13 @@ function Chat() {
     //   setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage, currentChat, messages]);
 
+  useEffect(() => {}, [onlineUsers]);
+
   useEffect(() => {
     socket.current.emit('addUser', user.id);
-    socket.current.on('getUsers', (users) => {
-      setOnlineUsers(users);
+    socket.current.on('getUsers', (u) => {
+      setOnlineUsers(u);
+      console.log(u);
     });
   }, [user]);
 
@@ -198,6 +204,7 @@ function Chat() {
               onlineUsers={onlineUsers}
               currentId={user.id}
               setCurrentChat={setCurrentChat}
+              accessList={currentChat[0]?.accessList}
             />
           </div>
         </div>

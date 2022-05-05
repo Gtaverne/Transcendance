@@ -4,12 +4,13 @@ import './chatOnline.css';
 const imageURL = 'https://cdn.intra.42.fr/users/small_ttranche.jpg';
 
 type ChatOnlineProps = {
-  onlineUsers: UserInterface[];
+  onlineUsers: number[];
   currentId: number;
   setCurrentChat: React.Dispatch<React.SetStateAction<RoomInterface[]>>;
+  accessList: UserInterface[] | undefined;
 };
 
-function ChatOnline({ onlineUsers, currentId, setCurrentChat }: ChatOnlineProps) {
+function ChatOnline({ onlineUsers, currentId, setCurrentChat, accessList }: ChatOnlineProps) {
 
   return (
     <div className="chatOnline">

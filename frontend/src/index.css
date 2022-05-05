@@ -64,3 +64,13 @@ code {
   background-color: #1877f2;
   color: white;
 }
+
+.landingPage {
+  margin-top: 100px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.landingPage a {
+  text-decoration: none;
+}

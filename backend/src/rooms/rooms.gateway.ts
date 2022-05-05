@@ -42,6 +42,7 @@ export class RoomsGateway
       }
     }
     if (userFound) {
+      this.users[index].socket.disconnect();
       this.users.splice(index, 1);
     }
     this.users.push({ userId, socket });
@@ -112,7 +113,19 @@ export class RoomsGateway
 
   @SubscribeMessage('addUser')
   handleAddUser(socket: Socket, userId: number) {
+    let userCounter = this.users.length;
     this.addUser(socket, userId);
+    if (userCounter !== this.users.length) {
+      let usersList = [];
+      for (let i = 0; i < this.users.length; i++) {
+        usersList.push(this.users[i].userId);
+	}
+	usersList.push(-100);
+    //   console.log('NEW USER', usersList);
+	  for (let i = 0; i < this.users.length; i++) {
+		this.server.to(this.users[i].socket.id).emit('getUsers', usersList);
+	  }
+    }
     // this.users.forEach((u) => u.emit('getUsers', String(this.users), "online")); //20:34
 
     // this.server.emit('getUsers', this.users, 'online'); //!\ ligne qui fait planter
