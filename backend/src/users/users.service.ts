@@ -10,6 +10,9 @@ import { response } from 'express';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { CreateRoomDTO } from 'src/rooms/dto/create-room.dto';
+import { useJwt } from "react-jwt";
+var jwt = require('jsonwebtoken');
+
 
 dotenv.config({ path: './.env' });
 
@@ -18,6 +21,7 @@ dotenv.config({ path: './.env' });
 const Access_Token_URL = process.env.Access_Token_URL;
 const Client_ID = process.env.Client_ID;
 const Client_Secret = process.env.Client_Secret;
+const Token_Secret = process.env.JWT_Secret;
 
 @Injectable()
 export class UsersService {
@@ -145,11 +149,12 @@ export class UsersService {
   // 2- Traduction de ce code en token
   // 3- Recuperation des donnees de la personne sur la base de ce code
   // 4- Login de l'user et EVENTUELLEMENT creation de son compte user
-  async login(code: string): Promise<UsersEntity> {
-    var userData = new UsersEntity();
+  async login(code: string): Promise<any> {
     var token = '';
-
-    //console.log('code from params: '+  code)
+    var answer = {
+      'user': new UsersEntity(),
+      'jwt' : 'dudule'
+    }
 
     const data = qs.stringify({
       client_id: Client_ID,
@@ -168,33 +173,31 @@ export class UsersService {
       data: data,
     };
 
-    // console.log('ready to do the axios request')
+    token = (await axios(config)).data.access_token
 
-    await axios(config)
-      .then(function (response: AxiosResponse) {
-        token = response.data.access_token;
-      })
-      .catch(function (error) {
-        console.log('Axios request failed: ' + error.response.status);
-      });
-
-    await axios(config)
-      .then(function (response: AxiosResponse) {
-        token = response.data.access_token;
-        console.log('show me the token from 42: ' + token);
-        console.log('Status: ' + response.status);
-      })
-      .catch(function (error) {
-        console.log('Axios request failed: ' + response.status);
-      });
+    //TODO: Ask if the short version is enough
+    // await axios(config)
+    //   .then(function (response: AxiosResponse) {
+    //     token = response.data.access_token;
+    //   })
+    //   .catch(function (error) {
+    //     console.log('Could not get a token from 42');
+    //   });
 
     if (token) {
-      userData = await this.getUserDataFrom42(token);
-      return userData;
+      answer.user = await this.getUserDataFrom42(token);
+      answer.jwt = this.generateToken(answer.user.id)
     } else {
-      console.log('No token provided');
+      console.log('No 42 token provided');
     }
-    return userData;
+    return answer;
+  }
+
+  generateToken(data: any) : string {
+    const token = jwt.sign(data, Token_Secret)
+    // console.log('My jwt: ' + token)
+
+    return token
   }
 
   //Gets the user data from API 42

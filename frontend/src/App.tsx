@@ -18,7 +18,6 @@ function App() {
   const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
 
-
   useEffect(() => {
     if (user) {
       socket.current = io('ws://localhost:5050');

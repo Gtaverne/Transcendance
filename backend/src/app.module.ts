@@ -30,6 +30,7 @@ import { TutoModule } from './tuto/tuto.module';
   providers: [AppService],
 })
 export class AppModule {
+  
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes(UsersController);
     consumer
@@ -40,11 +41,5 @@ export class AppModule {
       //Exclure le callback de Login
       //.exclude({ path: 'users', method: RequestMethod.POST });
       .exclude({ path: 'users/callback', method: RequestMethod.POST });
-
-      
-
-      
-
-
   }
 }

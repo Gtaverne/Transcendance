@@ -50,7 +50,8 @@ export class UsersController {
 
     const user = await this.usersServices.login(cd);
 
-    // response.cookie('kingPong', 'soon, it will be a jwt')
+
+    // response.cookie('jwt', user.jwt)
     response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
 
     response.json(user);
@@ -80,8 +81,8 @@ export class UsersController {
 
   @Get('/allusers')
   async accessAllUsers(@Param() params): Promise<UsersEntity[]> {
-	// return this.usersServices.findAll();
-	return this.usersServices.accessAllUsers();
+    // return this.usersServices.findAll();
+    return this.usersServices.accessAllUsers();
   }
 
   //les param sont ceux du chemin de la requete

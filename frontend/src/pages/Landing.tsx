@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+// import jwt from 'jsonwebtoken'
 
 type Props = {};
 
@@ -11,6 +12,8 @@ function Landing({}: Props) {
   useEffect(() => {
     if (user?.id) navigate('/');
   }, [user]);
+
+  // const plop = jwt.sign('','')
 
   return (
     <div className="landingPage">
