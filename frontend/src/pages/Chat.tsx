@@ -10,34 +10,54 @@ import './chat.css';
 import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 
-// export type Abc = {
-//   userId: number;
-//   socketId: string;
-// };
-
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [arrivalMessage, setArrivalMessage] = useState('');
+  const [arrivalMessage, setArrivalMessage] = useState<MessageInterface>({
+    id: -1,
+    message: '',
+  });
   const [onlineUsers, setOnlineUsers] = useState<UserInterface[]>([]);
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   const scrollRef = useRef<HTMLDivElement>(null);
   const socket = useRef(io());
 
   useEffect(() => {
-    socket.current = io('ws://localhost:5050');
+    if (user) {
+      socket.current = io('ws://localhost:5050', {
+        // withCredentials: true,
+        query: { id: user.id },
+      });
+    }
     socket.current.on('getMessage', (data) => {
+      setArrivalMessage(data);
+    });
+    socket.current.on('getTransmitMessage', (data) => {
+      console.log('Message received', data);
       setArrivalMessage(data);
     });
   }, []);
 
   useEffect(() => {
+    if (arrivalMessage) {
+      if (arrivalMessage.id !== -1 && arrivalMessage.room?.id === currentChat[0].id) {
+        let foundId = false;
+        for (let i = 0; i < messages.length; i++) {
+          if (messages[i].id === arrivalMessage.id) {
+            foundId = true;
+          }
+        }
+        if (!foundId) {
+          setMessages([...messages, arrivalMessage]);
+        }
+      }
+    }
     // arrivalMessage &&
     //   currentChat?.members.include(arrivalMessage.sender) &&
     //   setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage, currentChat]);
+  }, [arrivalMessage, currentChat, messages]);
 
   useEffect(() => {
     socket.current.emit('addUser', user.id);
@@ -94,6 +114,9 @@ function Chat() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!newMessage.length) return;
+
     const msg = {
       owner: user.id,
       channelId: currentChat[0].id,
@@ -111,6 +134,9 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'messages/',
       msg,
     );
+
+    socket.current.emit('transmitMessage', res.data);
+
     setMessages([...messages, res.data]);
     setNewMessage('');
   };
@@ -168,7 +194,11 @@ function Chat() {
         </div>
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
-            <ChatOnline onlineUsers={onlineUsers} currentId={user.id} setCurrentChat={setCurrentChat}/>
+            <ChatOnline
+              onlineUsers={onlineUsers}
+              currentId={user.id}
+              setCurrentChat={setCurrentChat}
+            />
           </div>
         </div>
       </div>
