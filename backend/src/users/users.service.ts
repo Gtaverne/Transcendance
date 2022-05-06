@@ -114,6 +114,7 @@ export class UsersService {
       .leftJoinAndSelect('accessToList.accessList', 'accessList')
       .where('users.id = :id', { id })
       .getOne();
+    // console.log('I am in', user.accessToList.length, 'rooms');
     return user.accessToList;
   }
 

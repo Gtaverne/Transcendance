@@ -72,8 +72,6 @@ function Chat() {
     }
   }, [arrivalMessage, currentChat, messages]);
 
-  useEffect(() => {}, [onlineUsers]);
-
   useEffect(() => {
     socket.current.emit('addUser', user.id);
     socket.current.on('getUsers', (u) => {
@@ -110,7 +108,7 @@ function Chat() {
   useEffect(() => {
     getConversations();
     getConversationsCanJoin();
-  }, [user.id]);
+  }, []);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -174,8 +172,8 @@ function Chat() {
 
     if (res.data) {
       console.log('Updating conv after join');
-      getConversations();
-      getConversationsCanJoin();
+      setTimeout(getConversations, 250);
+      setTimeout(getConversationsCanJoin, 250);
     }
   };
 
@@ -194,8 +192,8 @@ function Chat() {
 
     if (res.data) {
       console.log('Updating conv after join');
-      getConversations();
-      getConversationsCanJoin();
+      setTimeout(getConversations, 250);
+      setTimeout(getConversationsCanJoin, 250);
     }
   };
 

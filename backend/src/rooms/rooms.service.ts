@@ -103,6 +103,7 @@ export class RoomsService {
       if (allRooms[i].isDm === false && !accessListNum.includes(allRooms[i].id))
         ret.push(allRooms[i]);
     }
+	// console.log("I can join", ret.length, "rooms");
     return ret;
   }
 
