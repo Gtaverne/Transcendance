@@ -75,11 +75,15 @@ export class RoomsService {
   }
 
   async join(join: JoinRoomDTO) {
-    const user = await this.usersService.findOne(join.owner);
+    console.log(join);
+    const user = await this.usersService.accessListUser(join.owner);
     const room = await this.roomsRepository.findOne(join.convId);
     if (!user || !room) return;
+    // console.log(user.accessToList);
+    // console.log('-------------------------------------------');
     user.accessToList.push(room);
-    //ici
+    // console.log(user.accessToList);
+    this.usersService.save(user);
     return room;
   }
 

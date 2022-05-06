@@ -15,6 +15,7 @@ function Chat() {
     RoomInterface[]
   >([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
+  const [chatId, setChatId] = useState<number>();
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [arrivalMessage, setArrivalMessage] = useState<MessageInterface>({
@@ -38,9 +39,17 @@ function Chat() {
       });
     }
     socket.current.on('getTransmitMessage', (data) => {
-      console.log('Socket message detected', data);
-      if (currentChat[0] && currentChat[0].id === data.room.id)
-        setArrivalMessage(data);
+      console.log(
+        'Socket message detected',
+        data.room.id,
+        currentChat[0]?.id,
+        data,
+      );
+      console.log('getTransmitMessage', currentChat[0]);
+      setArrivalMessage(data);
+      if (currentChat[0] && currentChat[0].id === data.room.id) {
+        console.log('Message in the current room');
+      }
     });
   }, []);
 
@@ -48,7 +57,7 @@ function Chat() {
     if (arrivalMessage) {
       if (
         arrivalMessage.id !== -1 &&
-        arrivalMessage.room?.id === currentChat[0].id
+        arrivalMessage.room?.id === currentChat[0]?.id
       ) {
         let foundId = false;
         for (let i = 0; i < messages.length; i++) {
@@ -134,6 +143,7 @@ function Chat() {
     );
 
     socket.current.emit('transmitMessage', res.data);
+    console.log('handleSubmit', currentChat[0]?.id);
 
     setMessages([...messages, res.data]);
     setNewMessage('');
@@ -197,13 +207,19 @@ function Chat() {
                 className="chatMenuInput"
               /> */}
               {conversations.map((c, i) => (
-                <div onClick={() => setCurrentChat([c])} key={i}>
+                <div
+                  onClick={() => {
+                    setCurrentChat([c]);
+                  }}
+                  key={i}
+                >
                   <Conversation
                     key={i}
                     conversation={c}
                     currentUser={user}
                     join={false}
                     handleJoin={handleJoin}
+                    currentChat={currentChat}
                   />
                 </div>
               ))}
@@ -222,6 +238,7 @@ function Chat() {
                     currentUser={user}
                     join={true}
                     handleJoin={handleJoin}
+                    currentChat={currentChat}
                   />
                 </div>
               ))}

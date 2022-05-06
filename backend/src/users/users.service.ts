@@ -10,9 +10,8 @@ import { response } from 'express';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { CreateRoomDTO } from 'src/rooms/dto/create-room.dto';
-import { useJwt } from "react-jwt";
+import { useJwt } from 'react-jwt';
 var jwt = require('jsonwebtoken');
-
 
 dotenv.config({ path: './.env' });
 
@@ -61,6 +60,9 @@ export class UsersService {
       password: '',
     };
     this.roomsService.create(newRoom);
+  }
+  async save(user: UsersEntity) {
+    return await this.usersRepository.save(user);
   }
 
   async create(user: UsersEntity) {
@@ -115,6 +117,14 @@ export class UsersService {
     return user.accessToList;
   }
 
+  async accessListUser(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['accessToList'],
+    });
+    return user;
+  }
+
   async accessAllUsers(): Promise<UsersEntity[]> {
     const temp = await this.usersRepository
       .createQueryBuilder('users')
@@ -158,9 +168,9 @@ export class UsersService {
   async login(code: string): Promise<any> {
     var token = '';
     var answer = {
-      'user': new UsersEntity(),
-      'jwt' : 'dudule'
-    }
+      user: new UsersEntity(),
+      jwt: 'dudule',
+    };
 
     const data = qs.stringify({
       client_id: Client_ID,
@@ -179,7 +189,7 @@ export class UsersService {
       data: data,
     };
 
-    token = (await axios(config)).data.access_token
+    token = (await axios(config)).data.access_token;
 
     //TODO: Ask if the short version is enough
     // await axios(config)
@@ -192,18 +202,18 @@ export class UsersService {
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
-      answer.jwt = this.generateToken(answer.user.id)
+      answer.jwt = this.generateToken(answer.user.id);
     } else {
       console.log('No 42 token provided');
     }
     return answer;
   }
 
-  generateToken(data: any) : string {
-    const token = jwt.sign(data, Token_Secret)
+  generateToken(data: any): string {
+    const token = jwt.sign(data, Token_Secret);
     // console.log('My jwt: ' + token)
 
-    return token
+    return token;
   }
 
   //Gets the user data from API 42

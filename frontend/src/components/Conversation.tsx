@@ -11,6 +11,7 @@ type ConversationProps = {
   currentUser: UserInterface;
   join: Boolean;
   handleJoin: any;
+  currentChat: RoomInterface[];
 };
 
 function Conversation({
@@ -18,6 +19,7 @@ function Conversation({
   currentUser,
   join,
   handleJoin,
+  currentChat,
 }: ConversationProps) {
   const [users, setUsers] = useState<UserInterface[]>([]);
   const [image, setImage] = useState<string>(imageURL);
@@ -36,7 +38,7 @@ function Conversation({
   }, [conversation, currentUser]);
 
   useEffect(() => {
-    if (users.length == 2) {
+    if (users.length == 2 && conversation.isDm === true) {
       if (users[0].username === currentUser.username) {
         setConversationName(users[1].username);
         if (users[1].avatar !== 'oui') setImage(users[1].avatar);
@@ -46,20 +48,33 @@ function Conversation({
       }
     } else {
       setConversationName(conversation.channelName);
+      setImage(imageURL);
     }
   }, [users]);
 
   const handleJoinTemp = async (e: React.FormEvent) => {
     e.preventDefault();
-	handleJoin(conversation.id);
-  }
+    handleJoin(conversation.id);
+  };
 
   return (
-    <div className={join ? "conversationJoin" : "conversation"}>
+    <div
+      className={
+        join
+          ? 'conversationJoin'
+          : currentChat[0]?.id === conversation.id
+          ? 'conversationIn'
+          : 'conversation'
+      }
+    >
       <img className="conversationImg" src={image} />
       <span className="conversationName">{conversationName}</span>
       {join && (
-        <button className="joinConvButton" value={conversation.id} onClick={handleJoinTemp}>
+        <button
+          className="joinConvButton"
+          value={conversation.id}
+          onClick={handleJoinTemp}
+        >
           Join
         </button>
       )}

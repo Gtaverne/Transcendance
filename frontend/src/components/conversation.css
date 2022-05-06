@@ -1,9 +1,14 @@
-.conversation {
+.conversation,
+.conversationIn {
   display: flex;
   align-items: center;
   padding: 10px;
   cursor: pointer;
   margin-top: 10px;
+}
+
+.conversationIn {
+  background-color: rgb(245, 245, 245);
 }
 
 .conversationJoin {
