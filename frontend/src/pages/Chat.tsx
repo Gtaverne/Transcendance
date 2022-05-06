@@ -15,7 +15,6 @@ function Chat() {
     RoomInterface[]
   >([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
-  const [chatId, setChatId] = useState<number>();
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [arrivalMessage, setArrivalMessage] = useState<MessageInterface>({
@@ -30,6 +29,7 @@ function Chat() {
   const [convName, setConvName] = useState<string>('');
   const [convPassword, setConvPassword] = useState('');
   const [convDm, setConvDm] = useState('');
+  let update = 0;
 
   useEffect(() => {
     if (user) {
@@ -85,28 +85,30 @@ function Chat() {
     console.log("Don't forget to login");
   }
 
+  const getConversations = async () => {
+    try {
+      const res = await axios.get(
+        process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
+      );
+      setConversations(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getConversationsCanJoin = async () => {
+    try {
+      const res = await axios.get(
+        process.env.REACT_APP_URL_BACK + 'rooms/canjoin/' + user.id,
+      );
+      setConversationsCanJoin(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const res = await axios.get(
-          process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
-        );
-        setConversations(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     getConversations();
-    const getConversationsCanJoin = async () => {
-      try {
-        const res = await axios.get(
-          process.env.REACT_APP_URL_BACK + 'rooms/canjoin/' + user.id,
-        );
-        setConversationsCanJoin(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     getConversationsCanJoin();
   }, [user.id]);
 
@@ -171,8 +173,9 @@ function Chat() {
     );
 
     if (res.data) {
-      console.log(res.data);
-      //update les conv
+      console.log('Updating conv after join');
+      getConversations();
+      getConversationsCanJoin();
     }
   };
 
@@ -190,8 +193,9 @@ function Chat() {
     );
 
     if (res.data) {
-      console.log(res.data);
-      //update les conv
+      console.log('Updating conv after join');
+      getConversations();
+      getConversationsCanJoin();
     }
   };
 
