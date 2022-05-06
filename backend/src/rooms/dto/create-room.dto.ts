@@ -14,8 +14,11 @@ export class CreateRoomDTO {
   @IsNotEmpty()
   readonly isDm: boolean;
   @IsOptional()
-  @IsInt()
-  readonly secondMemberDm: number;
+  @IsString()
+  readonly secondMemberDm: string;
+  @IsOptional()
+  @IsString()
+  readonly password: string;
   @IsNotEmpty()
   @IsString()
   readonly category: string;

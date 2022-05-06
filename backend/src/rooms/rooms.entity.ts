@@ -13,7 +13,7 @@ export class RoomsEntity extends BaseEntity {
   password: string;
   @Column({ type: 'varchar', length: 300, nullable: true })
   category: string;
-  @Column({ type: 'boolean', default: true, nullable: true })
+  @Column({ type: 'boolean', default: false, nullable: true })
   isDm: boolean;
 
   @OneToMany(() => MuteEntity, (mute) => mute.muted)

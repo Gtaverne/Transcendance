@@ -22,6 +22,7 @@ export class MessagesService {
     const room = await this.roomsService.findOne(createMessage.channelId);
     newMessage.owner = owner;
     newMessage.room = room;
+	if (createMessage.message.length >= 300) return;
     newMessage.message = createMessage.message;
 
     await this.messagesRepository.save(newMessage);

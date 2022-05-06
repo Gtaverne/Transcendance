@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import RoomInterface from '../interfaces/RoomInterface';
 import UserInterface from '../interfaces/UserInterface';
 import './chatOnline.css';
@@ -10,31 +11,27 @@ type ChatOnlineProps = {
   accessList: UserInterface[] | undefined;
 };
 
-function ChatOnline({ onlineUsers, currentId, setCurrentChat, accessList }: ChatOnlineProps) {
+function ChatOnline({
+  onlineUsers,
+  currentId,
+  setCurrentChat,
+  accessList,
+}: ChatOnlineProps) {
+//   useEffect(() => {
+//     console.log(accessList);
+//   }, [accessList]);
 
   return (
     <div className="chatOnline">
-      <div className="chatOnlineFriend">
-        <div className="chatOnlineImgContainer">
-          <img className="chatOnlineImg" src={imageURL} alt="" />
-          <div className="chatOnlineBadge"></div>
+      {accessList?.map((a, key) => (
+        <div className="chatOnlineFriend" key={key}>
+          <div className="chatOnlineImgContainer">
+            <img className="chatOnlineImg" src={a.avatar} alt="" />
+            <div className={(onlineUsers.includes(a.id)) ? "chatOnlineBadge" : ""}></div>
+          </div>
+          <span className="chatOnlineName">{a.username} | id{a.id}</span>
         </div>
-        <span className="chatOnlineName">ttranche</span>
-      </div>
-      <div className="chatOnlineFriend">
-        <div className="chatOnlineImgContainer">
-          <img className="chatOnlineImg" src={imageURL} alt="" />
-          <div className="chatOnlineBadge"></div>
-        </div>
-        <span className="chatOnlineName">ttranche</span>
-      </div>
-      <div className="chatOnlineFriend">
-        <div className="chatOnlineImgContainer">
-          <img className="chatOnlineImg" src={imageURL} alt="" />
-          <div className="chatOnlineBadge"></div>
-        </div>
-        <span className="chatOnlineName">ttranche</span>
-      </div>
+      ))}
     </div>
   );
 }

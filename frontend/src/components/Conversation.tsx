@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import RoomInterface from '../interfaces/RoomInterface';
 import UserInterface from '../interfaces/UserInterface';
 import './conversation.css';
@@ -9,9 +9,16 @@ const imageURL =
 type ConversationProps = {
   conversation: RoomInterface;
   currentUser: UserInterface;
+  join: Boolean;
+  handleJoin: any;
 };
 
-function Conversation({ conversation, currentUser }: ConversationProps) {
+function Conversation({
+  conversation,
+  currentUser,
+  join,
+  handleJoin,
+}: ConversationProps) {
   const [users, setUsers] = useState<UserInterface[]>([]);
   const [image, setImage] = useState<string>(imageURL);
   const [userDm, setUserDm] = useState('');
@@ -23,7 +30,7 @@ function Conversation({ conversation, currentUser }: ConversationProps) {
         process.env.REACT_APP_URL_BACK + 'rooms/users/' + conversation.id,
       );
       setUsers(res.data);
-    //   console.log(res.data);
+      //   console.log(res.data);
     };
     getUsers();
   }, [conversation, currentUser]);
@@ -38,14 +45,24 @@ function Conversation({ conversation, currentUser }: ConversationProps) {
         if (users[0].avatar !== 'oui') setImage(users[0].avatar);
       }
     } else {
-      setConversationName('Default Conversation Name');
+      setConversationName(conversation.channelName);
     }
   }, [users]);
 
+  const handleJoinTemp = async (e: React.FormEvent) => {
+    e.preventDefault();
+	handleJoin(conversation.id);
+  }
+
   return (
-    <div className="conversation">
+    <div className={join ? "conversationJoin" : "conversation"}>
       <img className="conversationImg" src={image} />
       <span className="conversationName">{conversationName}</span>
+      {join && (
+        <button className="joinConvButton" value={conversation.id} onClick={handleJoinTemp}>
+          Join
+        </button>
+      )}
     </div>
   );
 }

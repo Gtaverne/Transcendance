@@ -1,5 +1,5 @@
 .messenger {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 92px);
   display: flex;
 }
 
@@ -45,7 +45,8 @@
   border-radius: 20px;
 }
 
-.chatSubmitButton {
+.chatSubmitButton,
+.convSubmitButton {
   width: 70px;
   height: 40px;
   border: none;
@@ -67,9 +68,75 @@
 }
 
 .noConversationText {
-	position: absolute;
-	top: 10%;
-	font-size: 25px;
-	color: rgb(224, 220, 220);
-	cursor: default;
+  position: absolute;
+  top: 10%;
+  font-size: 25px;
+  color: rgb(224, 220, 220);
+  cursor: default;
+}
+.chatMenuWrapper {
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatMenuTop {
+  /* position: relative;
+  flex: 3.5; */
+  /* background-color: red; */
+}
+
+.chatMenuBottom {
+  border-top: 1px solid gray;
+  height: 330px;
+  /* margin-top: 10px; */
+  /* background-color: blue; */
+  /* display: flex;
+  flex-direction: colums; */
+}
+
+.conversationType {
+  width: 160px;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1877f2;
+  color: white;
+}
+
+.convPassword,
+.conversationNameBox,
+.convDm {
+  margin-top: 10px;
+}
+
+.chatMenuBottom input {
+  width: 154px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid gray;
+}
+
+.chatMenuBottomLeft {
+  width: 80%;
+}
+.convSubmitButton {
+}
+
+.chatNewWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatMenuTop {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.chatMenuMiddle {
+  overflow-y: scroll;
+  border-top: 1px solid gray;
+  height: 100%;
 }

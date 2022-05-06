@@ -115,16 +115,16 @@ export class RoomsGateway
   handleAddUser(socket: Socket, userId: number) {
     let userCounter = this.users.length;
     this.addUser(socket, userId);
-    if (userCounter !== this.users.length) {
+    if (userCounter !== this.users.length || true) { //always true for testing
       let usersList = [];
       for (let i = 0; i < this.users.length; i++) {
         usersList.push(this.users[i].userId);
-	}
-	usersList.push(-100);
+      }
+      usersList.push(-100);
     //   console.log('NEW USER', usersList);
-	  for (let i = 0; i < this.users.length; i++) {
-		this.server.to(this.users[i].socket.id).emit('getUsers', usersList);
-	  }
+      for (let i = 0; i < this.users.length; i++) {
+        this.server.to(this.users[i].socket.id).emit('getUsers', usersList);
+      }
     }
     // this.users.forEach((u) => u.emit('getUsers', String(this.users), "online")); //20:34
 
@@ -138,31 +138,4 @@ export class RoomsGateway
     // this.server.emit('getUsers', this.users, 'online');
     const user = this.getUser(receiverId);
   }
-
-  //   @SubscribeMessage('sendMessagee')
-  //   handleMessageTuto(socket: Socket, message: string) {
-  //     this.server.emit('newMessage', message);
-  //   }
-
-  //   @SubscribeMessage('message')
-  //   handleMessage(@MessageBody() message: string): void {
-  //     this.server.emit('message', message);
-  //     console.log('Hey Bro');
-  //   }
-
-  //   @SubscribeMessage('createRoom')
-  //   create(@MessageBody() createRoomDto: CreateRoomDTO) {
-  //     return this.roomsService.create(createRoomDto);
-  //   }
-
-  //   @SubscribeMessage('findAllRoom/:id')
-  //   findAll(@Param() params) {
-  //     return this.roomsService.findAll();
-  //   }
-
-  //   @SubscribeMessage('joinRoom')
-  //   joinRoom() {
-  //     console.log('heyo');
-  //     //TODO
-  //   }
 }

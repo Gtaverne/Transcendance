@@ -50,10 +50,11 @@ export class UsersService {
 
     const newRoom = {
       owner: 1,
-      isDm: true,
-      secondMemberDm: 2,
-      category: 'private',
-      channelName: 'hey',
+      isDm: false,
+      secondMemberDm: '',
+      category: 'public',
+      channelName: 'Town Hall',
+      password: '',
     };
     this.roomsService.create(newRoom);
   }
@@ -73,6 +74,11 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.usersRepository.findOne(id);
+    return user;
+  }
+
+  async findOneWithName(name: string) {
+    const user = await this.usersRepository.findOne({ username: name });
     return user;
   }
 

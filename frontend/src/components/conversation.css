@@ -6,8 +6,16 @@
   margin-top: 10px;
 }
 
+.conversationJoin {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: default;
+  margin-top: 10px;
+}
+
 .conversation:hover {
-  background-color: rgb(245,245,245);
+  background-color: rgb(245, 245, 245);
 }
 
 .conversationImg {
@@ -16,4 +24,16 @@
   border-radius: 50%;
   object-fit: cover;
   margin-right: 20px;
+  /* border: 1px solid gray; */
+}
+
+.joinConvButton {
+  width: 50px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1877f2;
+  color: white;
+  margin-left: 5px;
 }

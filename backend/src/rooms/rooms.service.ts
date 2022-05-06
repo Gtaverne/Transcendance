@@ -7,6 +7,7 @@ import { RoomDTO } from './dto/room.dto';
 import { RoomsEntity } from './rooms.entity';
 import { UsersService } from 'src/users/users.service';
 import { identity } from 'rxjs';
+import { JoinRoomDTO } from './dto/join-room';
 
 @Injectable()
 export class RoomsService {
@@ -20,21 +21,49 @@ export class RoomsService {
   async create(createRoom: CreateRoomDTO) {
     console.log(createRoom);
     const newRoom = await this.roomsRepository.create();
+    const user1 = await this.usersService.findOne(createRoom.owner);
+    console.log(user1);
 
-    if (createRoom.isDm == true) {
-      const user1 = await this.usersService.findOne(createRoom.owner);
-      const user2 = await this.usersService.findOne(createRoom.secondMemberDm);
-      if (!user1 || !user2) {
-        console.log('One of the users is was not found');
+    if (createRoom.category === 'directMessage') {
+      const user2 = await this.usersService.findOneWithName(
+        createRoom.secondMemberDm,
+      );
+      if (!user1 || !user2 || user1 === user2) {
+        console.log('One of the users is was not found or duplicate');
         return;
       }
-      console.log(user1);
       console.log(user2);
       newRoom.accessList = [user1, user2];
       newRoom.category = createRoom.category;
       newRoom.owner = user1;
       newRoom.isDm = true;
       newRoom.channelName = createRoom.channelName;
+    } else if (createRoom.category === 'public') {
+      if (
+        createRoom.channelName === '-' ||
+        createRoom.channelName.length >= 300
+      ) {
+        console.log('Wrong Data');
+        return;
+      }
+      newRoom.accessList = [user1];
+      newRoom.category = createRoom.category;
+      newRoom.owner = user1;
+      newRoom.channelName = createRoom.channelName;
+    } else if (createRoom.category === 'passwordProtected') {
+      if (
+        createRoom.channelName === '-' ||
+        createRoom.channelName.length >= 300 ||
+        createRoom.password.length >= 200
+      ) {
+        console.log('Wrong Data');
+        return;
+      }
+      newRoom.accessList = [user1];
+      newRoom.category = createRoom.category;
+      newRoom.owner = user1;
+      newRoom.channelName = createRoom.channelName;
+      newRoom.password = createRoom.password;
     } else {
       console.log('Room Category Not Valid Sorry');
       return;
@@ -43,12 +72,34 @@ export class RoomsService {
     await this.roomsRepository.save(newRoom);
     console.log('We added to the db:', newRoom);
     return newRoom;
-    // return JSON.stringify(newUser);
-    // return 'Tout est opérationnel :)';
+  }
+
+  async join(join: JoinRoomDTO) {
+    const user = await this.usersService.findOne(join.owner);
+    const room = await this.roomsRepository.findOne(join.convId);
+    if (!user || !room) return;
+    user.accessToList.push(room);
+    //ici
+    return room;
   }
 
   async findRooms(userId: number) {
     return this.usersService.accessList(userId);
+  }
+
+  //Bonus: Make this function more compact for real
+  async findRoomsCanJoin(userId: number) {
+    const accessList = await this.usersService.accessList(userId);
+    const accessListNum = [];
+    for (let i = 0; i < accessList.length; i++)
+      accessListNum.push(accessList[i].id);
+    const allRooms = await this.roomsRepository.find();
+    const ret = [];
+    for (let i = 0; i < allRooms.length; i++) {
+      if (allRooms[i].isDm === false && !accessListNum.includes(allRooms[i].id))
+        ret.push(allRooms[i]);
+    }
+    return ret;
   }
 
   async findOne(id: number) {
