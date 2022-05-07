@@ -60,10 +60,15 @@
   flex: 3;
 }
 
-.chatMenuWrapper,
-.chatBoxWrapper,
-.chatOnlineWrapper {
+.chatMenuWrapper {
   padding: 10px;
+  height: 100%;
+}
+
+.chatBoxWrapper {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
   height: 100%;
 }
 
@@ -139,4 +144,73 @@
   overflow-y: scroll;
   border-top: 1px solid gray;
   height: 100%;
+}
+
+.chatOnlineWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  height: 100%;
+}
+
+.chatOnlineTopWrapper {
+  padding: 10px;
+  height: 100%;
+}
+
+.chatOnlineBottom {
+  border-top: 1px solid gray;
+  padding-left: 10px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatOnlineBottom input {
+  width: 110px;
+  height: 26.5px;
+  border-radius: 5px;
+  border: 1px solid gray;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+.chatOnlineBottomButton {
+  width: 160px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1877f2;
+  color: white;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.contentBox button {
+  width: 110px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1877f2;
+  color: white;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.chatOnlineBottom p {
+  margin-bottom: 3px;
+  text-align: center;
+}
+
+.contentBox button {
+  width: 110px;
+}
+
+.editPassword {
+  margin-top: 5px;
 }

@@ -5,6 +5,8 @@ import UserInterface from '../interfaces/UserInterface';
 import './conversation.css';
 const imageURL =
   'https://thumbs.dreamstime.com/b/people-talking-icon-one-set-web-icons-vector-people-talking-icon-one-set-web-vector-icons-137796837.jpg';
+const imageLock =
+  'https://media.istockphoto.com/vectors/lock-icon-vector-id936681148?k=20&m=936681148&s=612x612&w=0&h=j6fxNWrJ09iE7khUsDWetKn_PwWydgIS0yFJBEonGow=';
 
 type ConversationProps = {
   conversation: RoomInterface;
@@ -46,14 +48,23 @@ function Conversation({
         setConversationName(users[0].username);
         if (users[0].avatar !== 'oui') setImage(users[0].avatar);
       }
+    } else if (conversation.category === 'passwordProtected') {
+      setConversationName(conversation.channelName);
+      setImage(imageLock);
     } else {
       setConversationName(conversation.channelName);
       setImage(imageURL);
     }
-	setPrivatePassword('');
+    setPrivatePassword('');
   }, [users]);
 
   const handleJoinTemp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    handleJoin(conversation.id, privatePassword);
+    setPrivatePassword('');
+  };
+
+  const handleLeaveTemp = async (e: React.FormEvent) => {
     e.preventDefault();
     handleJoin(conversation.id, privatePassword);
     setPrivatePassword('');
@@ -91,6 +102,15 @@ function Conversation({
           Join
         </button>
       )}
+      {/* {conversation.category === 'public' && !join && (
+        <button
+          className="joinConvButton"
+          value={conversation.id}
+          onClick={handleLeaveTemp}
+        >
+          Leave
+        </button>
+      )} */}
     </div>
   );
 }

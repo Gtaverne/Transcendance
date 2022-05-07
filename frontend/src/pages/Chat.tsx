@@ -8,6 +8,7 @@ import MessageInterface from '../interfaces/MessageInterface';
 import RoomInterface from '../interfaces/RoomInterface';
 import './chat.css';
 import { io } from 'socket.io-client';
+import UserInterface from '../interfaces/UserInterface';
 
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
@@ -15,6 +16,7 @@ function Chat() {
     RoomInterface[]
   >([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
+  const [currentUser, setCurrentUser] = useState<UserInterface[]>([]);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [arrivalMessage, setArrivalMessage] = useState<MessageInterface>({
@@ -361,12 +363,58 @@ function Chat() {
         </div>
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
-            <ChatOnline
-              onlineUsers={onlineUsers}
-              currentId={user.id}
-              setCurrentChat={setCurrentChat}
-              accessList={currentChat[0]?.accessList}
-            />
+            <div className="chatOnlineTopWrapper">
+              <ChatOnline
+                onlineUsers={onlineUsers}
+                currentId={user.id}
+                setCurrentUser={setCurrentUser}
+                accessList={currentChat[0]?.accessList}
+              />
+            </div>
+            <div className="chatOnlineBottom">
+              <h3>User Informations</h3>
+              <button className='chatOnlineBottomButton'>View Profile</button>
+              <button className='chatOnlineBottomButton'>Leave Room</button>
+              <button className='chatOnlineBottomButton'>Block User</button>
+              <div className="contentBox">
+                <input
+                  className="editPassword"
+                  placeholder="Edit Password"
+                  id="convName"
+                  // value={convName}
+                  // onChange={(e) => {
+                  //   setConvName(e.target.value);
+                  // }}
+                />
+                <button>Validate</button>
+              </div>
+              <button className='chatOnlineBottomButton'>Set User as Admin</button>
+              <div className='contentBox'>
+                <input
+                  placeholder="Mute _ Minutes"
+                  id="convName"
+                  type="number"
+                  // value={convName}
+                  // onChange={(e) => {
+                  //   setConvName(e.target.value);
+                  // }}
+                />
+                <button>Mute</button>
+              </div>
+              <div className='contentBox'>
+                <input
+                  className="contentBox"
+                  placeholder="Ban _ Minutes"
+                  id="convName"
+                  type="number"
+                  // value={convName}
+                  // onChange={(e) => {
+                  //   setConvName(e.target.value);
+                  // }}
+                />
+                <button>Ban</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

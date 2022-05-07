@@ -7,14 +7,14 @@ const imageURL = 'https://cdn.intra.42.fr/users/small_ttranche.jpg';
 type ChatOnlineProps = {
   onlineUsers: number[];
   currentId: number;
-  setCurrentChat: React.Dispatch<React.SetStateAction<RoomInterface[]>>;
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserInterface[]>>;
   accessList: UserInterface[] | undefined;
 };
 
 function ChatOnline({
   onlineUsers,
   currentId,
-  setCurrentChat,
+  setCurrentUser,
   accessList,
 }: ChatOnlineProps) {
 //   useEffect(() => {
