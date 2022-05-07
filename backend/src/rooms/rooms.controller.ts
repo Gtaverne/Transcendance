@@ -20,6 +20,11 @@ export class RoomsController {
     return this.roomsServices.changeOwner(data);
   }
 
+  @Post('/changeadmin/')
+  async changeAdmin(@Body() data: ChangeRoleDTO): Promise<boolean> {
+    return this.roomsServices.changeAdmin(data);
+  }
+
   @Post()
   async create(@Body() room: CreateRoomDTO): Promise<RoomsEntity> {
     return this.roomsServices.create(room);

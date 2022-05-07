@@ -10,6 +10,7 @@ type ChatOnlineProps = {
   currentUser: UserInterface[];
   owner: UserInterface | undefined;
   currentChat: RoomInterface[];
+  currentChatAdmins: number[];
 };
 
 function ChatOnline({
@@ -20,6 +21,7 @@ function ChatOnline({
   currentUser,
   owner,
   currentChat,
+  currentChatAdmins,
 }: ChatOnlineProps) {
   //   useEffect(() => {
   //     console.log(accessList);
@@ -48,6 +50,7 @@ function ChatOnline({
           <span className="chatOnlineName">
             {a.username} | id{a.id}{' '}
             {owner?.id === a.id && !currentChat[0]?.isDm && '| owner'}
+            {currentChatAdmins.includes(a.id) && !currentChat[0]?.isDm && '| admin'}
           </span>
         </div>
       ))}

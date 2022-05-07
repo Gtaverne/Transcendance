@@ -20,25 +20,73 @@ export class RoomsService {
     private usersService: UsersService,
   ) {}
 
+  async changeAdmin(data: ChangeRoleDTO) {
+    // console.log(data);
+    // console.log("---------------------------------", data.appointedId);
+    const room = await this.roomsRepository.findOne({
+      where: { id: data.channelId },
+      relations: ['owner', 'admins'],
+    });
+    // console.log("room", room);
+    const newAdmin = await this.usersService.findOne(data.appointedId);
+    // console.log("newOwner", newOwner);
+    // console.log("room.owner.id", room.owner.id);
+    // console.log("data.user.id", data.user.id);
+
+    if (room.owner.id !== data.user.id) {
+      console.log('User Request is not comming from Owner');
+      return false;
+    }
+    if (data.role !== 'admin' || room.owner.id === data.appointedId) {
+      console.log('Wrong Request Role');
+      return false;
+    }
+    console.log('oui', room.admins.length);
+    for (let i = 0; i < room.admins.length; i++) {
+      if (room.admins[i].id === data.appointedId) {
+        console.log('User is already Admin, removing the role');
+        console.log(room.admins.length);
+        room.admins.splice(i, 1);
+        console.log(room.admins.length);
+        // if (room.admins.length)
+        await this.roomsRepository.save(room);
+        const room2 = await this.roomsRepository.findOne({
+          where: { id: data.channelId },
+          relations: ['owner', 'admins'],
+        });
+        console.log(room2);
+        return true;
+      }
+    }
+    room.admins.push(newAdmin);
+    console.log('ouii', room.admins.length);
+    await this.roomsRepository.save(room);
+    return true;
+  }
+
   async changeOwner(data: ChangeRoleDTO) {
-	console.log(data);
-	console.log("---------------------------------", data.appointedId);
-	const room = await this.roomsRepository.findOne({
+    // console.log(data);
+    // console.log("---------------------------------", data.appointedId);
+    const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
       relations: ['owner'],
     });
-	console.log("room", room);
-	const newOwner = await this.usersService.findOne(data.appointedId);
-	console.log("newOwner", newOwner);
-	// console.log("room.owner.id", room.owner.id);
-	// console.log("data.user.id", data.user.id);
+    // console.log("room", room);
+    const newOwner = await this.usersService.findOne(data.appointedId);
+    // console.log("newOwner", newOwner);
+    // console.log("room.owner.id", room.owner.id);
+    // console.log("data.user.id", data.user.id);
 
-	if (room.owner.id !== data.user.id) {
-		console.log("User Request is not comming from Owner")
-		return false;
-	}
-	room.owner = newOwner;
-	await this.roomsRepository.save(room);
+    if (room.owner.id !== data.user.id) {
+      console.log('User Request is not comming from Owner');
+      return false;
+    }
+    if (data.role !== 'owner') {
+      console.log('Wrong Request Role');
+      return false;
+    }
+    room.owner = newOwner;
+    await this.roomsRepository.save(room);
     return true;
   }
 

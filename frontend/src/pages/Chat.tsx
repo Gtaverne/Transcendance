@@ -112,6 +112,7 @@ function Chat() {
         for (let i = 0; i < res.data.length!; i++) {
           if (res.data[i].id === currentChat[0]?.id) {
             setCurrentChat([res.data[i]]);
+            setAdmins(res.data[i]);
             console.log('UPDATING CURRENT CHAT', res.data[i].owner?.id);
           }
         }
@@ -259,6 +260,33 @@ function Chat() {
     }
   };
 
+  const handleUpdateAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const data = {
+      user,
+      channelId: currentChat[0].id,
+      appointedId: currentUser[0].id,
+      role: 'admin',
+    };
+
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/changeadmin/',
+      data,
+    );
+
+    if (res) {
+      console.log('Admin list updated');
+      setTimeout(getConversations, 250);
+    }
+  };
+
+  const setAdmins = (c: RoomInterface) => {
+    let adminList: number[] = [];
+    c.admins?.forEach((a) => adminList.push(a.id));
+    setCurrentChatAdmins(adminList);
+  };
+
   return (
     <>
       <div className="messenger">
@@ -275,6 +303,8 @@ function Chat() {
                   onClick={() => {
                     setCurrentChat([c]);
                     setCurrentUser([]);
+                    setAdmins(c);
+                    console.log(c);
                   }}
                   key={i}
                 >
@@ -419,6 +449,7 @@ function Chat() {
                 accessList={currentChat[0]?.accessList}
                 owner={currentChat[0]?.owner}
                 currentChat={currentChat}
+                currentChatAdmins={currentChatAdmins}
               />
             </div>
             {currentChat.length ? (
@@ -448,8 +479,13 @@ function Chat() {
                     {!currentChat[0]?.isDm &&
                       currentChat[0]?.owner?.id === user.id &&
                       currentChat[0]?.owner?.id !== currentUser[0]?.id && (
-                        <button className="chatOnlineBottomButton">
-                          Set as Admin
+                        <button
+                          className="chatOnlineBottomButton"
+                          onClick={handleUpdateAdmin}
+                        >
+                          {currentChatAdmins.includes(currentUser[0]?.id)
+                            ? 'Remove from Admin'
+                            : 'Set as Admin'}
                         </button>
                       )}
                     {currentUser[0]?.id === user.id &&
@@ -464,18 +500,6 @@ function Chat() {
                         Block User
                       </button>
                     )}
-                    <div className="contentBox">
-                      <input
-                        className="editPassword"
-                        placeholder="Set Password"
-                        id="convName"
-                        // value={convName}
-                        // onChange={(e) => {
-                        //   setConvName(e.target.value);
-                        // }}
-                      />
-                      <button>Validate</button>
-                    </div>
                     <div className="contentBox">
                       <input
                         placeholder="Mute _ Minutes"
@@ -507,6 +531,18 @@ function Chat() {
                     Select a user to view his informations.
                   </span>
                 )}
+                <div className="contentBox">
+                  <input
+                    className="editPassword"
+                    placeholder="Set Password"
+                    id="convName"
+                    // value={convName}
+                    // onChange={(e) => {
+                    //   setConvName(e.target.value);
+                    // }}
+                  />
+                  <button>Validate</button>
+                </div>
               </div>
             ) : (
               <></>
