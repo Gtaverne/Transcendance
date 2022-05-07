@@ -51,6 +51,11 @@ function Chat() {
         console.log('Message in the current room');
       }
     });
+    socket.current.on('getNewRoom', (data) => {
+      console.log('Socket getNewRoom detected');
+      if (data.message === user.username) setTimeout(getConversations, 250);
+      if (data.message === 'no') setTimeout(getConversationsCanJoin, 250);
+    });
   }, []);
 
   useEffect(() => {
@@ -85,10 +90,11 @@ function Chat() {
 
   const getConversations = async () => {
     try {
+      let convLen = conversations.length;
       const res = await axios.get(
         process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
       );
-      setConversations(res.data);
+      if (res.data.length !== convLen) setConversations(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -170,6 +176,12 @@ function Chat() {
       room,
     );
 
+    socket.current.emit('newRoom', {
+      owner: user.id,
+      channelId: 0,
+      message: conversationType === 'directMessage' ? convDm : 'no',
+    });
+
     if (res.data) {
       console.log('Updating conv after join');
       setTimeout(getConversations, 250);
@@ -184,7 +196,7 @@ function Chat() {
       owner: user.id,
       convId,
       password: privatePassword,
-      private: (privatePassword && privatePassword !== '') ? true : false,
+      private: privatePassword && privatePassword !== '' ? true : false,
     };
 
     const res = await axios.post(

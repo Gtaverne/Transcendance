@@ -73,7 +73,7 @@ export class RoomsService {
     }
 
     await this.roomsRepository.save(newRoom);
-    console.log('We added to the db:', newRoom);
+    // console.log('We added to the db:', newRoom);
     return newRoom;
   }
 

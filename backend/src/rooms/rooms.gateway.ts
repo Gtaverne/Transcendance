@@ -111,17 +111,28 @@ export class RoomsGateway
     // this.server.emit('getTransmitMessage', msg);
   }
 
+  @SubscribeMessage('newRoom')
+  handleNewRoom(socket: Socket, msg: any) {
+    console.log('NewRoom detected:', msg.message);
+    for (let i = 0; i < this.users.length; i++) {
+      if (msg.owner !== this.users[i].userId)
+        this.server.to(this.users[i].socket.id).emit('getNewRoom', msg);
+    }
+    // this.server.emit('getTransmitMessage', msg);
+  }
+
   @SubscribeMessage('addUser')
   handleAddUser(socket: Socket, userId: number) {
     let userCounter = this.users.length;
     this.addUser(socket, userId);
-    if (userCounter !== this.users.length || true) { //always true for testing
+    if (userCounter !== this.users.length || true) {
+      //always true for testing
       let usersList = [];
       for (let i = 0; i < this.users.length; i++) {
         usersList.push(this.users[i].userId);
       }
       usersList.push(-100);
-    //   console.log('NEW USER', usersList);
+      //   console.log('NEW USER', usersList);
       for (let i = 0; i < this.users.length; i++) {
         this.server.to(this.users[i].socket.id).emit('getUsers', usersList);
       }
