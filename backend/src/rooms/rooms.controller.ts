@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UsersEntity } from 'src/users/users.entity';
+import { ChangeRoleDTO } from './dto/change-status.dto';
 import { CreateRoomDTO } from './dto/create-room.dto';
 import { JoinRoomDTO } from './dto/join-room';
 import { RoomsEntity } from './rooms.entity';
@@ -12,6 +13,11 @@ export class RoomsController {
   @Post('/join/')
   async join(@Body() join: JoinRoomDTO): Promise<RoomsEntity> {
     return this.roomsServices.join(join);
+  }
+
+  @Post('/changeowner/')
+  async changeOwner(@Body() data: ChangeRoleDTO): Promise<boolean> {
+    return this.roomsServices.changeOwner(data);
   }
 
   @Post()

@@ -112,6 +112,10 @@ export class UsersService {
       .createQueryBuilder('users')
       .leftJoinAndSelect('users.accessToList', 'accessToList')
       .leftJoinAndSelect('accessToList.accessList', 'accessList')
+      .leftJoinAndSelect('accessToList.owner', 'owner')
+      .leftJoinAndSelect('accessToList.admins', 'admins')
+      .leftJoinAndSelect('accessToList.muteList', 'muteList')
+      .leftJoinAndSelect('accessToList.banList', 'banList')
       .where('users.id = :id', { id })
       .getOne();
     // console.log('I am in', user.accessToList.length, 'rooms');

@@ -9,6 +9,7 @@ import RoomInterface from '../interfaces/RoomInterface';
 import './chat.css';
 import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
+import { useNavigate } from 'react-router-dom';
 
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
@@ -16,6 +17,7 @@ function Chat() {
     RoomInterface[]
   >([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
+  const [currentChatAdmins, setCurrentChatAdmins] = useState<number[]>([]);
   const [currentUser, setCurrentUser] = useState<UserInterface[]>([]);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -31,7 +33,7 @@ function Chat() {
   const [convName, setConvName] = useState<string>('');
   const [convPassword, setConvPassword] = useState('');
   const [convDm, setConvDm] = useState('');
-  let update = 0;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -58,7 +60,15 @@ function Chat() {
       if (data.message === user.username) setTimeout(getConversations, 250);
       if (data.message === 'no') setTimeout(getConversationsCanJoin, 250);
     });
-  }, []);
+    if (currentChat[0] && currentChat[0]?.admins?.length) {
+      let admins = [];
+      for (let i = 0; i < currentChat[0]?.admins?.length!; i++) {
+        admins.push(currentChat[0]?.admins[i].id);
+      }
+      setCurrentChatAdmins(admins);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChat, user]);
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -96,7 +106,16 @@ function Chat() {
       const res = await axios.get(
         process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
       );
-      if (res.data.length !== convLen) setConversations(res.data);
+      console.log('updatingConv');
+      setConversations(res.data);
+      if (currentChat[0]) {
+        for (let i = 0; i < res.data.length!; i++) {
+          if (res.data[i].id === currentChat[0]?.id) {
+            setCurrentChat([res.data[i]]);
+            console.log('UPDATING CURRENT CHAT', res.data[i].owner?.id);
+          }
+        }
+      }
     } catch (err) {
       console.log(err);
     }
@@ -116,6 +135,7 @@ function Chat() {
   useEffect(() => {
     getConversations();
     getConversationsCanJoin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -213,6 +233,32 @@ function Chat() {
     }
   };
 
+  const handleNavigate = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate('/userprofile/' + currentUser[0]?.id);
+  };
+
+  const handleUpdateOwner = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const data = {
+      user,
+      channelId: currentChat[0].id,
+      appointedId: currentUser[0].id,
+      role: 'owner',
+    };
+
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/changeowner/',
+      data,
+    );
+
+    if (res) {
+      console.log('You are not owner anymore');
+      setTimeout(getConversations, 250);
+    }
+  };
+
   return (
     <>
       <div className="messenger">
@@ -228,6 +274,7 @@ function Chat() {
                 <div
                   onClick={() => {
                     setCurrentChat([c]);
+                    setCurrentUser([]);
                   }}
                   key={i}
                 >
@@ -368,53 +415,102 @@ function Chat() {
                 onlineUsers={onlineUsers}
                 currentId={user.id}
                 setCurrentUser={setCurrentUser}
+                currentUser={currentUser}
                 accessList={currentChat[0]?.accessList}
+                owner={currentChat[0]?.owner}
+                currentChat={currentChat}
               />
             </div>
-            <div className="chatOnlineBottom">
-              <h3>User Informations</h3>
-              <button className='chatOnlineBottomButton'>View Profile</button>
-              <button className='chatOnlineBottomButton'>Leave Room</button>
-              <button className='chatOnlineBottomButton'>Block User</button>
-              <div className="contentBox">
-                <input
-                  className="editPassword"
-                  placeholder="Edit Password"
-                  id="convName"
-                  // value={convName}
-                  // onChange={(e) => {
-                  //   setConvName(e.target.value);
-                  // }}
-                />
-                <button>Validate</button>
+            {currentChat.length ? (
+              <div className="chatOnlineBottom">
+                <h3>User Informations | id{currentChat[0]?.id}</h3>
+                <p>
+                  {currentChatAdmins.length} admins: {currentChatAdmins}
+                </p>
+                {currentUser.length ? (
+                  <>
+                    <button
+                      className="chatOnlineBottomButton"
+                      onClick={handleNavigate}
+                    >
+                      View Profile
+                    </button>
+                    {!currentChat[0]?.isDm &&
+                      currentChat[0]?.owner?.id === user.id &&
+                      currentChat[0]?.owner?.id !== currentUser[0]?.id && (
+                        <button
+                          className="chatOnlineBottomButton"
+                          onClick={handleUpdateOwner}
+                        >
+                          Set as Owner
+                        </button>
+                      )}
+                    {!currentChat[0]?.isDm &&
+                      currentChat[0]?.owner?.id === user.id &&
+                      currentChat[0]?.owner?.id !== currentUser[0]?.id && (
+                        <button className="chatOnlineBottomButton">
+                          Set as Admin
+                        </button>
+                      )}
+                    {currentUser[0]?.id === user.id &&
+                      currentChat[0]?.owner?.id !== user.id &&
+                      !currentChat[0]?.isDm && (
+                        <button className="chatOnlineBottomButton">
+                          Leave Room
+                        </button>
+                      )}
+                    {currentUser[0]?.id !== user.id && (
+                      <button className="chatOnlineBottomButton">
+                        Block User
+                      </button>
+                    )}
+                    <div className="contentBox">
+                      <input
+                        className="editPassword"
+                        placeholder="Set Password"
+                        id="convName"
+                        // value={convName}
+                        // onChange={(e) => {
+                        //   setConvName(e.target.value);
+                        // }}
+                      />
+                      <button>Validate</button>
+                    </div>
+                    <div className="contentBox">
+                      <input
+                        placeholder="Mute _ Minutes"
+                        id="convName"
+                        type="number"
+                        // value={convName}
+                        // onChange={(e) => {
+                        //   setConvName(e.target.value);
+                        // }}
+                      />
+                      <button>Mute</button>
+                    </div>
+                    <div className="contentBox">
+                      <input
+                        className="contentBox"
+                        placeholder="Ban _ Minutes"
+                        id="convName"
+                        type="number"
+                        // value={convName}
+                        // onChange={(e) => {
+                        //   setConvName(e.target.value);
+                        // }}
+                      />
+                      <button>Ban</button>
+                    </div>
+                  </>
+                ) : (
+                  <span className="noUserText">
+                    Select a user to view his informations.
+                  </span>
+                )}
               </div>
-              <button className='chatOnlineBottomButton'>Set User as Admin</button>
-              <div className='contentBox'>
-                <input
-                  placeholder="Mute _ Minutes"
-                  id="convName"
-                  type="number"
-                  // value={convName}
-                  // onChange={(e) => {
-                  //   setConvName(e.target.value);
-                  // }}
-                />
-                <button>Mute</button>
-              </div>
-              <div className='contentBox'>
-                <input
-                  className="contentBox"
-                  placeholder="Ban _ Minutes"
-                  id="convName"
-                  type="number"
-                  // value={convName}
-                  // onChange={(e) => {
-                  //   setConvName(e.target.value);
-                  // }}
-                />
-                <button>Ban</button>
-              </div>
-            </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>

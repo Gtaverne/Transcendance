@@ -169,7 +169,7 @@
 }
 
 .chatOnlineBottom input {
-  width: 110px;
+  width: 107px;
   height: 26.5px;
   border-radius: 5px;
   border: 1px solid gray;
@@ -190,7 +190,7 @@
 }
 
 .contentBox button {
-  width: 110px;
+  width: 107px;
   height: 30px;
   border: none;
   border-radius: 5px;
@@ -213,4 +213,12 @@
 
 .editPassword {
   margin-top: 5px;
+}
+
+.noUserText {
+  font-size: 25px;
+  color: rgb(224, 220, 220);
+  cursor: default;
+  text-align: center;
+  height: 200px;
 }

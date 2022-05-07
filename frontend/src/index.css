@@ -74,3 +74,11 @@ code {
 .landingPage a {
   text-decoration: none;
 }
+
+.userProfile {
+  text-align: center;
+}
+
+.userProfile button {
+  margin: 10px;
+}

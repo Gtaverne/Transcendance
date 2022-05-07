@@ -3,12 +3,16 @@
   align-items: center;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 10px;
+  margin: 8px;
+}
+
+.chatOnlineFriendSelected {
+  background-color: #F5F5F5;
 }
 
 .chatOnlineImgContainer {
   position: relative;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 .chatOnlineImg {
@@ -16,7 +20,7 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid white;
+  /* border: 1px solid white; */
 }
 
 .chatOnlineBadge {

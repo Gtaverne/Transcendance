@@ -4,10 +4,7 @@ import { useState, useEffect } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
 import { login, reset } from '../features/auth/authSlice';
 
-import {
-  FaSignOutAlt, FaUser } from 'react-icons/fa';
-
-import React from 'react';
+import { FaSignOutAlt, FaUser } from 'react-icons/fa';
 
 import * as qs from 'qs';
 
@@ -54,31 +51,31 @@ const UserProfile = (props: Props) => {
     }));
   };
 
-  const onBlock = async () => {
+  const onBlock = async () => {};
 
-  }
-
-  const onFollow = async () => {
-    
-  }
+  const onFollow = async () => {};
 
   return (
-    <>
+    <div className='userProfile'>
       <div></div>
       {user && user.id && user.id === fetchedProfile.id ? (
         <>
           <h2>Welcome home</h2>
-          <button className="logButton" color="#f194ff" onClick={() => {
-          editProfile && console.log('ready to edit')
-          setEditProfile((prevState) => !prevState)
-        }}>
+          <button
+            className="logButton"
+            color="#f194ff"
+            onClick={() => {
+              editProfile && console.log('ready to edit');
+              setEditProfile((prevState) => !prevState);
+            }}
+          >
             <FaSignOutAlt />
             Edit
           </button>
         </>
       ) : (
         <>
-          <h2>Add as contact</h2>
+          <h3>Add as contact</h3>
           <button className="logButton" onClick={onFollow}>
             <FaUser />
             Follow
@@ -93,9 +90,9 @@ const UserProfile = (props: Props) => {
       <div></div>
       <img className="profilepage" src={fetchedProfile.avatar} />
 
-      <div>Username: {fetchedProfile.username}</div>
-      <div>email: {fetchedProfile.email}</div>
-    </>
+      <p>Username: {fetchedProfile.username}</p>
+      <p>email: {fetchedProfile.email}</p>
+    </div>
   );
 };
 

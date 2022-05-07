@@ -9,6 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import { identity } from 'rxjs';
 import { JoinRoomDTO } from './dto/join-room';
 import { hash, genSalt, compare } from 'bcrypt';
+import { ChangeRoleDTO } from './dto/change-status.dto';
 
 @Injectable()
 export class RoomsService {
@@ -18,6 +19,28 @@ export class RoomsService {
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
   ) {}
+
+  async changeOwner(data: ChangeRoleDTO) {
+	console.log(data);
+	console.log("---------------------------------", data.appointedId);
+	const room = await this.roomsRepository.findOne({
+      where: { id: data.channelId },
+      relations: ['owner'],
+    });
+	console.log("room", room);
+	const newOwner = await this.usersService.findOne(data.appointedId);
+	console.log("newOwner", newOwner);
+	// console.log("room.owner.id", room.owner.id);
+	// console.log("data.user.id", data.user.id);
+
+	if (room.owner.id !== data.user.id) {
+		console.log("User Request is not comming from Owner")
+		return false;
+	}
+	room.owner = newOwner;
+	await this.roomsRepository.save(room);
+    return true;
+  }
 
   async create(createRoom: CreateRoomDTO) {
     console.log(createRoom);
