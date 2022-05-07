@@ -23,7 +23,7 @@ function Conversation({
 }: ConversationProps) {
   const [users, setUsers] = useState<UserInterface[]>([]);
   const [image, setImage] = useState<string>(imageURL);
-  const [userDm, setUserDm] = useState('');
+  const [privatePassword, setPrivatePassword] = useState<string>('');
   const [conversationName, setConversationName] = useState<string>('');
 
   useEffect(() => {
@@ -50,11 +50,13 @@ function Conversation({
       setConversationName(conversation.channelName);
       setImage(imageURL);
     }
+	setPrivatePassword('');
   }, [users]);
 
   const handleJoinTemp = async (e: React.FormEvent) => {
     e.preventDefault();
-    handleJoin(conversation.id);
+    handleJoin(conversation.id, privatePassword);
+    setPrivatePassword('');
   };
 
   return (
@@ -69,6 +71,17 @@ function Conversation({
     >
       <img className="conversationImg" src={image} />
       <span className="conversationName">{conversationName}</span>
+      {join && conversation.category === 'passwordProtected' && (
+        <input
+          className="privatePassword"
+          placeholder="Password"
+          id="privatePassword"
+          value={privatePassword}
+          onChange={(e) => {
+            setPrivatePassword(e.target.value);
+          }}
+        />
+      )}
       {join && (
         <button
           className="joinConvButton"

@@ -177,12 +177,14 @@ function Chat() {
     }
   };
 
-  const handleJoin = async (convId: number) => {
+  const handleJoin = async (convId: number, privatePassword: string) => {
     console.log(convId);
 
     const joinDTO = {
       owner: user.id,
       convId,
+      password: privatePassword,
+      private: (privatePassword && privatePassword !== '') ? true : false,
     };
 
     const res = await axios.post(
@@ -321,6 +323,7 @@ function Chat() {
                         key={i}
                         message={m}
                         own={m.owner?.id === user.id}
+                        imageURL={m.owner?.avatar}
                       />
                     </div>
                   ))}

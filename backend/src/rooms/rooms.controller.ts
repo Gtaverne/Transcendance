@@ -35,4 +35,9 @@ export class RoomsController {
   async findRoomUsers(@Param() params): Promise<UsersEntity[]> {
     return this.roomsServices.findRoomUsers(params.id);
   }
+
+  @Get('/:id')
+  async findOne(@Param() params): Promise<RoomsEntity> {
+    return this.roomsServices.findOne(params.id);
+  }
 }

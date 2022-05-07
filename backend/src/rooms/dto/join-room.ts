@@ -1,6 +1,9 @@
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
+  IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class JoinRoomDTO {
@@ -10,4 +13,10 @@ export class JoinRoomDTO {
   @IsNotEmpty()
   @IsInt()
   readonly convId: string;
+  @IsOptional()
+  @IsString()
+  readonly password: string;
+  @IsNotEmpty()
+  @IsBoolean()
+  readonly private: boolean;
 }

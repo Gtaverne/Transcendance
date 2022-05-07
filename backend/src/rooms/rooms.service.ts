@@ -8,6 +8,7 @@ import { RoomsEntity } from './rooms.entity';
 import { UsersService } from 'src/users/users.service';
 import { identity } from 'rxjs';
 import { JoinRoomDTO } from './dto/join-room';
+import { hash, genSalt, compare } from 'bcrypt';
 
 @Injectable()
 export class RoomsService {
@@ -59,11 +60,13 @@ export class RoomsService {
         console.log('Wrong Data');
         return;
       }
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(createRoom.password, salt);
       newRoom.accessList = [user1];
       newRoom.category = createRoom.category;
       newRoom.owner = user1;
       newRoom.channelName = createRoom.channelName;
-      newRoom.password = createRoom.password;
+      newRoom.password = hashedPassword;
     } else {
       console.log('Room Category Not Valid Sorry');
       return;
@@ -75,10 +78,24 @@ export class RoomsService {
   }
 
   async join(join: JoinRoomDTO) {
-    console.log(join);
+    console.log(0, join);
     const user = await this.usersService.accessListUser(join.owner);
     const room = await this.roomsRepository.findOne(join.convId);
     if (!user || !room) return;
+
+    // console.log(1, join.password);
+    // const salt = await genSalt();
+    // console.log(2, salt);
+    // const hashedPassword = await hash(join.password, salt);
+    // console.log(3, hashedPassword);
+    const res = await compare(join.password, room.password);
+    // console.log(4, res);
+
+    if (join.private && !res) {
+      console.log('Wrong Password, Access to the Room Denied');
+      return;
+    }
+    // console.log(room.password, '-', join.password, join.private);
     // console.log(user.accessToList);
     // console.log('-------------------------------------------');
     user.accessToList.push(room);
@@ -103,12 +120,15 @@ export class RoomsService {
       if (allRooms[i].isDm === false && !accessListNum.includes(allRooms[i].id))
         ret.push(allRooms[i]);
     }
-	// console.log("I can join", ret.length, "rooms");
+    // console.log("I can join", ret.length, "rooms");
     return ret;
   }
 
-  async findOne(id: number) {
-    const user = await this.roomsRepository.findOne(id);
+  async findOne(roomId: number) {
+    const user = await this.roomsRepository.findOne({
+      where: { id: roomId },
+      relations: ['muteList', 'banList', 'accessList', 'owner', 'admins'],
+    });
     return user;
   }
 

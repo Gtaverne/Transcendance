@@ -5,10 +5,11 @@ const imageURL = 'https://cdn.iconscout.com/icon/free/png-256/list-message-23677
 
 type MessageProps = {
 	own: boolean;
-	message: MessageInterface; 
+	message: MessageInterface;
+	imageURL: string | undefined;
   };  
 
-  function Message({own, message}: MessageProps) {
+  function Message({own, message, imageURL}: MessageProps) {
 	  return (
 		  <div className={own?"message own":"message"}>
 		<div className="messageTop">
