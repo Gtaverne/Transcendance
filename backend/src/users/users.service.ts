@@ -11,6 +11,7 @@ import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { CreateRoomDTO } from 'src/rooms/dto/create-room.dto';
 import { useJwt } from 'react-jwt';
+import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 var jwt = require('jsonwebtoken');
 
 dotenv.config({ path: './.env' });
@@ -140,32 +141,6 @@ export class UsersService {
     return temp;
   }
 
-  /*
-  //BEFORE CONNECTION TO DB
-
-  users: User[] = [];
-
-  //your db logic here
-    create(user: User) {
-      this.users.push(user);
-      return this.users;
-    }
-
-    findAll(): User[] {
-      return this.users;
-    }
-
-    findOne(id: number): User {
-      return this.users.find((u) => u.id === id);
-    }
-
-  delete(id: number): User[] {
-    const index = this.users.findIndex((u) => u.id === id);
-    this.users.splice(index, 1);
-    return this.users;
-  }
-*/
-
   // 1- Recuperation d'un code via la page de login de l'intra
   // 2- Traduction de ce code en token
   // 3- Recuperation des donnees de la personne sur la base de ce code
@@ -264,5 +239,37 @@ export class UsersService {
     }
 
     return dude;
+  }
+
+  async blockUser(data: ChangeRoleDTO) {
+    return false;
+	//first check with georges comment update user
+	//this function should be finished, need update in the front do display accurately
+
+    if (data.role !== 'block') {
+      console.log('Wrong Request Role');
+      return false;
+    }
+    const userBlocking = await this.usersRepository.findOne({
+      where: { id: data.user.id },
+      relations: ['iBlockedList'],
+    });
+    const userBlocked = await this.usersRepository.findOne(data.appointedId);
+    if (userBlocking.id === userBlocked.id) {
+      console.log("You can't block yourself");
+      return false;
+    }
+    for (let i = 0; i < userBlocking.iBlockedList.length; i++) {
+      if (userBlocking.iBlockedList[i].id === userBlocked.id) {
+        console.log('User is already Blocked, removing from the list');
+        userBlocking.iBlockedList.splice(i, 1);
+        await this.usersRepository.save(userBlocking);
+        return true;
+      }
+    }
+    console.log('Blocking User');
+    userBlocking.iBlockedList.push(userBlocked);
+    await this.usersRepository.save(userBlocking);
+    return true;
   }
 }

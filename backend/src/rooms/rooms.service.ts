@@ -20,6 +20,32 @@ export class RoomsService {
     private usersService: UsersService,
   ) {}
 
+  async changePassword(data: ChangeRoleDTO) {
+    const room = await this.roomsRepository.findOne({
+      where: { id: data.channelId },
+      relations: ['owner'],
+    });
+    if (room.owner.id !== data.user.id) {
+      console.log('User Request is not comming from Owner');
+      return false;
+    }
+    if (data.role.length >= 300) {
+      console.log('Password is too long');
+      return false;
+    }
+    if (data.appointedId === -1) {
+      room.password = '';
+      room.category = 'public';
+    } else {
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(data.role, salt);
+      room.password = hashedPassword;
+      room.category = 'passwordProtected';
+    }
+    await this.roomsRepository.save(room);
+    return true;
+  }
+
   async leaveRoom(data: ChangeRoleDTO) {
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },

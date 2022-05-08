@@ -33,6 +33,7 @@ function Chat() {
   const [convName, setConvName] = useState<string>('');
   const [convPassword, setConvPassword] = useState('');
   const [convDm, setConvDm] = useState('');
+  const [changePassword, setChangePassword] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -289,24 +290,58 @@ function Chat() {
 
   const handleLeaveRoom = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const data = {
-      user,
-      channelId: currentChat[0].id,
-      appointedId: 0,
-      role: 'leave',
-    };
-
     const res = await axios.post(
       process.env.REACT_APP_URL_BACK + 'rooms/leaveroom/',
-      data,
+      {
+        user,
+        channelId: currentChat[0].id,
+        appointedId: 0,
+        role: 'leave',
+      },
     );
-
     if (res) {
       console.log('successfully left the room');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
       setCurrentChat([]);
+    }
+  };
+
+  const handleBlockUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'users/blockuser/',
+      {
+        user,
+        channelId: 0,
+        appointedId: currentUser[0].id,
+        role: 'block',
+      },
+    );
+    if (res) {
+      console.log('successfully blocked user');
+      setTimeout(getConversations, 250);
+      setTimeout(getConversationsCanJoin, 250);
+      //update current chat ? & blocked list ? a partir de user ?
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/changepassword/',
+      {
+        user,
+        channelId: currentChat[0].id,
+        appointedId: changePassword ? 0 : -1,
+        role: changePassword ? changePassword : '-',
+      },
+    );
+    if (res) {
+      setTimeout(getConversations, 250);
+      setChangePassword('Success');
+    } else {
+      setChangePassword('Fail');
     }
   };
 
@@ -327,6 +362,7 @@ function Chat() {
                     setCurrentChat([c]);
                     setCurrentUser([]);
                     setAdmins(c);
+                    setChangePassword('');
                     console.log(c);
                   }}
                   key={i}
@@ -556,18 +592,20 @@ function Chat() {
                     Select a user to view his informations.
                   </span>
                 )}
-                <div className="contentBox">
-                  <input
-                    className="editPassword"
-                    placeholder="Set Password"
-                    id="convName"
-                    // value={convName}
-                    // onChange={(e) => {
-                    //   setConvName(e.target.value);
-                    // }}
-                  />
-                  <button>Validate</button>
-                </div>
+                {user.id === currentChat[0].owner?.id && (
+                  <div className="contentBox">
+                    <input
+                      className="editPassword"
+                      placeholder="Set Password"
+                      id="changePassword"
+                      value={changePassword}
+                      onChange={(e) => {
+                        setChangePassword(e.target.value);
+                      }}
+                    />
+                    <button onClick={handleChangePassword}>Validate</button>
+                  </div>
+                )}
               </div>
             ) : (
               <></>

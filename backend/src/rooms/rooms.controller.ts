@@ -15,6 +15,11 @@ export class RoomsController {
     return this.roomsServices.join(join);
   }
 
+  @Post('/changepassword/')
+  async changePassword(@Body() data: ChangeRoleDTO): Promise<boolean> {
+    return this.roomsServices.changePassword(data);
+  }
+
   @Post('/leaveroom/')
   async leaveRoom(@Body() data: ChangeRoleDTO): Promise<boolean> {
     return this.roomsServices.leaveRoom(data);

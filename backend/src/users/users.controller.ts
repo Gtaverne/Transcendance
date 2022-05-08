@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { query, Request, Response } from 'express';
+import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 import { UserDTO } from './dto/user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
@@ -94,6 +95,11 @@ export class UsersController {
   @Get()
   async findAll(@Param() params): Promise<UsersEntity[]> {
     return this.usersServices.findAll();
+  }
+
+  @Post('/blockuser/')
+  async blockUser(@Body() data: ChangeRoleDTO): Promise<boolean> {
+    return this.usersServices.blockUser(data);
   }
 
   @Post()
