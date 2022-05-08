@@ -287,6 +287,29 @@ function Chat() {
     setCurrentChatAdmins(adminList);
   };
 
+  const handleLeaveRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const data = {
+      user,
+      channelId: currentChat[0].id,
+      appointedId: 0,
+      role: 'leave',
+    };
+
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/leaveroom/',
+      data,
+    );
+
+    if (res) {
+      console.log('successfully left the room');
+      setTimeout(getConversations, 250);
+      setTimeout(getConversationsCanJoin, 250);
+      setCurrentChat([]);
+    }
+  };
+
   return (
     <>
       <div className="messenger">
@@ -455,9 +478,9 @@ function Chat() {
             {currentChat.length ? (
               <div className="chatOnlineBottom">
                 <h3>User Informations | id{currentChat[0]?.id}</h3>
-                <p>
+                {/* <p>
                   {currentChatAdmins.length} admins: {currentChatAdmins}
-                </p>
+                </p> */}
                 {currentUser.length ? (
                   <>
                     <button
@@ -477,8 +500,7 @@ function Chat() {
                         </button>
                       )}
                     {!currentChat[0]?.isDm &&
-                      currentChat[0]?.owner?.id === user.id &&
-                      currentChat[0]?.owner?.id !== currentUser[0]?.id && (
+                      currentChat[0]?.owner?.id === user.id && (
                         <button
                           className="chatOnlineBottomButton"
                           onClick={handleUpdateAdmin}
@@ -491,7 +513,10 @@ function Chat() {
                     {currentUser[0]?.id === user.id &&
                       currentChat[0]?.owner?.id !== user.id &&
                       !currentChat[0]?.isDm && (
-                        <button className="chatOnlineBottomButton">
+                        <button
+                          className="chatOnlineBottomButton"
+                          onClick={handleLeaveRoom}
+                        >
                           Leave Room
                         </button>
                       )}

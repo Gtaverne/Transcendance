@@ -15,6 +15,11 @@ export class RoomsController {
     return this.roomsServices.join(join);
   }
 
+  @Post('/leaveroom/')
+  async leaveRoom(@Body() data: ChangeRoleDTO): Promise<boolean> {
+    return this.roomsServices.leaveRoom(data);
+  }
+
   @Post('/changeowner/')
   async changeOwner(@Body() data: ChangeRoleDTO): Promise<boolean> {
     return this.roomsServices.changeOwner(data);
