@@ -11,6 +11,8 @@ import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
 
+declare var global: any;
+
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
   const [conversationsCanJoin, setConversationsCanJoin] = useState<
@@ -113,6 +115,7 @@ function Chat() {
           console.log(1.5, 'updating current chat infos');
           if (res.data[i].id === currentChat[0]?.id) {
             setCurrentChat([res.data[i]]);
+            global.currentChat = res.data[i];
             setAdmins(res.data[i]);
             console.log(2, 'updating current chat infos', res.data[i].id);
           }
@@ -322,7 +325,8 @@ function Chat() {
       console.log('successfully left the room');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
-      setCurrentChat([]);
+	  global.currentChat = [];
+
     }
   };
 
@@ -696,20 +700,22 @@ function Chat() {
                     Select a user to view his informations.
                   </span>
                 )}
-                {user.id === currentChat[0].owner?.id && !currentChat[0]?.isDm && currentChat[0].category !== "private" && (
-                  <div className="contentBox">
-                    <input
-                      className="editPassword"
-                      placeholder="Password"
-                      id="changePassword"
-                      value={changePassword}
-                      onChange={(e) => {
-                        setChangePassword(e.target.value);
-                      }}
-                    />
-                    <button onClick={handleChangePassword}>Validate</button>
-                  </div>
-                )}
+                {user.id === currentChat[0].owner?.id &&
+                  !currentChat[0]?.isDm &&
+                  currentChat[0].category !== 'private' && (
+                    <div className="contentBox">
+                      <input
+                        className="editPassword"
+                        placeholder="Password"
+                        id="changePassword"
+                        value={changePassword}
+                        onChange={(e) => {
+                          setChangePassword(e.target.value);
+                        }}
+                      />
+                      <button onClick={handleChangePassword}>Validate</button>
+                    </div>
+                  )}
                 {!currentChat[0]?.isDm && (
                   <div className="contentBox">
                     <input
