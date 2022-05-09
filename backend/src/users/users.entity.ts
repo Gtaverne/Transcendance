@@ -21,8 +21,8 @@ export class UsersEntity extends BaseEntity {
   avatar: string;
   @Column({ type: 'varchar', length: 150, nullable: true })
   email: string;
-  @Column({ type: 'boolean', default: false, nullable: true })
-  doublefa: boolean;
+  @Column({ type: 'integer', default: 0, nullable: true })
+  doublefa: number;
   @Column({ type: 'integer', default: 0, nullable: false })
   lvl: number;
 

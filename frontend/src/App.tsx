@@ -5,6 +5,7 @@ import Chat from './pages/Chat';
 import Game from './pages/Game';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
+import Configure2FA from './pages/Configure2FA';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 // import { useEffect } from 'react';
@@ -38,6 +39,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/userprofile/:id" element={<PrivateRoute />}>
               <Route path="/userprofile/:id" element={<UserProfile />} />
+            </Route>
+            <Route path="/configure2fa/:id" element={<PrivateRoute />}>
+              <Route path="/configure2fa/:id" element={<Configure2FA />} />
             </Route>
             <Route path="/chat" element={<PrivateRoute />}>
               <Route path="/chat" element={<Chat />} />

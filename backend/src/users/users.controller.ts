@@ -16,6 +16,7 @@ import {
 import { strictEqual } from 'assert';
 import { query, Request, Response } from 'express';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
+import { EditorDTO } from './dto/editor.dto';
 import { UserDTO } from './dto/user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
@@ -100,6 +101,11 @@ export class UsersController {
   @Post('/blockuser/')
   async blockUser(@Body() data: ChangeRoleDTO): Promise<boolean> {
     return this.usersServices.blockUser(data);
+  }
+
+  @Post('/editprofile/')
+  async editprofile(@Body() data: EditorDTO): Promise<any> {
+    return this.usersServices.editprofile(data);
   }
 
   @Post()
