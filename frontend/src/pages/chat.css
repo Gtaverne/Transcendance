@@ -159,6 +159,11 @@
   height: 100%;
 }
 
+.buttonOnlineTopWrapper {
+  width: 100%;
+  text-align: center;
+}
+
 .chatOnlineBottom {
   border-top: 1px solid gray;
   padding-left: 10px;
@@ -169,12 +174,13 @@
 }
 
 .chatOnlineBottom input {
-  width: 107px;
+  width: 71px;
   height: 26.5px;
   border-radius: 5px;
   border: 1px solid gray;
   margin-bottom: 5px;
   margin-right: 5px;
+  text-align: center;
 }
 
 .chatOnlineBottomButton {
@@ -208,7 +214,7 @@
 }
 
 .contentBox button {
-  width: 110px;
+  width: 73px;
 }
 
 .editPassword {

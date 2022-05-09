@@ -7,9 +7,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import * as qs from 'qs';
 import * as dotenv from 'dotenv';
 import { response } from 'express';
-import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { RoomsService } from 'src/rooms/rooms.service';
-import { CreateRoomDTO } from 'src/rooms/dto/create-room.dto';
 import { useJwt } from 'react-jwt';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 var jwt = require('jsonwebtoken');
@@ -117,6 +115,10 @@ export class UsersService {
       .leftJoinAndSelect('accessToList.admins', 'admins')
       .leftJoinAndSelect('accessToList.muteList', 'muteList')
       .leftJoinAndSelect('accessToList.banList', 'banList')
+      .leftJoinAndSelect('muteList.muted', 'muted')
+      .leftJoinAndSelect('banList.baned', 'baned')
+      .leftJoinAndSelect('muteList.mutedUser', 'mutedUser')
+      .leftJoinAndSelect('banList.banedUser', 'banedUser')
       .where('users.id = :id', { id })
       .getOne();
     // console.log('I am in', user.accessToList.length, 'rooms');
@@ -243,8 +245,8 @@ export class UsersService {
 
   async blockUser(data: ChangeRoleDTO) {
     return false;
-	//first check with georges comment update user
-	//this function should be finished, need update in the front do display accurately
+    //first check with georges comment update user
+    //this function should be finished, need update in the front do display accurately
 
     if (data.role !== 'block') {
       console.log('Wrong Request Role');

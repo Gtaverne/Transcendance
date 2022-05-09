@@ -22,7 +22,10 @@ export class MessagesService {
     const room = await this.roomsService.findOne(createMessage.channelId);
     newMessage.owner = owner;
     newMessage.room = room;
-	if (createMessage.message.length >= 300) return;
+    if (createMessage.message.length >= 300) return;
+    const muteList = await this.roomsService.muteList(room.id);
+    const banList = await this.roomsService.banList(room.id);
+    if (muteList.includes(owner.id) || banList.includes(owner.id)) return;
     newMessage.message = createMessage.message;
 
     await this.messagesRepository.save(newMessage);
@@ -31,7 +34,10 @@ export class MessagesService {
 
   async findMessages(roomId: number) {
     const room = await this.roomsService.findOne(roomId);
-    const res = await this.messagesRepository.find({ where: { room: room }, relations: ["owner"] });
-    return res.sort((a,b) => a.id - b.id);
+    const res = await this.messagesRepository.find({
+      where: { room: room },
+      relations: ['owner'],
+    });
+    return res.sort((a, b) => a.id - b.id);
   }
 }

@@ -10,6 +10,8 @@ import {
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
+import { MuteEntity } from 'src/rooms/mute.entity';
+import { BanEntity } from 'src/rooms/ban.entity';
 
 @Entity('users')
 export class UsersEntity extends BaseEntity {
@@ -57,4 +59,10 @@ export class UsersEntity extends BaseEntity {
 
   @ManyToMany(() => RoomsEntity, (room) => room.admins)
   administratingRooms: RoomsEntity[];
+
+  @OneToMany(() => MuteEntity, (mute) => mute.mutedUser)
+  mutedInARoom: MuteEntity[];
+
+  @OneToMany(() => BanEntity, (ban) => ban.banedUser)
+  bannedInARoom: BanEntity[];
 }

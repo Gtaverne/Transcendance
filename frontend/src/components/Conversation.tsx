@@ -7,6 +7,8 @@ const imageURL =
   'https://thumbs.dreamstime.com/b/people-talking-icon-one-set-web-icons-vector-people-talking-icon-one-set-web-vector-icons-137796837.jpg';
 const imageLock =
   'https://media.istockphoto.com/vectors/lock-icon-vector-id936681148?k=20&m=936681148&s=612x612&w=0&h=j6fxNWrJ09iE7khUsDWetKn_PwWydgIS0yFJBEonGow=';
+const imagePrivate =
+  'https://cdn.iconscout.com/icon/free/png-256/no-filter-457692.png';
 
 type ConversationProps = {
   conversation: RoomInterface;
@@ -51,6 +53,9 @@ function Conversation({
     } else if (conversation.category === 'passwordProtected') {
       setConversationName(conversation.channelName);
       setImage(imageLock);
+    } else if (conversation.category === 'private') {
+      setConversationName(conversation.channelName);
+      setImage(imagePrivate);
     } else {
       setConversationName(conversation.channelName);
       setImage(imageURL);
@@ -102,15 +107,6 @@ function Conversation({
           Join
         </button>
       )}
-      {/* {conversation.category === 'public' && !join && (
-        <button
-          className="joinConvButton"
-          value={conversation.id}
-          onClick={handleLeaveTemp}
-        >
-          Leave
-        </button>
-      )} */}
     </div>
   );
 }

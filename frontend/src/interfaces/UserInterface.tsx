@@ -2,6 +2,8 @@ import BaseInterface from './BaseInterface';
 import RoomInterface from './RoomInterface';
 import GameInterface from './GameInterface';
 import MessageInterface from './MessageInterface';
+import MuteInterface from './MuteInterface';
+import BanInterface from './BanInterface';
 
 interface UserInterface extends BaseInterface {
   username: string;
@@ -20,6 +22,8 @@ interface UserInterface extends BaseInterface {
   gamePlayer2?: GameInterface[];
   ownedRooms?: RoomInterface[];
   administratingRooms?: RoomInterface[];
+  mutedInARoom?: MuteInterface[];
+  bannedInARoom?: BanInterface[];
 }
 
 export default UserInterface;

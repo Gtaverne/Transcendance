@@ -1,4 +1,4 @@
-import { CreateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export class BaseEntity {
   //autoincrement
@@ -8,6 +8,6 @@ export class BaseEntity {
   createdAt?: Date;
 
   //Now let us check where is this used
-  @CreateDateColumn({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
   updatedAt?: Date;
 }

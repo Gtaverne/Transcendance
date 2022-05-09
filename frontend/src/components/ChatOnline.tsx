@@ -11,6 +11,8 @@ type ChatOnlineProps = {
   owner: UserInterface | undefined;
   currentChat: RoomInterface[];
   currentChatAdmins: number[];
+  currentChatMute: number[];
+  currentChatBan: number[];
 };
 
 function ChatOnline({
@@ -22,6 +24,8 @@ function ChatOnline({
   owner,
   currentChat,
   currentChatAdmins,
+  currentChatMute,
+  currentChatBan,
 }: ChatOnlineProps) {
   //   useEffect(() => {
   //     console.log(accessList);
@@ -51,6 +55,8 @@ function ChatOnline({
             {a.username} | id{a.id}
             {owner?.id === a.id && !currentChat[0]?.isDm && ' | owner'}
             {currentChatAdmins.includes(a.id) && !currentChat[0]?.isDm && ' | admin'}
+			{currentChatMute.includes(a.id) && !currentChat[0]?.isDm && ' | mute'}
+			{currentChatBan.includes(a.id) && !currentChat[0]?.isDm && ' | ban'}
           </span>
         </div>
       ))}

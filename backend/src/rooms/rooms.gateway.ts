@@ -104,6 +104,7 @@ export class RoomsGateway
 
   @SubscribeMessage('transmitMessage')
   handleTransmitMessage(socket: Socket, msg: MessagesEntity) {
+    if (msg.message.length >= 300) return;
     console.log('New message detected:', msg.message);
     for (let i = 0; i < this.users.length; i++) {
       this.server.to(this.users[i].socket.id).emit('getTransmitMessage', msg);
@@ -111,12 +112,12 @@ export class RoomsGateway
     // this.server.emit('getTransmitMessage', msg);
   }
 
-  @SubscribeMessage('newRoom')
-  handleNewRoom(socket: Socket, msg: any) {
-    console.log('NewRoom detected:', msg.message);
+  @SubscribeMessage('newInfo')
+  handleNewInfo(socket: Socket, msg: any) {
+    console.log('NewInfo detected:', msg.message);
     for (let i = 0; i < this.users.length; i++) {
       if (msg.owner !== this.users[i].userId)
-        this.server.to(this.users[i].socket.id).emit('getNewRoom', msg);
+        this.server.to(this.users[i].socket.id).emit('getNewInfo', msg);
     }
     // this.server.emit('getTransmitMessage', msg);
   }

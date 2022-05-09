@@ -18,6 +18,8 @@ function Chat() {
   >([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
   const [currentChatAdmins, setCurrentChatAdmins] = useState<number[]>([]);
+  const [currentChatMute, setCurrentChatMute] = useState<number[]>([]);
+  const [currentChatBan, setCurrentChatBan] = useState<number[]>([]);
   const [currentUser, setCurrentUser] = useState<UserInterface[]>([]);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -34,6 +36,9 @@ function Chat() {
   const [convPassword, setConvPassword] = useState('');
   const [convDm, setConvDm] = useState('');
   const [changePassword, setChangePassword] = useState('');
+  const [usernameInvite, setUsernameInvite] = useState('');
+  const [ban, setBan] = useState(0);
+  const [mute, setMute] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,23 +55,18 @@ function Chat() {
         currentChat[0]?.id,
         data,
       );
-      console.log('getTransmitMessage', currentChat[0]);
       setArrivalMessage(data);
       if (currentChat[0] && currentChat[0].id === data.room.id) {
         console.log('Message in the current room');
       }
     });
-    socket.current.on('getNewRoom', (data) => {
-      console.log('Socket getNewRoom detected');
-      if (data.message === user.username) setTimeout(getConversations, 250);
-      if (data.message === 'no') setTimeout(getConversationsCanJoin, 250);
+    socket.current.on('getNewInfo', (data) => {
+      console.log('Socket getNewInfo detected', currentChat.length);
+      setTimeout(getConversations, 250);
+      setTimeout(getConversationsCanJoin, 250);
     });
     if (currentChat[0] && currentChat[0]?.admins?.length) {
-      let admins = [];
-      for (let i = 0; i < currentChat[0]?.admins?.length!; i++) {
-        admins.push(currentChat[0]?.admins[i].id);
-      }
-      setCurrentChatAdmins(admins);
+      setAdmins(currentChat[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChat, user]);
@@ -103,18 +103,18 @@ function Chat() {
 
   const getConversations = async () => {
     try {
-      let convLen = conversations.length;
       const res = await axios.get(
         process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
       );
-      console.log('updatingConv');
       setConversations(res.data);
       if (currentChat[0]) {
+        console.log(1, 'updating current chat infos');
         for (let i = 0; i < res.data.length!; i++) {
+          console.log(1.5, 'updating current chat infos');
           if (res.data[i].id === currentChat[0]?.id) {
             setCurrentChat([res.data[i]]);
             setAdmins(res.data[i]);
-            console.log('UPDATING CURRENT CHAT', res.data[i].owner?.id);
+            console.log(2, 'updating current chat infos', res.data[i].id);
           }
         }
       }
@@ -159,7 +159,7 @@ function Chat() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!newMessage.length) return;
+    if (!newMessage.length || newMessage.length >= 300) return;
 
     const msg = {
       owner: user.id,
@@ -173,7 +173,6 @@ function Chat() {
     );
 
     socket.current.emit('transmitMessage', res.data);
-    console.log('handleSubmit', currentChat[0]?.id);
 
     setMessages([...messages, res.data]);
     setNewMessage('');
@@ -182,6 +181,14 @@ function Chat() {
   useEffect(() => {
     scrollRef.current?.scrollIntoView(); // { behavior: 'smooth' }
   }, [messages]);
+
+  const refreshOthers = async () => {
+    socket.current.emit('newInfo', {
+      owner: user.id,
+      channelId: 0,
+      message: '-',
+    });
+  };
 
   const handleSubmitConv = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,10 +207,10 @@ function Chat() {
       room,
     );
 
-    socket.current.emit('newRoom', {
+    socket.current.emit('newInfo', {
       owner: user.id,
       channelId: 0,
-      message: conversationType === 'directMessage' ? convDm : 'no',
+      message: conversationType === 'directMessage',
     });
 
     if (res.data) {
@@ -283,9 +290,21 @@ function Chat() {
   };
 
   const setAdmins = (c: RoomInterface) => {
+    if (!currentChat[0]) return;
+    let now = new Date();
     let adminList: number[] = [];
+    let muteList: number[] = [];
+    let banList: number[] = [];
     c.admins?.forEach((a) => adminList.push(a.id));
+    c.muteList?.forEach((a) => {
+      if (now < new Date(a.timestamp)) muteList.push(a.mutedUser?.id!);
+    });
+    c.banList?.forEach((a) => {
+      if (now < new Date(a.timestamp)) banList.push(a.banedUser?.id!);
+    });
     setCurrentChatAdmins(adminList);
+    setCurrentChatMute(muteList);
+    setCurrentChatBan(banList);
   };
 
   const handleLeaveRoom = async (e: React.FormEvent) => {
@@ -345,6 +364,59 @@ function Chat() {
     }
   };
 
+  const handleMute = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/mute/',
+      {
+        user,
+        channelId: currentChat[0].id,
+        appointedId: currentUser[0].id,
+        role: 'mute',
+        time: mute ? mute : 0,
+      },
+    );
+    if (res) {
+      console.log('successfully muted');
+      setTimeout(getConversations, 250);
+    }
+  };
+
+  const handleBan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/ban/',
+      {
+        user,
+        channelId: currentChat[0].id,
+        appointedId: currentUser[0].id,
+        role: 'ban',
+        time: ban ? ban : 0,
+      },
+    );
+    if (res) {
+      console.log('successfully band');
+      setTimeout(getConversations, 250);
+    }
+  };
+
+  const handleUsernameInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await axios.post(
+      process.env.REACT_APP_URL_BACK + 'rooms/invite/',
+      {
+        user,
+        channelId: currentChat[0].id,
+        appointedId: 0,
+        role: usernameInvite ? usernameInvite : '',
+      },
+    );
+    if (res) {
+      console.log('successfully invited');
+      setTimeout(getConversations, 250);
+    }
+  };
+
   return (
     <>
       <div className="messenger">
@@ -363,7 +435,9 @@ function Chat() {
                     setCurrentUser([]);
                     setAdmins(c);
                     setChangePassword('');
-                    console.log(c);
+                    setUsernameInvite('');
+                    setMute(0);
+                    setBan(0);
                   }}
                   key={i}
                 >
@@ -411,13 +485,13 @@ function Chat() {
                     >
                       <option value="directMessage">Direct Message</option>
                       <option value="public">Public</option>
+                      <option value="private">Private</option>
                       <option value="passwordProtected">
                         Password Protected
                       </option>
                     </select>
                   </div>
-                  {conversationType === 'public' ||
-                  conversationType === 'passwordProtected' ? (
+                  {conversationType !== 'directMessage' ? (
                     <div>
                       <div className="conversationNameBox">
                         <input
@@ -478,17 +552,19 @@ function Chat() {
                     </div>
                   ))}
                 </div>
-                <div className="chatBoxBottom">
-                  <textarea
-                    className="chatMessageInput"
-                    placeholder="write something..."
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    value={newMessage}
-                  ></textarea>
-                  <button className="chatSubmitButton" onClick={handleSubmit}>
-                    Send
-                  </button>
-                </div>
+                {!currentChatMute.includes(user.id) && (
+                  <div className="chatBoxBottom">
+                    <textarea
+                      className="chatMessageInput"
+                      placeholder="write something..."
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      value={newMessage}
+                    ></textarea>
+                    <button className="chatSubmitButton" onClick={handleSubmit}>
+                      Send
+                    </button>
+                  </div>
+                )}
               </>
             ) : (
               <span className="noConversationText">
@@ -500,6 +576,18 @@ function Chat() {
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
             <div className="chatOnlineTopWrapper">
+              {currentChat.length ? (
+                <div className="buttonOnlineTopWrapper">
+                  <button
+                    className="chatOnlineBottomButton"
+                    onClick={getConversations}
+                  >
+                    Refresh Roles
+                  </button>
+                </div>
+              ) : (
+                ''
+              )}
               <ChatOnline
                 onlineUsers={onlineUsers}
                 currentId={user.id}
@@ -509,6 +597,8 @@ function Chat() {
                 owner={currentChat[0]?.owner}
                 currentChat={currentChat}
                 currentChatAdmins={currentChatAdmins}
+                currentChatMute={currentChatMute}
+                currentChatBan={currentChatBan}
               />
             </div>
             {currentChat.length ? (
@@ -516,6 +606,12 @@ function Chat() {
                 <h3>User Informations | id{currentChat[0]?.id}</h3>
                 {/* <p>
                   {currentChatAdmins.length} admins: {currentChatAdmins}
+                </p>
+                <p>
+                  {currentChatMute.length} mute: {currentChatMute}
+                </p>
+                <p>
+                  {currentChatBan.length} ban: {currentChatBan}
                 </p> */}
                 {currentUser.length ? (
                   <>
@@ -561,42 +657,50 @@ function Chat() {
                         Block User
                       </button>
                     )}
-                    <div className="contentBox">
-                      <input
-                        placeholder="Mute _ Minutes"
-                        id="convName"
-                        type="number"
-                        // value={convName}
-                        // onChange={(e) => {
-                        //   setConvName(e.target.value);
-                        // }}
-                      />
-                      <button>Mute</button>
-                    </div>
-                    <div className="contentBox">
-                      <input
-                        className="contentBox"
-                        placeholder="Ban _ Minutes"
-                        id="convName"
-                        type="number"
-                        // value={convName}
-                        // onChange={(e) => {
-                        //   setConvName(e.target.value);
-                        // }}
-                      />
-                      <button>Ban</button>
-                    </div>
+                    {(currentChatAdmins.includes(user.id) ||
+                      currentChat[0]?.owner?.id === user.id) &&
+                      !currentChatAdmins.includes(currentUser[0]?.id) &&
+                      currentChat[0]?.owner?.id !== currentUser[0]?.id &&
+                      !currentChat[0]?.isDm && (
+                        <>
+                          <div className="contentBox">
+                            <input
+                              placeholder="Minutes"
+                              id="mute"
+                              type="number"
+                              value={mute === 0 ? '' : mute}
+                              onChange={(e) => {
+                                setMute(e.target.valueAsNumber);
+                              }}
+                            />
+                            <button onClick={handleMute}>Mute</button>
+                          </div>
+                          <div className="contentBox" onClick={handleBan}>
+                            <input
+                              className="contentBox"
+                              placeholder="Minutes"
+                              id="ban"
+                              type="number"
+                              value={ban === 0 ? '' : ban}
+                              onChange={(e) => {
+                                setBan(e.target.valueAsNumber);
+                              }}
+                            />
+                            <button>Ban</button>
+                          </div>
+                        </>
+                      )}
                   </>
                 ) : (
                   <span className="noUserText">
                     Select a user to view his informations.
                   </span>
                 )}
-                {user.id === currentChat[0].owner?.id && (
+                {user.id === currentChat[0].owner?.id && !currentChat[0]?.isDm && currentChat[0].category !== "private" && (
                   <div className="contentBox">
                     <input
                       className="editPassword"
-                      placeholder="Set Password"
+                      placeholder="Password"
                       id="changePassword"
                       value={changePassword}
                       onChange={(e) => {
@@ -604,6 +708,20 @@ function Chat() {
                       }}
                     />
                     <button onClick={handleChangePassword}>Validate</button>
+                  </div>
+                )}
+                {!currentChat[0]?.isDm && (
+                  <div className="contentBox">
+                    <input
+                      className="editPassword"
+                      placeholder="Username"
+                      id="usernameInvite"
+                      value={usernameInvite}
+                      onChange={(e) => {
+                        setUsernameInvite(e.target.value);
+                      }}
+                    />
+                    <button onClick={handleUsernameInvite}>Invite</button>
                   </div>
                 )}
               </div>

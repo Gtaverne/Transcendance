@@ -1,6 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import { CreateRoomDTO } from './dto/create-room.dto';
 import { RoomDTO } from './dto/room.dto';
@@ -10,21 +9,184 @@ import { identity } from 'rxjs';
 import { JoinRoomDTO } from './dto/join-room';
 import { hash, genSalt, compare } from 'bcrypt';
 import { ChangeRoleDTO } from './dto/change-status.dto';
+import { MuteBanDTO } from './dto/mute-ban.dto';
+import { MuteEntity } from './mute.entity';
+import { BanEntity } from './ban.entity';
 
 @Injectable()
 export class RoomsService {
   constructor(
     @InjectRepository(RoomsEntity)
     private roomsRepository: Repository<RoomsEntity>,
+    @InjectRepository(MuteEntity)
+    private muteRepository: Repository<MuteEntity>,
+    @InjectRepository(BanEntity)
+    private banRepository: Repository<BanEntity>,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
   ) {}
+
+  async invite(data: ChangeRoleDTO) {
+    const user = await this.usersService.findOneWithName(data.role);
+    const room = await this.roomsRepository.findOne({
+      where: { id: data.channelId },
+      relations: ['accessList'],
+    });
+    if (!user || !room) return false;
+    for (let i = 0; i < room.accessList.length; i++) {
+      if (room.accessList[i].id === user.id) {
+        console.log('User Already in the Room');
+        return false;
+      }
+    }
+    room.accessList.push(user);
+    this.roomsRepository.save(room);
+    return true;
+  }
+
+  async muteList(id: number): Promise<number[]> {
+    const room = await this.roomsRepository
+      .createQueryBuilder('rooms')
+      .leftJoinAndSelect('rooms.muteList', 'muteList')
+      .leftJoinAndSelect('muteList.mutedUser', 'mutedUser')
+      .where('rooms.id = :id', { id })
+      .getOne();
+    const list: number[] = [];
+    let now = new Date();
+    for (let i = 0; i < room.muteList.length; i++)
+      if (now < new Date(room.muteList[i].timestamp))
+        list.push(room.muteList[i].mutedUser.id);
+    return list;
+  }
+
+  async banList(id: number): Promise<number[]> {
+    const room = await this.roomsRepository
+      .createQueryBuilder('rooms')
+      .leftJoinAndSelect('rooms.banList', 'banList')
+      .leftJoinAndSelect('banList.banedUser', 'banedUser')
+      .where('rooms.id = :id', { id })
+      .getOne();
+    const list: number[] = [];
+    let now = new Date();
+    for (let i = 0; i < room.banList.length; i++)
+      if (now < new Date(room.banList[i].timestamp))
+        list.push(room.banList[i].banedUser.id);
+    return list;
+  }
+
+  async mute(data: MuteBanDTO) {
+    if (data.time < 0) {
+      console.log("Can't mute a negative time");
+      return false;
+    }
+    const user = await this.usersService.findOne(data.appointedId);
+    const room = await this.roomsRepository.findOne(data.channelId);
+    const newMute = new MuteEntity();
+    newMute.mutedUser = user;
+    newMute.muted = room;
+    newMute.timestamp = new Date(new Date().getTime() + data.time * 60000);
+    const roomXL = await this.roomsRepository
+      .createQueryBuilder('rooms')
+      .leftJoinAndSelect('rooms.muteList', 'muteList')
+      .leftJoinAndSelect('muteList.mutedUser', 'mutedUser')
+      .leftJoinAndSelect('muteList.muted', 'muted')
+      .leftJoinAndSelect('rooms.owner', 'owner')
+      .leftJoinAndSelect('rooms.admins', 'admins')
+      .where('rooms.id = :a', { a: data.channelId })
+      .getOne();
+    let adminList = [];
+    for (let i = 0; i < roomXL.admins.length; i++)
+      adminList.push(roomXL.admins[i].id);
+    if (roomXL.owner.id !== data.user.id && !adminList.includes(data.user.id)) {
+      console.log('User Request is not comming from Owner or Admin');
+      return false;
+    }
+    if (
+      adminList.includes(data.appointedId) ||
+      data.appointedId === data.user.id ||
+      roomXL.owner.id === data.appointedId
+    ) {
+      console.log("User can't mute an Admin or Owner or Himself");
+      return false;
+    }
+    const mutedEntity = await this.muteRepository
+      .createQueryBuilder('mute')
+      .leftJoinAndSelect('mute.muted', 'muted')
+      .leftJoinAndSelect('mute.mutedUser', 'mutedUser')
+      .where('muted.id = :a', { a: data.channelId })
+      .andWhere('mutedUser.id = :b', { b: data.appointedId })
+      .getOne();
+    if (!mutedEntity) {
+      await this.muteRepository.save(newMute);
+      console.log('New Mute Created');
+      return true;
+    }
+    mutedEntity.timestamp = newMute.timestamp;
+    this.muteRepository.save(mutedEntity);
+    console.log('Mute Edited');
+    return true;
+  }
+
+  async ban(data: MuteBanDTO) {
+    if (data.time < 0) {
+      console.log("Can't ban a negative time");
+      return false;
+    }
+    const user = await this.usersService.findOne(data.appointedId);
+    const room = await this.roomsRepository.findOne(data.channelId);
+    const newBan = new BanEntity();
+    newBan.banedUser = user;
+    newBan.baned = room;
+    newBan.timestamp = new Date(new Date().getTime() + data.time * 60000);
+    const roomXL = await this.roomsRepository
+      .createQueryBuilder('rooms')
+      .leftJoinAndSelect('rooms.banList', 'banList')
+      .leftJoinAndSelect('banList.banedUser', 'banedUser')
+      .leftJoinAndSelect('banList.baned', 'baned')
+      .leftJoinAndSelect('rooms.owner', 'owner')
+      .leftJoinAndSelect('rooms.admins', 'admins')
+      .where('rooms.id = :a', { a: data.channelId })
+      .getOne();
+    let adminList = [];
+    for (let i = 0; i < roomXL.admins.length; i++)
+      adminList.push(roomXL.admins[i].id);
+    if (roomXL.owner.id !== data.user.id && !adminList.includes(data.user.id)) {
+      console.log('User Request is not comming from Owner or Admin');
+      return false;
+    }
+    if (
+      adminList.includes(data.appointedId) ||
+      data.appointedId === data.user.id ||
+      roomXL.owner.id === data.appointedId
+    ) {
+      console.log("User can't ban an Admin or Owner or Himself");
+      return false;
+    }
+    const banedEntity = await this.banRepository
+      .createQueryBuilder('ban')
+      .leftJoinAndSelect('ban.baned', 'baned')
+      .leftJoinAndSelect('ban.banedUser', 'banedUser')
+      .where('baned.id = :a', { a: data.channelId })
+      .andWhere('banedUser.id = :b', { b: data.appointedId })
+      .getOne();
+    if (!banedEntity) {
+      await this.banRepository.save(newBan);
+      console.log('New Ban Created');
+      return true;
+    }
+    banedEntity.timestamp = newBan.timestamp;
+    this.banRepository.save(banedEntity);
+    console.log('Ban Edited');
+    return true;
+  }
 
   async changePassword(data: ChangeRoleDTO) {
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
       relations: ['owner'],
     });
+    if (room.category === 'private' || room.category === 'directMessage')
+      return false;
     if (room.owner.id !== data.user.id) {
       console.log('User Request is not comming from Owner');
       return false;
@@ -144,7 +306,10 @@ export class RoomsService {
       newRoom.owner = user1;
       newRoom.isDm = true;
       newRoom.channelName = createRoom.channelName;
-    } else if (createRoom.category === 'public') {
+    } else if (
+      createRoom.category === 'public' ||
+      createRoom.category === 'private'
+    ) {
       if (
         createRoom.channelName === '-' ||
         createRoom.channelName.length >= 300
@@ -224,7 +389,11 @@ export class RoomsService {
     const allRooms = await this.roomsRepository.find();
     const ret = [];
     for (let i = 0; i < allRooms.length; i++) {
-      if (allRooms[i].isDm === false && !accessListNum.includes(allRooms[i].id))
+      if (
+        allRooms[i].isDm === false &&
+        !accessListNum.includes(allRooms[i].id) &&
+        allRooms[i].category !== 'private'
+      )
         ret.push(allRooms[i]);
     }
     // console.log("I can join", ret.length, "rooms");

@@ -3,6 +3,7 @@ import { UsersEntity } from 'src/users/users.entity';
 import { ChangeRoleDTO } from './dto/change-status.dto';
 import { CreateRoomDTO } from './dto/create-room.dto';
 import { JoinRoomDTO } from './dto/join-room';
+import { MuteBanDTO } from './dto/mute-ban.dto';
 import { RoomsEntity } from './rooms.entity';
 import { RoomsService } from './rooms.service';
 
@@ -10,9 +11,24 @@ import { RoomsService } from './rooms.service';
 export class RoomsController {
   constructor(private roomsServices: RoomsService) {}
 
+  @Post('/invite/')
+  async invite(@Body() data: ChangeRoleDTO): Promise<boolean> {
+    return this.roomsServices.invite(data);
+  }
+
   @Post('/join/')
   async join(@Body() join: JoinRoomDTO): Promise<RoomsEntity> {
     return this.roomsServices.join(join);
+  }
+
+  @Post('/mute/')
+  async mute(@Body() data: MuteBanDTO): Promise<boolean> {
+    return this.roomsServices.mute(data);
+  }
+
+  @Post('/ban/')
+  async ban(@Body() data: MuteBanDTO): Promise<boolean> {
+    return this.roomsServices.ban(data);
   }
 
   @Post('/changepassword/')

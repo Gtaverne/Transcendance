@@ -9,6 +9,8 @@ import {
 } from 'class-validator';
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
+import { BanEntity } from 'src/rooms/ban.entity';
+import { MuteEntity } from 'src/rooms/mute.entity';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { UsersEntity } from '../users.entity';
 
@@ -67,4 +69,10 @@ export class UserDTO {
   @IsArray()
   @IsOptional()
   readonly administratingRooms: RoomsEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly mutedInARoom: MuteEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly bannedInARoom: BanEntity[];
 }
