@@ -10,6 +10,8 @@ import { response } from 'express';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { useJwt } from 'react-jwt';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
+import { UserDTO } from './dto/user.dto';
+import { EditorDTO } from './dto/editor.dto';
 var jwt = require('jsonwebtoken');
 
 dotenv.config({ path: './.env' });
@@ -151,6 +153,8 @@ export class UsersService {
     var token = '';
     var answer = {
       user: new UsersEntity(),
+      iBlockedList: [],
+      iFollowList: [],
       jwt: 'dudule',
     };
 
@@ -184,6 +188,9 @@ export class UsersService {
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
+      //BENJAMIN: Recuperer ici les listes
+      answer.iBlockedList = [2, 3];
+      answer.iFollowList = [22];
       answer.jwt = this.generateToken(answer.user.id);
     } else {
       console.log('No 42 token provided');
@@ -241,6 +248,70 @@ export class UsersService {
     }
 
     return dude;
+  }
+
+  async editprofile(data: EditorDTO): Promise<any> {
+    console.log('We are in the user.service');
+
+    if (
+      data.field === 'username' &&
+      typeof data.value === 'string' &&
+      data.value !== ''
+    ) {
+      await this.usersRepository.update(data.id!, {
+        username: data.value,
+      });
+    } else if (
+      data.field === 'avatar' &&
+      typeof data.value === 'string' &&
+      data.value !== ''
+    ) {
+      await this.usersRepository.update(data.id!, { avatar: data.value });
+    } else if (
+      data.field === 'doublefa' &&
+      typeof data.value === 'number' &&
+      data.value >= 0
+    ) {
+      await this.usersRepository.update(data.id!, { doublefa: data.value });
+    } else if (
+      data.field === 'iBlockedList' &&
+      typeof data.value &&
+      data.value[0] === 'unblock'
+    ) {
+      console.log('unblock ', data.value[1]);
+    }
+    // template
+    // else if (
+    //   data.field === 'XXXXXXX' &&
+    //   typeof data.value === 'XXXXXXXX' &&
+    //   data.XXXXXXX !== ''
+    // ) {
+    //   await this.usersRepository.update(data.id!, { XXXXX: data.XXXXXXXX });
+    // }
+    else {
+      console.log('COuld not edit field: ' + data.field);
+      return null;
+    }
+
+    console.log('We updated the field ' + data.field + ' in the db');
+    const user = await this.usersRepository
+      .createQueryBuilder('users')
+      // .leftJoinAndSelect('users.accessToList', 'accessToList')
+      // .leftJoinAndSelect('users.messagesList', 'messagesList')
+      // .leftJoinAndSelect('accessToList.accessList', 'accessList')
+      .where('users.id = :a', { a: data.id })
+      .getOne();
+    //BENJAMIN: Recuperer ici les listes
+    const iFollowList: number[] = [440515, 989];
+    const iBlockedList: number[] = [989, 598];
+
+    const res = {
+      user: user,
+      iFollowList: iFollowList,
+      iBlockedList: iBlockedList,
+    };
+
+    return res;
   }
 
   async blockUser(data: ChangeRoleDTO) {

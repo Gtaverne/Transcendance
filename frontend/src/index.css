@@ -69,6 +69,16 @@ code {
   color: white;
 }
 
+.largeButton {
+  width: 100px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1877f2;
+  color: white;
+}
+
 .landingPage {
   margin-top: 100px;
   text-align: center;

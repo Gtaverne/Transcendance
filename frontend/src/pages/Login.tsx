@@ -30,7 +30,7 @@ function Login({}: Props) {
 
     dispatch(reset());
     //Voir si une de ces conditions doit être virée
-  }, [user, isError, isLoading, isSuccess, message]);
+  }, [dispatch, user, isError, isLoading, isSuccess, message]);
 
   if (!code) {
     return <div>Intra 42 denied your login</div>;

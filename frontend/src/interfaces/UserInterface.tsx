@@ -9,7 +9,7 @@ interface UserInterface extends BaseInterface {
   username: string;
   avatar: string;
   email: string;
-  doublefa: boolean;
+  doublefa: number; //C'est important
   lvl: number;
 
   iFollowList?: UserInterface[];
