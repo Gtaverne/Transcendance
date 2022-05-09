@@ -5,11 +5,11 @@ import './chatOnline.css';
 type ChatOnlineProps = {
   onlineUsers: number[];
   currentId: number;
-  setCurrentUser: React.Dispatch<React.SetStateAction<UserInterface[]>>;
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserInterface | undefined>>;
   accessList: UserInterface[] | undefined;
-  currentUser: UserInterface[];
+  currentUser: UserInterface | undefined;
   owner: UserInterface | undefined;
-  currentChat: RoomInterface[];
+  currentChat: RoomInterface | undefined;
   currentChatAdmins: number[];
   currentChatMute: number[];
   currentChatBan: number[];
@@ -36,12 +36,12 @@ function ChatOnline({
       {accessList?.map((a, key) => (
         <div
           className={
-            currentUser[0]?.id === a.id
+            currentUser?.id === a.id
               ? 'chatOnlineFriend chatOnlineFriendSelected'
               : 'chatOnlineFriend'
           }
           onClick={() => {
-            setCurrentUser([a]);
+            setCurrentUser(a);
           }}
           key={key}
         >
@@ -53,10 +53,10 @@ function ChatOnline({
           </div>
           <span className="chatOnlineName">
             {a.username} | id{a.id}
-            {owner?.id === a.id && !currentChat[0]?.isDm && ' | owner'}
-            {currentChatAdmins.includes(a.id) && !currentChat[0]?.isDm && ' | admin'}
-			{currentChatMute.includes(a.id) && !currentChat[0]?.isDm && ' | mute'}
-			{currentChatBan.includes(a.id) && !currentChat[0]?.isDm && ' | ban'}
+            {owner?.id === a.id && !currentChat?.isDm && ' | owner'}
+            {currentChatAdmins.includes(a.id) && !currentChat?.isDm && ' | admin'}
+			{currentChatMute.includes(a.id) && !currentChat?.isDm && ' | mute'}
+			{currentChatBan.includes(a.id) && !currentChat?.isDm && ' | ban'}
           </span>
         </div>
       ))}

@@ -18,11 +18,15 @@ function Chat() {
   const [conversationsCanJoin, setConversationsCanJoin] = useState<
     RoomInterface[]
   >([]);
-  const [currentChat, setCurrentChat] = useState<RoomInterface[]>([]);
+  const [currentChat, setCurrentChat] = useState<RoomInterface | undefined>(
+    undefined,
+  );
   const [currentChatAdmins, setCurrentChatAdmins] = useState<number[]>([]);
   const [currentChatMute, setCurrentChatMute] = useState<number[]>([]);
   const [currentChatBan, setCurrentChatBan] = useState<number[]>([]);
-  const [currentUser, setCurrentUser] = useState<UserInterface[]>([]);
+  const [currentUser, setCurrentUser] = useState<UserInterface | undefined>(
+    undefined,
+  );
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [arrivalMessage, setArrivalMessage] = useState<MessageInterface>({
@@ -54,21 +58,21 @@ function Chat() {
       console.log(
         'Socket message detected',
         data.room.id,
-        currentChat[0]?.id,
+        currentChat?.id,
         data,
       );
       setArrivalMessage(data);
-      if (currentChat[0] && currentChat[0].id === data.room.id) {
+      if (currentChat && currentChat.id === data.room.id) {
         console.log('Message in the current room');
       }
     });
     socket.current.on('getNewInfo', (data) => {
-      console.log('Socket getNewInfo detected', currentChat.length);
+      console.log('Socket getNewInfo detected');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     });
-    if (currentChat[0] && currentChat[0]?.admins?.length) {
-      setAdmins(currentChat[0]);
+    if (currentChat && currentChat?.admins?.length) {
+      setAdmins(currentChat);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChat, user]);
@@ -77,7 +81,7 @@ function Chat() {
     if (arrivalMessage) {
       if (
         arrivalMessage.id !== -1 &&
-        arrivalMessage.room?.id === currentChat[0]?.id
+        arrivalMessage.room?.id === currentChat?.id
       ) {
         let foundId = false;
         for (let i = 0; i < messages.length; i++) {
@@ -109,12 +113,12 @@ function Chat() {
         process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
       );
       setConversations(res.data);
-      if (currentChat[0]) {
+      if (currentChat) {
         console.log(1, 'updating current chat infos');
         for (let i = 0; i < res.data.length!; i++) {
           console.log(1.5, 'updating current chat infos');
-          if (res.data[i].id === currentChat[0]?.id) {
-            setCurrentChat([res.data[i]]);
+          if (res.data[i].id === currentChat?.id) {
+            setCurrentChat(res.data[i]);
             global.currentChat = res.data[i];
             setAdmins(res.data[i]);
             console.log(2, 'updating current chat infos', res.data[i].id);
@@ -145,10 +149,10 @@ function Chat() {
 
   useEffect(() => {
     const getMessages = async () => {
-      if (currentChat.length > 0) {
+      if (currentChat) {
         try {
           const res = await axios.get(
-            process.env.REACT_APP_URL_BACK + 'messages/' + currentChat[0].id,
+            process.env.REACT_APP_URL_BACK + 'messages/' + currentChat?.id,
           );
           setMessages(res.data);
         } catch (err) {
@@ -166,7 +170,7 @@ function Chat() {
 
     const msg = {
       owner: user.id,
-      channelId: currentChat[0].id,
+      channelId: currentChat?.id,
       message: newMessage,
     };
 
@@ -247,7 +251,7 @@ function Chat() {
 
   const handleNavigate = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/userprofile/' + currentUser[0]?.id);
+    navigate('/userprofile/' + currentUser?.id);
   };
 
   const handleUpdateOwner = async (e: React.FormEvent) => {
@@ -255,8 +259,8 @@ function Chat() {
 
     const data = {
       user,
-      channelId: currentChat[0].id,
-      appointedId: currentUser[0].id,
+      channelId: currentChat?.id,
+      appointedId: currentUser?.id,
       role: 'owner',
     };
 
@@ -276,8 +280,8 @@ function Chat() {
 
     const data = {
       user,
-      channelId: currentChat[0].id,
-      appointedId: currentUser[0].id,
+      channelId: currentChat?.id,
+      appointedId: currentUser?.id,
       role: 'admin',
     };
 
@@ -293,7 +297,7 @@ function Chat() {
   };
 
   const setAdmins = (c: RoomInterface) => {
-    if (!currentChat[0]) return;
+    if (!currentChat) return;
     let now = new Date();
     let adminList: number[] = [];
     let muteList: number[] = [];
@@ -316,7 +320,7 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'rooms/leaveroom/',
       {
         user,
-        channelId: currentChat[0].id,
+        channelId: currentChat?.id,
         appointedId: 0,
         role: 'leave',
       },
@@ -325,8 +329,7 @@ function Chat() {
       console.log('successfully left the room');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
-	  global.currentChat = [];
-
+      global.currentChat = undefined;
     }
   };
 
@@ -337,7 +340,7 @@ function Chat() {
       {
         user,
         channelId: 0,
-        appointedId: currentUser[0].id,
+        appointedId: currentUser?.id,
         role: 'block',
       },
     );
@@ -355,7 +358,7 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'rooms/changepassword/',
       {
         user,
-        channelId: currentChat[0].id,
+        channelId: currentChat?.id,
         appointedId: changePassword ? 0 : -1,
         role: changePassword ? changePassword : '-',
       },
@@ -374,8 +377,8 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'rooms/mute/',
       {
         user,
-        channelId: currentChat[0].id,
-        appointedId: currentUser[0].id,
+        channelId: currentChat?.id,
+        appointedId: currentUser?.id,
         role: 'mute',
         time: mute ? mute : 0,
       },
@@ -392,8 +395,8 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'rooms/ban/',
       {
         user,
-        channelId: currentChat[0].id,
-        appointedId: currentUser[0].id,
+        channelId: currentChat?.id,
+        appointedId: currentUser?.id,
         role: 'ban',
         time: ban ? ban : 0,
       },
@@ -410,7 +413,7 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'rooms/invite/',
       {
         user,
-        channelId: currentChat[0].id,
+        channelId: currentChat?.id,
         appointedId: 0,
         role: usernameInvite ? usernameInvite : '',
       },
@@ -435,8 +438,8 @@ function Chat() {
               {conversations.map((c, i) => (
                 <div
                   onClick={() => {
-                    setCurrentChat([c]);
-                    setCurrentUser([]);
+                    setCurrentChat(c);
+                    setCurrentUser(undefined);
                     setAdmins(c);
                     setChangePassword('');
                     setUsernameInvite('');
@@ -542,7 +545,7 @@ function Chat() {
         </div>
         <div className="chatBox">
           <div className="chatBoxWrapper">
-            {currentChat.length ? (
+            {currentChat ? (
               <>
                 <div className="chatBoxTop">
                   {messages.map((m, i) => (
@@ -580,7 +583,7 @@ function Chat() {
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
             <div className="chatOnlineTopWrapper">
-              {currentChat.length ? (
+              {currentChat ? (
                 <div className="buttonOnlineTopWrapper">
                   <button
                     className="chatOnlineBottomButton"
@@ -597,17 +600,17 @@ function Chat() {
                 currentId={user.id}
                 setCurrentUser={setCurrentUser}
                 currentUser={currentUser}
-                accessList={currentChat[0]?.accessList}
-                owner={currentChat[0]?.owner}
+                accessList={currentChat?.accessList}
+                owner={currentChat?.owner}
                 currentChat={currentChat}
                 currentChatAdmins={currentChatAdmins}
                 currentChatMute={currentChatMute}
                 currentChatBan={currentChatBan}
               />
             </div>
-            {currentChat.length ? (
+            {currentChat ? (
               <div className="chatOnlineBottom">
-                <h3>User Informations | id{currentChat[0]?.id}</h3>
+                <h3>User Informations | id{currentChat?.id}</h3>
                 {/* <p>
                   {currentChatAdmins.length} admins: {currentChatAdmins}
                 </p>
@@ -617,7 +620,7 @@ function Chat() {
                 <p>
                   {currentChatBan.length} ban: {currentChatBan}
                 </p> */}
-                {currentUser.length ? (
+                {currentUser ? (
                   <>
                     <button
                       className="chatOnlineBottomButton"
@@ -625,9 +628,9 @@ function Chat() {
                     >
                       View Profile
                     </button>
-                    {!currentChat[0]?.isDm &&
-                      currentChat[0]?.owner?.id === user.id &&
-                      currentChat[0]?.owner?.id !== currentUser[0]?.id && (
+                    {!currentChat?.isDm &&
+                      currentChat?.owner?.id === user.id &&
+                      currentChat?.owner?.id !== currentUser?.id && (
                         <button
                           className="chatOnlineBottomButton"
                           onClick={handleUpdateOwner}
@@ -635,20 +638,19 @@ function Chat() {
                           Set as Owner
                         </button>
                       )}
-                    {!currentChat[0]?.isDm &&
-                      currentChat[0]?.owner?.id === user.id && (
-                        <button
-                          className="chatOnlineBottomButton"
-                          onClick={handleUpdateAdmin}
-                        >
-                          {currentChatAdmins.includes(currentUser[0]?.id)
-                            ? 'Remove from Admin'
-                            : 'Set as Admin'}
-                        </button>
-                      )}
-                    {currentUser[0]?.id === user.id &&
-                      currentChat[0]?.owner?.id !== user.id &&
-                      !currentChat[0]?.isDm && (
+                    {!currentChat?.isDm && currentChat?.owner?.id === user.id && (
+                      <button
+                        className="chatOnlineBottomButton"
+                        onClick={handleUpdateAdmin}
+                      >
+                        {currentChatAdmins.includes(currentUser?.id)
+                          ? 'Remove from Admin'
+                          : 'Set as Admin'}
+                      </button>
+                    )}
+                    {currentUser?.id === user.id &&
+                      currentChat?.owner?.id !== user.id &&
+                      !currentChat?.isDm && (
                         <button
                           className="chatOnlineBottomButton"
                           onClick={handleLeaveRoom}
@@ -656,16 +658,16 @@ function Chat() {
                           Leave Room
                         </button>
                       )}
-                    {currentUser[0]?.id !== user.id && (
+                    {currentUser?.id !== user.id && (
                       <button className="chatOnlineBottomButton">
                         Block User
                       </button>
                     )}
                     {(currentChatAdmins.includes(user.id) ||
-                      currentChat[0]?.owner?.id === user.id) &&
-                      !currentChatAdmins.includes(currentUser[0]?.id) &&
-                      currentChat[0]?.owner?.id !== currentUser[0]?.id &&
-                      !currentChat[0]?.isDm && (
+                      currentChat?.owner?.id === user.id) &&
+                      !currentChatAdmins.includes(currentUser?.id) &&
+                      currentChat?.owner?.id !== currentUser?.id &&
+                      !currentChat?.isDm && (
                         <>
                           <div className="contentBox">
                             <input
@@ -700,9 +702,9 @@ function Chat() {
                     Select a user to view his informations.
                   </span>
                 )}
-                {user.id === currentChat[0].owner?.id &&
-                  !currentChat[0]?.isDm &&
-                  currentChat[0].category !== 'private' && (
+                {user.id === currentChat.owner?.id &&
+                  !currentChat.isDm &&
+                  currentChat.category !== 'private' && (
                     <div className="contentBox">
                       <input
                         className="editPassword"
@@ -716,7 +718,7 @@ function Chat() {
                       <button onClick={handleChangePassword}>Validate</button>
                     </div>
                   )}
-                {!currentChat[0]?.isDm && (
+                {!currentChat?.isDm && (
                   <div className="contentBox">
                     <input
                       className="editPassword"
