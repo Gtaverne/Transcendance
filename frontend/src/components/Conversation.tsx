@@ -15,7 +15,7 @@ type ConversationProps = {
   currentUser: UserInterface;
   join: Boolean;
   handleJoin: any;
-  currentChat: RoomInterface[];
+  currentChat: RoomInterface | undefined;
 };
 
 function Conversation({
@@ -80,7 +80,7 @@ function Conversation({
       className={
         join
           ? 'conversationJoin'
-          : currentChat[0]?.id === conversation.id
+          : currentChat?.id === conversation.id
           ? 'conversationIn'
           : 'conversation'
       }
