@@ -113,11 +113,11 @@ function Chat() {
         process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
       );
       setConversations(res.data);
-      if (currentChat) {
+      if (global.currentChat) {
         console.log(1, 'updating current chat infos');
         for (let i = 0; i < res.data.length!; i++) {
           console.log(1.5, 'updating current chat infos');
-          if (res.data[i].id === currentChat?.id) {
+          if (res.data[i].id === global?.currentChat?.id) {
             setCurrentChat(res.data[i]);
             global.currentChat = res.data[i];
             setAdmins(res.data[i]);
@@ -144,6 +144,7 @@ function Chat() {
   useEffect(() => {
     getConversations();
     getConversationsCanJoin();
+    global.currentChat = undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -292,6 +293,7 @@ function Chat() {
 
     if (res) {
       console.log('Admin list updated');
+      refreshOthers();
       setTimeout(getConversations, 250);
     }
   };
