@@ -13,6 +13,7 @@ type ChatOnlineProps = {
   currentChatAdmins: number[];
   currentChatMute: number[];
   currentChatBan: number[];
+  iBlockList: number[];
 };
 
 function ChatOnline({
@@ -26,6 +27,7 @@ function ChatOnline({
   currentChatAdmins,
   currentChatMute,
   currentChatBan,
+  iBlockList,
 }: ChatOnlineProps) {
   //   useEffect(() => {
   //     console.log(accessList);
@@ -57,6 +59,7 @@ function ChatOnline({
             {currentChatAdmins.includes(a.id) && !currentChat?.isDm && ' | admin'}
 			{currentChatMute.includes(a.id) && !currentChat?.isDm && ' | mute'}
 			{currentChatBan.includes(a.id) && !currentChat?.isDm && ' | ban'}
+			{iBlockList.includes(a.id) && ' | blocked'}
           </span>
         </div>
       ))}

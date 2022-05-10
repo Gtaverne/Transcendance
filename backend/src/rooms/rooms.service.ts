@@ -172,11 +172,17 @@ export class RoomsService {
     if (!banedEntity) {
       await this.banRepository.save(newBan);
       console.log('New Ban Created');
-      return true;
+    } else {
+      banedEntity.timestamp = newBan.timestamp;
+      this.banRepository.save(banedEntity);
+      console.log('Ban Edited');
     }
-    banedEntity.timestamp = newBan.timestamp;
-    this.banRepository.save(banedEntity);
-    console.log('Ban Edited');
+    this.leaveRoom({
+      user,
+      channelId: data.channelId,
+      appointedId: 0,
+      role: 'leave',
+    });
     return true;
   }
 
@@ -353,8 +359,12 @@ export class RoomsService {
     console.log(0, join);
     const user = await this.usersService.accessListUser(join.owner);
     const room = await this.roomsRepository.findOne(join.convId);
+    const bannedFrom = await this.banList(join.owner);
     if (!user || !room) return;
-
+    if (bannedFrom.includes(join.convId)) {
+      console.log("Can't join a room you are banned from");
+      return;
+    }
     // console.log(1, join.password);
     // const salt = await genSalt();
     // console.log(2, salt);

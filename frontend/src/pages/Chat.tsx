@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { RootStateOrAny, useSelector } from 'react-redux';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import ChatOnline from '../components/ChatOnline';
 import Conversation from '../components/Conversation';
 import Message from '../components/Message';
@@ -10,8 +10,9 @@ import './chat.css';
 import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
+// import { editLight, reset } from '../features/auth/authSlice';
 
-declare var global: any;
+// declare var global: { currentChat: RoomInterface | undefined };
 
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
@@ -34,7 +35,9 @@ function Chat() {
     message: '',
   });
   const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
-  const { user } = useSelector((state: RootStateOrAny) => state.auth);
+  const { user, iBlockList: iBlockListAuth } = useSelector(
+    (state: RootStateOrAny) => state.auth,
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const socket = useRef(io());
   const [conversationType, setConversationType] = useState('directMessage');
@@ -45,7 +48,11 @@ function Chat() {
   const [usernameInvite, setUsernameInvite] = useState('');
   const [ban, setBan] = useState(0);
   const [mute, setMute] = useState(0);
+  const [iBlockList, setIBlockList] = useState<number[]>([]);
+  const [, updateState] = React.useState({});
+  const forceUpdate = React.useCallback(() => updateState({}), []);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (user) {
@@ -108,25 +115,22 @@ function Chat() {
   }
 
   const getConversations = async () => {
-    try {
-      const res = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
-      );
-      setConversations(res.data);
-      if (global.currentChat) {
-        console.log(1, 'updating current chat infos');
-        for (let i = 0; i < res.data.length!; i++) {
-          console.log(1.5, 'updating current chat infos');
-          if (res.data[i].id === global?.currentChat?.id) {
-            setCurrentChat(res.data[i]);
-            global.currentChat = res.data[i];
-            setAdmins(res.data[i]);
-            console.log(2, 'updating current chat infos', res.data[i].id);
-          }
+    const res = await axios.get(
+      process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
+    );
+    setConversations(res.data);
+    // console.log(global.currentChat, currentChat);
+    if (currentChat) {
+      //   console.log(1, 'updating current chat infos', res.data.length);
+      for (let i = 0; i < res.data.length; i++) {
+        // console.log(1.5, 'updating current chat infos');
+        if (res.data[i].id === currentChat?.id) {
+          setCurrentChat(res.data[i]);
+          //   global.currentChat = res.data[i];
+          setAdmins(res.data[i]);
+          console.log(2, 'updating current chat infos', res.data[i].id);
         }
       }
-    } catch (err) {
-      console.log(err);
     }
   };
 
@@ -136,6 +140,19 @@ function Chat() {
         process.env.REACT_APP_URL_BACK + 'rooms/canjoin/' + user.id,
       );
       setConversationsCanJoin(res.data);
+      for (let i = 0; i < res.data.length; i++)
+        if (res.data[i].id === currentChat?.id) setCurrentChat(undefined);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getIBlockList = async () => {
+    try {
+      const res = await axios.get(
+        process.env.REACT_APP_URL_BACK + 'users/blocked/' + user.id,
+      );
+      setIBlockList(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -144,7 +161,8 @@ function Chat() {
   useEffect(() => {
     getConversations();
     getConversationsCanJoin();
-    global.currentChat = undefined;
+    // global.currentChat = undefined;
+    getIBlockList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -223,6 +241,7 @@ function Chat() {
 
     if (res.data) {
       console.log('Updating conv after join');
+      refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     }
@@ -245,6 +264,7 @@ function Chat() {
 
     if (res.data) {
       console.log('Updating conv after join');
+      refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     }
@@ -272,6 +292,7 @@ function Chat() {
 
     if (res) {
       console.log('You are not owner anymore');
+      refreshOthers();
       setTimeout(getConversations, 250);
     }
   };
@@ -295,6 +316,7 @@ function Chat() {
       console.log('Admin list updated');
       refreshOthers();
       setTimeout(getConversations, 250);
+      //   setAdmins(currentChat!);
     }
   };
 
@@ -314,6 +336,7 @@ function Chat() {
     setCurrentChatAdmins(adminList);
     setCurrentChatMute(muteList);
     setCurrentChatBan(banList);
+    forceUpdate();
   };
 
   const handleLeaveRoom = async (e: React.FormEvent) => {
@@ -331,26 +354,44 @@ function Chat() {
       console.log('successfully left the room');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
-      global.currentChat = undefined;
+      //   global.currentChat = undefined;
+      setCurrentChat(undefined);
     }
   };
 
   const handleBlockUser = async (e: React.FormEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
+    // dispatch(editLight({ id: user.id, field: 'block', value: currentUser?.id }));
+    // return;
+
+    let val: number = currentUser?.id ? currentUser?.id : 0;
+    let alreadyBlocked;
+
+    if (iBlockList.includes(val)) alreadyBlocked = true;
+    else alreadyBlocked = false;
+
     const res = await axios.post(
       process.env.REACT_APP_URL_BACK + 'users/blockuser/',
       {
         user,
-        channelId: 0,
+        channelId: currentChat?.id,
         appointedId: currentUser?.id,
         role: 'block',
       },
     );
-    if (res) {
+    if (res && alreadyBlocked) {
+      console.log('successfully unblocked user');
+      let temp = iBlockList;
+      const index = temp.indexOf(val);
+      if (index > -1) {
+        temp.splice(index, 1);
+      }
+      setIBlockList(temp);
+      console.log(iBlockList, temp);
+      forceUpdate();
+    } else if (res && !alreadyBlocked) {
       console.log('successfully blocked user');
-      setTimeout(getConversations, 250);
-      setTimeout(getConversationsCanJoin, 250);
-      //update current chat ? & blocked list ? a partir de user ?
+      setIBlockList([...iBlockList, val]);
     }
   };
 
@@ -387,6 +428,7 @@ function Chat() {
     );
     if (res) {
       console.log('successfully muted');
+      refreshOthers();
       setTimeout(getConversations, 250);
     }
   };
@@ -405,6 +447,7 @@ function Chat() {
     );
     if (res) {
       console.log('successfully band');
+      refreshOthers();
       setTimeout(getConversations, 250);
     }
   };
@@ -422,6 +465,7 @@ function Chat() {
     );
     if (res) {
       console.log('successfully invited');
+      refreshOthers();
       setTimeout(getConversations, 250);
     }
   };
@@ -432,7 +476,7 @@ function Chat() {
         <div className="chatMenu">
           <div className="chatMenuWrapper">
             <div className="chatMenuTop">
-              <h3>My Conversations</h3>
+              <h3>My Conversations {currentChat?.id}</h3>
               {/* <input
                 placeholder="Search For Friends"
                 className="chatMenuInput"
@@ -557,6 +601,7 @@ function Chat() {
                         message={m}
                         own={m.owner?.id === user.id}
                         imageURL={m.owner?.avatar}
+                        iBlockList={iBlockList}
                       />
                     </div>
                   ))}
@@ -608,6 +653,7 @@ function Chat() {
                 currentChatAdmins={currentChatAdmins}
                 currentChatMute={currentChatMute}
                 currentChatBan={currentChatBan}
+                iBlockList={iBlockList}
               />
             </div>
             {currentChat ? (
@@ -661,8 +707,13 @@ function Chat() {
                         </button>
                       )}
                     {currentUser?.id !== user.id && (
-                      <button className="chatOnlineBottomButton">
-                        Block User
+                      <button
+                        className="chatOnlineBottomButton"
+                        onClick={handleBlockUser}
+                      >
+                        {iBlockList.includes(currentUser.id)
+                          ? 'Unblock User'
+                          : 'Block User'}
                       </button>
                     )}
                     {(currentChatAdmins.includes(user.id) ||
@@ -683,7 +734,7 @@ function Chat() {
                             />
                             <button onClick={handleMute}>Mute</button>
                           </div>
-                          <div className="contentBox" onClick={handleBan}>
+                          <div className="contentBox">
                             <input
                               className="contentBox"
                               placeholder="Minutes"
@@ -694,7 +745,7 @@ function Chat() {
                                 setBan(e.target.valueAsNumber);
                               }}
                             />
-                            <button>Ban</button>
+                            <button onClick={handleBan}>Ban</button>
                           </div>
                         </>
                       )}

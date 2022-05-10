@@ -5,9 +5,7 @@ import UserInterface from '../../interfaces/UserInterface';
 //Get user from localstorage
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 const iFollowList = JSON.parse(localStorage.getItem('iFollowList') || '[]');
-const iBlockedList = JSON.parse(
-  localStorage.getItem('iBlockedList') || '[]',
-);
+const iBlockedList = JSON.parse(localStorage.getItem('iBlockedList') || '[]');
 
 interface userInterface {
   user: any;
@@ -49,7 +47,6 @@ export const login = createAsyncThunk(
 export const edit = createAsyncThunk(
   'auth/edit',
   async (input: any, thunkAPI) => {
-
     //   //Je ne sais pas pourquoi on rentre dans cette boucle
     // if (input.id !== user.id) {
     //   console.log('input id', input.id);
@@ -59,6 +56,19 @@ export const edit = createAsyncThunk(
 
     try {
       return await authService.edit(input.id, input.field, input.value);
+    } catch (error) {
+      console.log('We could not edit profile');
+      return thunkAPI.rejectWithValue('Could not edit');
+    }
+  },
+);
+
+//Edit User but not User (just friends and blocked list)
+export const editLight = createAsyncThunk(
+  'auth/editLight',
+  async (input: any, thunkAPI) => {
+    try {
+      return await authService.editLight(input.id, input.field, input.value);
     } catch (error) {
       console.log('We could not edit profile');
       return thunkAPI.rejectWithValue('Could not edit');
@@ -112,13 +122,31 @@ export const authSlice = createSlice({
         state.iBlockedList = action.payload.iBlockedList;
         state.iFollowList = action.payload.iFollowList;
       })
-      .addCase(edit.rejected, (state, action) => {
-        console.log('Redux Edit Rejected');
+	  .addCase(edit.rejected, (state, action) => {
+		console.log('Redux Edit Rejected');
 
+		state.isLoading = false;
+		state.isError = true;
+		state.message = action.payload;
+		state.user = null;
+	  })
+	  .addCase(editLight.pending, (state) => {
+        state.isLoading = true;
+      })
+	  .addCase(editLight.fulfilled, (state, action) => {
+        console.log('Redux EditLight fulfilled');
+
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.iBlockedList = action.payload.iBlockedList;
+        state.iFollowList = action.payload.iFollowList;
+		console.log(action.payload.iBlockedList)
+      })
+	  .addCase(editLight.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-        state.user = null;
+		console.log('editlight failed')
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;

@@ -26,10 +26,14 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersServices: UsersService) {}
 
-  @Get('/friends')
-  findFriend(): string {
-    console.log('findFriends activated');
-    return 'Friends in users';
+  @Get('/friends/:id')
+  findFriends(@Param() params): Promise<number[]> {
+    return this.usersServices.findFriends(params.id);
+  }
+
+  @Get('/blocked/:id')
+  findBlocked(@Param() params): Promise<number[]> {
+    return this.usersServices.findBlocked(params.id);
   }
 
   @Get('/seed')
@@ -51,7 +55,6 @@ export class UsersController {
     const cd = await code;
 
     const user = await this.usersServices.login(cd);
-
 
     // response.cookie('jwt', user.jwt)
     response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });

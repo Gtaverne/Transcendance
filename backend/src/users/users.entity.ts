@@ -27,17 +27,17 @@ export class UsersEntity extends BaseEntity {
   lvl: number;
 
   //Penser à ajouter un default type
-  @OneToMany(() => UsersEntity, (user) => user.followingMeList)
+  @ManyToMany(() => UsersEntity, (user) => user.followingMeList)
   iFollowList: UsersEntity[];
 
-  @OneToMany(() => UsersEntity, (user) => user.iFollowList)
+  @ManyToMany(() => UsersEntity, (user) => user.iFollowList)
   @JoinTable()
   followingMeList: UsersEntity[];
 
-  @OneToMany(() => UsersEntity, (user) => user.blockedMeList)
+  @ManyToMany(() => UsersEntity, (user) => user.blockedMeList)
   iBlockedList: UsersEntity[];
 
-  @OneToMany(() => UsersEntity, (user) => user.iBlockedList)
+  @ManyToMany(() => UsersEntity, (user) => user.iBlockedList)
   @JoinTable()
   blockedMeList: UsersEntity[];
 

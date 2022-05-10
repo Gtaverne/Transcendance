@@ -12,7 +12,7 @@ export class JoinRoomDTO {
   readonly owner: number;
   @IsNotEmpty()
   @IsInt()
-  readonly convId: string;
+  readonly convId: number;
   @IsOptional()
   @IsString()
   readonly password: string;

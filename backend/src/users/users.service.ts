@@ -62,6 +62,7 @@ export class UsersService {
     };
     this.roomsService.create(newRoom);
   }
+
   async save(user: UsersEntity) {
     return await this.usersRepository.save(user);
   }
@@ -73,6 +74,28 @@ export class UsersService {
     return newUser;
     // return JSON.stringify(newUser);
     // return 'Tout est opérationnel :)';
+  }
+
+  async findFriends(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['iFollowList'],
+    });
+    let iFollowList: number[] = [];
+    for (let i = 0; i < user.iFollowList.length; i++)
+      iFollowList.push(user.iFollowList[i].id);
+    return iFollowList;
+  }
+
+  async findBlocked(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['iBlockedList'],
+    });
+    let iBlockedList: number[] = [];
+    for (let i = 0; i < user.iBlockedList.length; i++)
+      iBlockedList.push(user.iBlockedList[i].id);
+    return iBlockedList;
   }
 
   findAll() {
@@ -188,9 +211,19 @@ export class UsersService {
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
-      //BENJAMIN: Recuperer ici les listes
-      answer.iBlockedList = [2, 3];
-      answer.iFollowList = [22];
+      const user = await this.usersRepository.findOne({
+        where: { id: answer.user.id },
+        relations: ['iFollowList', 'iBlockedList'],
+      });
+      let iFollowList: number[] = [];
+      for (let i = 0; i < user.iFollowList.length; i++)
+        iFollowList.push(user.iFollowList[i].id);
+      let iBlockedList: number[] = [];
+      for (let i = 0; i < user.iBlockedList.length; i++)
+        iBlockedList.push(user.iBlockedList[i].id);
+
+      answer.iBlockedList = iBlockedList;
+      answer.iFollowList = iFollowList;
       answer.jwt = this.generateToken(answer.user.id);
     } else {
       console.log('No 42 token provided');
@@ -258,6 +291,7 @@ export class UsersService {
       typeof data.value === 'string' &&
       data.value !== ''
     ) {
+		//check pas de doublons
       await this.usersRepository.update(data.id!, {
         username: data.value,
       });
@@ -289,21 +323,21 @@ export class UsersService {
     //   await this.usersRepository.update(data.id!, { XXXXX: data.XXXXXXXX });
     // }
     else {
-      console.log('COuld not edit field: ' + data.field);
+      console.log('Could not edit field: ' + data.field);
       return null;
     }
 
     console.log('We updated the field ' + data.field + ' in the db');
-    const user = await this.usersRepository
-      .createQueryBuilder('users')
-      // .leftJoinAndSelect('users.accessToList', 'accessToList')
-      // .leftJoinAndSelect('users.messagesList', 'messagesList')
-      // .leftJoinAndSelect('accessToList.accessList', 'accessList')
-      .where('users.id = :a', { a: data.id })
-      .getOne();
-    //BENJAMIN: Recuperer ici les listes
-    const iFollowList: number[] = [440515, 989];
-    const iBlockedList: number[] = [989, 598];
+    const user = await this.usersRepository.findOne({
+      where: { id: data.id },
+      relations: ['iFollowList', 'iBlockedList'],
+    });
+    let iFollowList: number[] = [];
+    for (let i = 0; i < user.iFollowList.length; i++)
+      iFollowList.push(user.iFollowList[i].id);
+    let iBlockedList: number[] = [];
+    for (let i = 0; i < user.iBlockedList.length; i++)
+      iBlockedList.push(user.iBlockedList[i].id);
 
     const res = {
       user: user,
@@ -315,7 +349,7 @@ export class UsersService {
   }
 
   async blockUser(data: ChangeRoleDTO) {
-    return false;
+    // return false;
     //first check with georges comment update user
     //this function should be finished, need update in the front do display accurately
 

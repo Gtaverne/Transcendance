@@ -66,6 +66,39 @@ const edit = async (id: number, field: string, value: any) => {
   return response.data;
 };
 
+const editLight = async (id: number, field: string, value: any) => {
+  const data = { id: id, field: field, value: value };
+  if (value && value[0]) {
+    console.log(value[0]);
+  }
+
+  const response = await axios.post(API_URL + 'users/editprofile/', data);
+
+  console.log('Response', response);
+
+  if (
+    response.data &&
+    response.data.iFollowList &&
+    response.data.iBlockedList
+  ) {
+    // console.log('Data from the back: ' + response.data);
+    //   localStorage.setItem('user', JSON.stringify(response.data.user));
+    localStorage.setItem(
+      'iFollowList',
+      JSON.stringify(response.data.iFollowList),
+    );
+    localStorage.setItem(
+      'iBlockedList',
+      JSON.stringify(response.data.iBlockedList),
+    );
+  } else {
+    console.log('Backend seems down');
+    response.data = {};
+  }
+
+  return response.data;
+};
+
 // Logout user
 const logout = () => {
   localStorage.removeItem('user');
@@ -76,6 +109,7 @@ const logout = () => {
 const authService = {
   login,
   edit,
+  editLight,
   logout,
 };
 
