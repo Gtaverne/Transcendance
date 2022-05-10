@@ -74,12 +74,12 @@ function Chat() {
       }
     });
     socket.current.on('getNewInfo', (data) => {
-      console.log('Socket getNewInfo detected');
+      console.log('Socket getNewInfo detected', currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     });
     if (currentChat && currentChat?.admins?.length) {
-      setAdmins(currentChat);
+      setRoleList(currentChat);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChat, user]);
@@ -120,14 +120,15 @@ function Chat() {
     );
     setConversations(res.data);
     // console.log(global.currentChat, currentChat);
+	console.log("getConversations", currentChat)
     if (currentChat) {
-      //   console.log(1, 'updating current chat infos', res.data.length);
+      console.log(1, 'updating current chat infos', res.data.length);
       for (let i = 0; i < res.data.length; i++) {
         // console.log(1.5, 'updating current chat infos');
         if (res.data[i].id === currentChat?.id) {
           setCurrentChat(res.data[i]);
           //   global.currentChat = res.data[i];
-          setAdmins(res.data[i]);
+          setRoleList(res.data[i]);
           console.log(2, 'updating current chat infos', res.data[i].id);
         }
       }
@@ -248,8 +249,6 @@ function Chat() {
   };
 
   const handleJoin = async (convId: number, privatePassword: string) => {
-    console.log(convId);
-
     const joinDTO = {
       owner: user.id,
       convId,
@@ -267,7 +266,9 @@ function Chat() {
       refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
-    }
+    } else {
+      console.log('Access Unauthorized');
+	}
   };
 
   const handleNavigate = (e: React.FormEvent) => {
@@ -316,11 +317,11 @@ function Chat() {
       console.log('Admin list updated');
       refreshOthers();
       setTimeout(getConversations, 250);
-      //   setAdmins(currentChat!);
+      //   setRoleList(currentChat!);
     }
   };
 
-  const setAdmins = (c: RoomInterface) => {
+  const setRoleList = (c: RoomInterface) => {
     if (!currentChat) return;
     let now = new Date();
     let adminList: number[] = [];
@@ -486,7 +487,7 @@ function Chat() {
                   onClick={() => {
                     setCurrentChat(c);
                     setCurrentUser(undefined);
-                    setAdmins(c);
+                    setRoleList(c);
                     setChangePassword('');
                     setUsernameInvite('');
                     setMute(0);

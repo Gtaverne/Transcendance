@@ -356,10 +356,10 @@ export class RoomsService {
   }
 
   async join(join: JoinRoomDTO) {
-    console.log(0, join);
+    // console.log(0, join);
     const user = await this.usersService.accessListUser(join.owner);
     const room = await this.roomsRepository.findOne(join.convId);
-    const bannedFrom = await this.banList(join.owner);
+    const bannedFrom = await this.usersService.findBanned(join.owner);
     if (!user || !room) return;
     if (bannedFrom.includes(join.convId)) {
       console.log("Can't join a room you are banned from");

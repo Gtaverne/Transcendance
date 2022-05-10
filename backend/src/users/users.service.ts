@@ -98,6 +98,22 @@ export class UsersService {
     return iBlockedList;
   }
 
+  //list of rooms when an user id is currently banned
+  async findBanned(id: number) {
+    const user = await this.usersRepository
+      .createQueryBuilder('users')
+      .leftJoinAndSelect('users.bannedInARoom', 'bannedInARoom')
+      .leftJoinAndSelect('bannedInARoom.baned', 'baned')
+      .where('users.id = :id', { id })
+      .getOne();
+    let bannedInARoom: number[] = [];
+    let now = new Date();
+    for (let i = 0; i < user.bannedInARoom.length; i++)
+      if (now < new Date(user.bannedInARoom[i].timestamp))
+        bannedInARoom.push(user.bannedInARoom[i].baned.id);
+    return bannedInARoom;
+  }
+
   findAll() {
     return this.usersRepository.find();
   }
@@ -291,7 +307,7 @@ export class UsersService {
       typeof data.value === 'string' &&
       data.value !== ''
     ) {
-		//check pas de doublons
+      //check pas de doublons
       await this.usersRepository.update(data.id!, {
         username: data.value,
       });
