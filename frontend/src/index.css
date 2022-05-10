@@ -96,3 +96,9 @@ code {
 .userProfile button {
   margin: 10px;
 }
+
+/* ---------- GAME ---------- */
+
+.game {
+	background-color: black;
+}

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import { login, logout, reset } from '../features/auth/authSlice';
+import useWindowSize from '../hooks/useWindowSize';
 
 const API_42 = process.env.REACT_APP_API_42;
 const logo =
@@ -10,6 +11,7 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
+  const [height, width] = useWindowSize();
 
   const onLogout = () => {
     dispatch(logout());
@@ -24,6 +26,9 @@ function Header() {
           <img src={logo} alt="Logo" />
         </Link>
       </div>
+      <p>
+        Game Height: {height} | Game Width: {width}
+      </p>
       <ul>
         <li>
           <Link to="/game">Game</Link>
