@@ -11,7 +11,6 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
-  const [height, width] = useWindowSize();
 
   const onLogout = () => {
     dispatch(logout());
@@ -26,9 +25,6 @@ function Header() {
           <img src={logo} alt="Logo" />
         </Link>
       </div>
-      <p>
-        Game Height: {height} | Game Width: {width}
-      </p>
       <ul>
         <li>
           <Link to="/game">Game</Link>

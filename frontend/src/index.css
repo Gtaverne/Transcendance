@@ -99,6 +99,23 @@ code {
 
 /* ---------- GAME ---------- */
 
+/* put in black for final version */
+.gameWrapper {
+  /* background-color: red; */
+}
+
 .game {
-	background-color: black;
+}
+
+.gameTopBar {
+  height: 72px;
+  display: flex;
+  /* background-color: rgb(220, 220, 220); */
+  /* background-color: blue; */
+  justify-content: space-between;
+}
+
+.gameTopBar p {
+  align-self: center;
+  margin: 30px;
 }
