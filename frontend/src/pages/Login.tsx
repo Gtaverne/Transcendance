@@ -24,8 +24,10 @@ function Login({}: Props) {
       dispatch(login(code));
     }
 
-    if (profileLoaded || user.username !== '') {
+    if ((profileLoaded || user.username !== '') && user.doublefa === 0) {
       navigate('/');
+    } else if ((profileLoaded || user.username !== '') && user.doublefa > 0) {
+      navigate('/verifymfa')
     }
 
     dispatch(reset());

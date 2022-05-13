@@ -23,6 +23,8 @@ export class UsersEntity extends BaseEntity {
   email: string;
   @Column({ type: 'integer', default: 0, nullable: true })
   doublefa: number;
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  secret: string;
   @Column({ type: 'integer', default: 0, nullable: false })
   lvl: number;
 

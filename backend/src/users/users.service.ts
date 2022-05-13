@@ -13,6 +13,7 @@ import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 import { UserDTO } from './dto/user.dto';
 import { EditorDTO } from './dto/editor.dto';
 var jwt = require('jsonwebtoken');
+import * as speakeasy from 'speakeasy';
 
 dotenv.config({ path: './.env' });
 
@@ -22,6 +23,7 @@ const Access_Token_URL = process.env.Access_Token_URL;
 const Client_ID = process.env.Client_ID;
 const Client_Secret = process.env.Client_Secret;
 const Token_Secret = process.env.JWT_Secret;
+const App_Name = 'Carlos Pongos';
 
 @Injectable()
 export class UsersService {
@@ -184,6 +186,62 @@ export class UsersService {
     return temp;
   }
 
+  //Gets the ID of a user requiring a 2fa
+  //Generate a token, put it in the user db
+  async secret(token: string): Promise<string> {
+    console.log('The token', token);
+
+    try {
+      const idFromToken = jwt.verify(token, Token_Secret);
+
+      const user = await this.usersRepository.findOne({
+        where: { id: idFromToken },
+      });
+
+      console.log('user ID fetched:', user.id);
+
+      var res = speakeasy.generateSecret({
+        name: App_Name,
+      });
+      //Update user with secret.base32
+      try {
+        await this.usersRepository.update(idFromToken!, {
+          secret: res.base32,
+        });
+      } catch (error) {}
+      return res.otpauth_url;
+    } catch (error) {
+      console.log('User token revoked');
+      return 'logout';
+    }
+  }
+
+  async verificationMFA(token: string, code: string): Promise<Boolean> {
+    try {
+      console.log('code: ', code);
+      const idFromToken = jwt.verify(token, Token_Secret);
+
+      const user = await this.usersRepository.findOne({
+        where: { id: idFromToken },
+        select: ['secret'],
+      });
+
+      const secret = user.secret;
+      console.log(secret);
+
+      const res = speakeasy.totp.verify({
+        secret: secret,
+        encoding: 'base32',
+        token: code,
+      });
+      console.log('MFA res:', res);
+      return res;
+    } catch {
+      console.log('Wrecked token');
+      return false;
+    }
+  }
+
   // 1- Recuperation d'un code via la page de login de l'intra
   // 2- Traduction de ce code en token
   // 3- Recuperation des donnees de la personne sur la base de ce code
@@ -329,16 +387,7 @@ export class UsersService {
       data.value[0] === 'unblock'
     ) {
       console.log('unblock ', data.value[1]);
-    }
-    // template
-    // else if (
-    //   data.field === 'XXXXXXX' &&
-    //   typeof data.value === 'XXXXXXXX' &&
-    //   data.XXXXXXX !== ''
-    // ) {
-    //   await this.usersRepository.update(data.id!, { XXXXX: data.XXXXXXXX });
-    // }
-    else {
+    } else {
       console.log('Could not edit field: ' + data.field);
       return null;
     }

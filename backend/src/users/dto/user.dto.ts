@@ -24,6 +24,9 @@ export class UserDTO {
   @IsNotEmpty()
   @IsInt() //Modified
   readonly doublefa: number;
+  @IsString()
+  @IsOptional()
+  readonly secret: string;
   @IsNotEmpty()
   @IsInt()
   readonly lvl: number;

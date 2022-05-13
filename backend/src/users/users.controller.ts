@@ -14,7 +14,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
-import { query, Request, Response } from 'express';
+// import cookieParser from 'cookie-parser';
+// import * as cookie from 'cookie';
+import { query, Request, response, Response } from 'express';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 import { EditorDTO } from './dto/editor.dto';
 import { UserDTO } from './dto/user.dto';
@@ -53,15 +55,41 @@ export class UsersController {
     @Query('code') code: Promise<string>,
   ): Promise<any> {
     const cd = await code;
-
     const user = await this.usersServices.login(cd);
-
-    // response.cookie('jwt', user.jwt)
+    console.log('callback');
+    // response.setHeader('Set-Cookie', cookie.serialize('jwtbck', user.jwt) )  ;
+    // response.cookie('jwt_meh', user.jwt, {domain: 'http://localhost:3000',sameSite: 'none', secure: false});
     response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
-
     response.json(user);
-
     return 'It should be ok';
+  }
+
+  @Get('/mfasetup')
+  async mfa(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Query('jwt') token: string,
+  ): Promise<string> {
+    console.log('params', token);
+
+    const secret = await this.usersServices.secret(token);
+    response.json({ secret: secret });
+    return secret;
+  }
+
+
+  @Get('/mfaverify')
+  async mfaverify(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Query('jwt') token: string,
+    @Query('code') code: string,
+    ): Promise<Boolean>  {
+      
+      // console.log('token: ', token, '  code: ', code)
+      const verification = await this.usersServices.verificationMFA(token, code)
+      response.json({mfaverification : verification})
+      return verification
   }
 
   @Get('aCleanPlusTard')
