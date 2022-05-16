@@ -2,10 +2,9 @@ import React from 'react';
 import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { edit, reset, logout } from '../features/auth/authSlice';
-
 
 type Props = {};
 
@@ -16,12 +15,12 @@ function Verify2FA({}: Props) {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [QRCode, setQRCode] = useState('');
   const [writtenCode, setWrittenCode] = useState('Type 6 digits');
 
-    
   const onChange = (e: any) => {
-    setWrittenCode(e.target.value)
+    setWrittenCode(e.target.value);
   };
 
   const onTestMFA = async (e: any) => {
@@ -35,32 +34,36 @@ function Verify2FA({}: Props) {
         },
       );
 
-      const validMFA = resMFA.data.mfaverification
+      console.log(location.pathname);
+      const validMFA = resMFA.data.mfaverification;
       console.log('MFA: ', validMFA);
-      
+      if (validMFA) {
+        // dispatch(login())
+      } else {
+      }
     } catch (error) {
       console.log('Request to MFA validation failed');
     }
   };
 
-
-  return <div>
+  return (
     <div>
-          <input
-            type="text"
-            id="username"
-            value= {writtenCode}
-            onChange={onChange}
-            required
-          />
-          </div>
-          <div>
-            <button className="largeButton" onClick={onTestMFA}>
-              Test authenticator
-            </button>
-          </div>
-
-  </div>;
+      <div>
+        <input
+          type="text"
+          id="username"
+          value={writtenCode}
+          onChange={onChange}
+          required
+        />
+      </div>
+      <div>
+        <button className="largeButton" onClick={onTestMFA}>
+          Test authenticator
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Verify2FA;

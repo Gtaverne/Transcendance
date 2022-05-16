@@ -11,26 +11,69 @@ const API_URL = process.env.REACT_APP_URL_BACK;
 
 //Login user
 const login = async (code: string) => {
+  console.log('We got in login authService');
   const response = await axios.get(API_URL + 'users/callback', {
     params: { code: code },
   });
 
   if (response.data) {
-    // console.log('Data from the back: ' + response.data);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-
-    localStorage.setItem(
-      'iFollowList',
-      JSON.stringify(response.data.iFollowList),
-    );
-    localStorage.setItem(
-      'iBlockedList',
-      JSON.stringify(response.data.iBlockedList),
-    );
-
+    console.log('We received an answer:', response.data.user.username);
     Cookies.set('jwt', response.data.jwt);
+    if (response.data.user && response.data.user.doublefa > 0) {
+      console.log('Double fa on the profile');
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      return {
+        doublefa: 1,
+        id: response.data.user.id,
+      };
+    } else {
+      // console.log('Data from the back: ' + response.data);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      localStorage.setItem(
+        'iFollowList',
+        JSON.stringify(response.data.iFollowList),
+      );
+      localStorage.setItem(
+        'iBlockedList',
+        JSON.stringify(response.data.iBlockedList),
+      );
+    }
   } else {
     console.log('Backend seems down');
+    response.data = {};
+  }
+
+  return response.data;
+};
+
+//Login user
+const loginmfa = async (jwt: string, code: string) => {
+  console.log('We got in MFAlogin authService, jwt: ', jwt, ' code: ', code);
+  const response = await axios.get(API_URL + 'users/login2fa', {
+    params: { jwt: jwt, code: code },
+  });
+
+  if (response.data) {
+    console.log('We received an answer:', response.data.user.username);
+    Cookies.set('jwt', response.data.jwt);
+    try {
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      localStorage.setItem(
+        'iFollowList',
+        JSON.stringify(response.data.iFollowList),
+      );
+      localStorage.setItem(
+        'iBlockedList',
+        JSON.stringify(response.data.iBlockedList),
+      );
+
+      // console.log('Data from the back: ' + response.data);
+    } catch (error) {}
+  } else {
+    console.log('MFA failed, please retry');
     response.data = {};
   }
 
@@ -101,6 +144,7 @@ const editLight = async (id: number, field: string, value: any) => {
 
 // Logout user
 const logout = () => {
+  Cookies.remove('jwt');
   localStorage.removeItem('user');
   localStorage.removeItem('iFollowList');
   localStorage.removeItem('iBlockedList');
@@ -108,6 +152,7 @@ const logout = () => {
 
 const authService = {
   login,
+  loginmfa,
   edit,
   editLight,
   logout,

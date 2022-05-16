@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react';
-import { RootStateOrAny, useSelector } from 'react-redux';
+import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
-
-// const JWT_Secret = process.env.REACT_APP_JWT_Secret || 'defaultSecret'
+import { logout } from '../features/auth/authSlice';
 
 export const useAuthStatus = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
+  const dispatch = useDispatch();
 
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
 
   useEffect(() => {
-    if (user && user.id && Cookies.get('jwt')) {
+    if (
+      user &&
+      user.id &&
+      user.username != 'Validate MFA' &&
+      Cookies.get('jwt')
+    ) {
       setLoggedIn(true);
+    // } else if (user && user.username && user.username === 'Validate MFA') {
+    //   dispatch(logout());
     } else {
       setLoggedIn(false);
     }

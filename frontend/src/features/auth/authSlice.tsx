@@ -33,7 +33,14 @@ export const login = createAsyncThunk(
   async (code: string, thunkAPI) => {
     // console.log(code);
     try {
-      return await authService.login(code);
+      const profile = await authService.login(code);
+      if (profile && profile.doublefa > 0 ) {
+        console.log('Authslice doublefa');
+        return {
+          user: profile
+        }
+      }
+      return profile
     } catch (error) {
       // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
       console.log('We caught an error');
@@ -42,6 +49,24 @@ export const login = createAsyncThunk(
     }
   },
 );
+
+
+export const loginmfa = createAsyncThunk(
+  'auth/loginmfa',
+  async (input: any, thunkAPI) => {
+    // console.log(code);
+    try {
+      const profile = await authService.loginmfa(input.jwt, input.code);
+      return profile
+    } catch (error) {
+      // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+      console.log('We caught an error');
+
+      return thunkAPI.rejectWithValue('Could not login');
+    }
+  },
+);
+
 
 //Edit User
 export const edit = createAsyncThunk(
@@ -105,6 +130,22 @@ export const authSlice = createSlice({
         state.iFollowList = action.payload.iFollowList;
       })
       .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+      .addCase(loginmfa.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginmfa.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload.user;
+        state.iBlockedList = action.payload.iBlockedList;
+        state.iFollowList = action.payload.iFollowList;
+      })
+      .addCase(loginmfa.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

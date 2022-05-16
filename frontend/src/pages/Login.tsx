@@ -1,33 +1,79 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { login, reset } from '../features/auth/authSlice';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { login, loginmfa, reset } from '../features/auth/authSlice';
 import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 type Props = {};
 
 function Login({}: Props) {
   const [searchParams] = useSearchParams();
   const code: string = searchParams.get('code') || '';
-  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [firstLoop, setFirstLoop] = useState(true);
   let noloop = 0;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [mfaRequired, setMFARequired] = useState(false);
+  const [writtenCode, setWrittenCode] = useState('Type 6 digits');
 
   const { user, isError, isLoading, isSuccess, message } = useSelector(
     (state: RootStateOrAny) => state.auth,
   );
 
+  const onChange = (e: any) => {
+    setWrittenCode(e.target.value);
+  };
+
+  const onCheckMFA = async (e: any) => {
+    console.log('Login 2fa');
+
+    try {
+      const MFAParams = {
+        jwt: Cookies.get('jwt'),
+        code: writtenCode,
+      };
+      dispatch(loginmfa(MFAParams));
+    } catch (error) {
+      console.log('Request to MFA validation failed');
+    }
+  };
+
   useEffect(() => {
-    if (profileLoaded === false && noloop === 0) {
-      noloop = noloop + 1;
-      setProfileLoaded(true);
-      dispatch(login(code));
+    noloop = noloop + 1;
+
+    if (firstLoop === false || noloop > 1) {
+      console.log('Already looped');
+      setFirstLoop(false);
     }
 
-    if ((profileLoaded || user.username !== '') && user.doublefa === 0) {
+    if (user && user.username) {
+
+    } else if (code !== '' && user && !user.username) {
+      console.log('From login, login with code: ', code);
+      dispatch(login(code));
+      setFirstLoop(false);
+      if (user && user.username && user.username !== 'Validate MFA') {
+        console.log('Navigate to landing');
+        navigate('/');
+      }
+    } else {
+      console.log('No code provided');
+      // navigate('/');
+    }
+
+    if (user && user.username !== '' && user.doublefa === 0) {
+      //is it synchronous ?
+      console.log('User logged, no 2fa');
+
       navigate('/');
-    } else if ((profileLoaded || user.username !== '') && user.doublefa > 0) {
-      navigate('/verifymfa')
+    } else if (user && user.doublefa > 0) {
+      setMFARequired(true)
+      console.log('got through 2fa');
+    } else {
+      console.log('No username');
     }
 
     dispatch(reset());
@@ -42,7 +88,32 @@ function Login({}: Props) {
     return <div>Our backend denied your login</div>;
   }
 
-  return <div>Welcome, {user.username}</div>;
+  if (user && user.username && user.username !== 'Validate MFA') {
+    navigate('/')
+  }
+
+  if (mfaRequired) {
+    return (
+      <div>
+        <div>
+          <input
+            type="text"
+            id="username"
+            value={writtenCode}
+            onChange={onChange}
+            required
+          />
+        </div>
+        <div>
+          <button className="largeButton" onClick={onCheckMFA}>
+            Test authenticator
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return <div>Welcome</div>;
 }
 
 export default Login;

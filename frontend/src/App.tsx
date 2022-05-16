@@ -38,7 +38,7 @@ function App() {
             </Route>
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/verifymfa" element={<Verify2FA />} />
+            <Route path="/verifymfa/:code" element={<Verify2FA />} />
             <Route path="/userprofile/:id" element={<PrivateRoute />}>
               <Route path="/userprofile/:id" element={<UserProfile />} />
             </Route>

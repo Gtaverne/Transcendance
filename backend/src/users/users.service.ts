@@ -218,9 +218,8 @@ export class UsersService {
 
   async verificationMFA(token: string, code: string): Promise<Boolean> {
     try {
-      console.log('code: ', code);
+      console.log('code: ', code, 'token: ', token);
       const idFromToken = jwt.verify(token, Token_Secret);
-
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
         select: ['secret'],
@@ -234,7 +233,7 @@ export class UsersService {
         encoding: 'base32',
         token: code,
       });
-      console.log('MFA res:', res);
+      console.log('MFA result:', res);
       return res;
     } catch {
       console.log('Wrecked token');
@@ -252,7 +251,7 @@ export class UsersService {
       user: new UsersEntity(),
       iBlockedList: [],
       iFollowList: [],
-      jwt: 'dudule',
+      jwt: '',
     };
 
     const data = qs.stringify({
@@ -285,22 +284,134 @@ export class UsersService {
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
-      const user = await this.usersRepository.findOne({
-        where: { id: answer.user.id },
-        relations: ['iFollowList', 'iBlockedList'],
-      });
-      let iFollowList: number[] = [];
-      for (let i = 0; i < user.iFollowList.length; i++)
-        iFollowList.push(user.iFollowList[i].id);
-      let iBlockedList: number[] = [];
-      for (let i = 0; i < user.iBlockedList.length; i++)
-        iBlockedList.push(user.iBlockedList[i].id);
+      console.log('answer.user.username: ', answer.user.username);
 
-      answer.iBlockedList = iBlockedList;
-      answer.iFollowList = iFollowList;
-      answer.jwt = this.generateToken(answer.user.id);
+      if (answer.user.doublefa === 0) {
+        const user = await this.usersRepository.findOne({
+          where: { id: answer.user.id },
+          relations: ['iFollowList', 'iBlockedList'],
+        });
+        let iFollowList: number[] = [];
+        for (let i = 0; i < user.iFollowList.length; i++)
+          iFollowList.push(user.iFollowList[i].id);
+        let iBlockedList: number[] = [];
+        for (let i = 0; i < user.iBlockedList.length; i++)
+          iBlockedList.push(user.iBlockedList[i].id);
+
+        answer.iBlockedList = iBlockedList;
+        answer.iFollowList = iFollowList;
+        answer.jwt = this.generateToken(answer.user.id);
+      } else {
+        console.log('2FA detected in users.service: ', answer.user.username);
+
+        answer.jwt = this.generateToken(
+          JSON.stringify({
+            id: answer.user.id,
+            doublefa: answer.user.doublefa,
+          }),
+        );
+
+        var doublefaUser = new UsersEntity();
+        doublefaUser.username = 'Validate MFA';
+        doublefaUser.id = answer.user.id;
+        doublefaUser.doublefa = answer.user.doublefa;
+        answer.user = doublefaUser;
+        console.log('Ready to return: ', answer.user.username);
+      }
     } else {
       console.log('No 42 token provided');
+    }
+    return answer;
+  }
+
+  async login2fa(token: string, code: string): Promise<any> {
+    console.log('Token: ', token, ' code: ', code);
+    // const str = JSON.parse(token);
+    // console.log('str: ', str)
+    // console.log('In login2fa, id: ', id, ' jwt: ', jwt);
+    var answer = {
+      user: new UsersEntity(),
+      iBlockedList: [],
+      iFollowList: [],
+      jwt: token,
+    };
+
+    // const verif = await this.verificationMFA(token, code);
+
+    /*Verifmfa
+    try {
+      console.log('code: ', code, 'token: ', token);
+      const idFromToken = jwt.verify(token, Token_Secret);
+      const user = await this.usersRepository.findOne({
+        where: { id: idFromToken },
+        select: ['secret'],
+      });
+
+      const secret = user.secret;
+      console.log(secret);
+
+      const res = speakeasy.totp.verify({
+        secret: secret,
+        encoding: 'base32',
+        token: code,
+      });
+      console.log('MFA result:', res);
+      return res;
+    } catch {
+      console.log('Wrecked token');
+      return false;
+    }
+    */
+
+    try {
+      const translatedToked = jwt.verify(token, Token_Secret);
+      const idFromToken = translatedToked.id;
+      const user = await this.usersRepository.findOne({
+        where: { id: idFromToken },
+        select: ['secret'],
+      });
+
+      const secret = user.secret;
+      console.log(secret);
+
+      const res = speakeasy.totp.verify({
+        secret: secret,
+        encoding: 'base32',
+        token: code,
+      });
+      console.log('MFA result:', res);
+
+      if (res) {
+        try {
+          console.log('Ready to fetch profile with id:', idFromToken);
+          const user = await this.usersRepository.findOne({
+            where: { id: idFromToken },
+            relations: ['iFollowList', 'iBlockedList'],
+          });
+          let iFollowList: number[] = [];
+          for (let i = 0; i < user.iFollowList.length; i++)
+            iFollowList.push(user.iFollowList[i].id);
+          let iBlockedList: number[] = [];
+          for (let i = 0; i < user.iBlockedList.length; i++)
+            iBlockedList.push(user.iBlockedList[i].id);
+
+          console.log('User has been fetched');
+
+          answer.user = user
+          answer.iBlockedList = iBlockedList;
+          answer.iFollowList = iFollowList;
+          answer.jwt = this.generateToken(idFromToken);
+          console.log('Answer has been packaged in users.services loginMFA')
+        } catch (error) {
+          console.log('Could not retrieve profile');
+          return answer;
+        }
+      } else {
+        console.log('2FA verification failed, code probably wrong');
+        return answer;
+      }
+    } catch (error) {
+      console.log('Wrecked token');
     }
     return answer;
   }

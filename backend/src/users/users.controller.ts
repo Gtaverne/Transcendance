@@ -55,12 +55,18 @@ export class UsersController {
     @Query('code') code: Promise<string>,
   ): Promise<any> {
     const cd = await code;
-    const user = await this.usersServices.login(cd);
-    console.log('callback');
+    console.log('callback, code: ', code);
+    try {
+      const user = await this.usersServices.login(cd);
+      response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+      response.json(user);
+    } catch (error) {
+      console.log('Crash in the login function')
+      response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+      response.json({});
+    }
     // response.setHeader('Set-Cookie', cookie.serialize('jwtbck', user.jwt) )  ;
     // response.cookie('jwt_meh', user.jwt, {domain: 'http://localhost:3000',sameSite: 'none', secure: false});
-    response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
-    response.json(user);
     return 'It should be ok';
   }
 
@@ -90,6 +96,22 @@ export class UsersController {
       const verification = await this.usersServices.verificationMFA(token, code)
       response.json({mfaverification : verification})
       return verification
+  }
+
+  @Get('/login2fa')
+  async logind2fa(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Query('jwt') token: string,
+    @Query('code') code: string,
+    ): Promise<any>  {
+      
+      const user = await this.usersServices.login2fa(token, code)
+
+      console.log('In the controller, user is: ', JSON.stringify(user.user))
+      response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+      response.json(user);
+      return user
   }
 
   @Get('aCleanPlusTard')
