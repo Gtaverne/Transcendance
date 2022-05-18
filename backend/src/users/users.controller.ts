@@ -141,6 +141,12 @@ export class UsersController {
   }
 
   //les param sont ceux du chemin de la requete
+  //ATTENTION, CETTE ROUTE DEVRA ETRE NETTOYEE
+  @Get('/proile/:id')
+  async findOneForFront(@Param() params): Promise<UsersEntity> {
+    return this.usersServices.findOneForFront(params.id);
+  }
+
   @Get('/:id')
   async findOne(@Param() params): Promise<UsersEntity> {
     return this.usersServices.findOne(params.id);

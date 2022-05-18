@@ -10,7 +10,9 @@ function Landing({}: Props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.id) navigate('/');
+    if (user?.id ) {
+      navigate('/');
+    }
   }, [user]);
 
   // const plop = jwt.sign('','')

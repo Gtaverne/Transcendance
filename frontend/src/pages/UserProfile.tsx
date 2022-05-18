@@ -130,7 +130,7 @@ const UserProfile = (props: Props) => {
       )}
       <p>email: {fetchedProfile.email}</p>
 
-      {user && user.id && user.id === fetchedProfile.id ? (
+      {user && user.id && editProfile && user.id === fetchedProfile.id ? (
       <p>
         Double Factor Authentication: 
         {fetchedProfile.doublefa === 0 ? (

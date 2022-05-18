@@ -6,7 +6,7 @@ import Game from './pages/Game';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
 import Configure2FA from './pages/Configure2FA';
-import Verify2FA from './pages/verify2FA';
+// import Verify2FA from './pages/verify2FA';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 // import { useEffect } from 'react';
@@ -38,7 +38,7 @@ function App() {
             </Route>
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/verifymfa/:code" element={<Verify2FA />} />
+            {/* <Route path="/verifymfa/:code" element={<Verify2FA />} /> */}
             <Route path="/userprofile/:id" element={<PrivateRoute />}>
               <Route path="/userprofile/:id" element={<UserProfile />} />
             </Route>

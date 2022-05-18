@@ -39,6 +39,9 @@ function Login({}: Props) {
     } catch (error) {
       console.log('Request to MFA validation failed');
     }
+    if (!user!.username) {
+      //popup: Please retry code
+    }
   };
 
   useEffect(() => {
@@ -50,12 +53,11 @@ function Login({}: Props) {
     }
 
     if (user && user.username) {
-
     } else if (code !== '' && user && !user.username) {
       console.log('From login, login with code: ', code);
       dispatch(login(code));
       setFirstLoop(false);
-      if (user && user.username && user.username !== 'Validate MFA') {
+      if (user && user.username) {
         console.log('Navigate to landing');
         navigate('/');
       }
@@ -70,7 +72,7 @@ function Login({}: Props) {
 
       navigate('/');
     } else if (user && user.doublefa > 0) {
-      setMFARequired(true)
+      setMFARequired(true);
       console.log('got through 2fa');
     } else {
       console.log('No username');
@@ -88,8 +90,8 @@ function Login({}: Props) {
     return <div>Our backend denied your login</div>;
   }
 
-  if (user && user.username && user.username !== 'Validate MFA') {
-    navigate('/')
+  if (user && user.username) {
+    navigate('/');
   }
 
   if (mfaRequired) {
@@ -106,7 +108,7 @@ function Login({}: Props) {
         </div>
         <div>
           <button className="largeButton" onClick={onCheckMFA}>
-            Test authenticator
+            Send code
           </button>
         </div>
       </div>

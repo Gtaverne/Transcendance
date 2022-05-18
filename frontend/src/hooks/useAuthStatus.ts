@@ -14,12 +14,9 @@ export const useAuthStatus = () => {
     if (
       user &&
       user.id &&
-      user.username != 'Validate MFA' &&
       Cookies.get('jwt')
     ) {
       setLoggedIn(true);
-    // } else if (user && user.username && user.username === 'Validate MFA') {
-    //   dispatch(logout());
     } else {
       setLoggedIn(false);
     }

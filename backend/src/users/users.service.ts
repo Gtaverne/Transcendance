@@ -125,6 +125,15 @@ export class UsersService {
     return user;
   }
 
+  async findOneForFront(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      select: ['id', 'username', 'lvl', 'avatar', 'email'],
+    });
+    console.log(JSON.stringify(user));
+    return user;
+  }
+
   async findOneWithName(name: string) {
     const user = await this.usersRepository.findOne({ username: name });
     return user;
@@ -133,6 +142,7 @@ export class UsersService {
   async updateUser(id: number, user: UsersEntity) {
     if (id !== user.id) return;
     await this.usersRepository.update(id, user);
+    //Check if sent in front
     const updatedPost = await this.usersRepository.findOne(id);
     console.log(updatedPost);
     return updatedPost;
@@ -289,6 +299,7 @@ export class UsersService {
       if (answer.user.doublefa === 0) {
         const user = await this.usersRepository.findOne({
           where: { id: answer.user.id },
+          select: ['id', 'username', 'avatar', 'email', 'lvl'],
           relations: ['iFollowList', 'iBlockedList'],
         });
         let iFollowList: number[] = [];
@@ -298,6 +309,7 @@ export class UsersService {
         for (let i = 0; i < user.iBlockedList.length; i++)
           iBlockedList.push(user.iBlockedList[i].id);
 
+        answer.user = user;
         answer.iBlockedList = iBlockedList;
         answer.iFollowList = iFollowList;
         answer.jwt = this.generateToken(answer.user.id);
@@ -312,7 +324,7 @@ export class UsersService {
         );
 
         var doublefaUser = new UsersEntity();
-        doublefaUser.username = 'Validate MFA';
+        // doublefaUser.username = 'Validate MFA';
         doublefaUser.id = answer.user.id;
         doublefaUser.doublefa = answer.user.doublefa;
         answer.user = doublefaUser;
@@ -335,33 +347,6 @@ export class UsersService {
       iFollowList: [],
       jwt: token,
     };
-
-    // const verif = await this.verificationMFA(token, code);
-
-    /*Verifmfa
-    try {
-      console.log('code: ', code, 'token: ', token);
-      const idFromToken = jwt.verify(token, Token_Secret);
-      const user = await this.usersRepository.findOne({
-        where: { id: idFromToken },
-        select: ['secret'],
-      });
-
-      const secret = user.secret;
-      console.log(secret);
-
-      const res = speakeasy.totp.verify({
-        secret: secret,
-        encoding: 'base32',
-        token: code,
-      });
-      console.log('MFA result:', res);
-      return res;
-    } catch {
-      console.log('Wrecked token');
-      return false;
-    }
-    */
 
     try {
       const translatedToked = jwt.verify(token, Token_Secret);
@@ -386,6 +371,7 @@ export class UsersService {
           console.log('Ready to fetch profile with id:', idFromToken);
           const user = await this.usersRepository.findOne({
             where: { id: idFromToken },
+            select: ['id', 'username', 'avatar', 'email', 'lvl'],
             relations: ['iFollowList', 'iBlockedList'],
           });
           let iFollowList: number[] = [];
@@ -397,11 +383,11 @@ export class UsersService {
 
           console.log('User has been fetched');
 
-          answer.user = user
+          answer.user = user;
           answer.iBlockedList = iBlockedList;
           answer.iFollowList = iFollowList;
           answer.jwt = this.generateToken(idFromToken);
-          console.log('Answer has been packaged in users.services loginMFA')
+          console.log('Answer has been packaged in users.services loginMFA');
         } catch (error) {
           console.log('Could not retrieve profile');
           return answer;
@@ -449,6 +435,7 @@ export class UsersService {
     //Here we check if the user already exists
     const res = await this.usersRepository.find({
       where: { email: loggedProfile.email },
+      // select: ['id', 'username', 'avatar', 'email', 'lvl'],
     });
 
     var dude = new UsersEntity();

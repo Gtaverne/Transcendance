@@ -10,7 +10,7 @@ import './chat.css';
 import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
-// import { editLight, reset } from '../features/auth/authSlice';
+import { edit, reset } from '../features/auth/authSlice';
 
 // declare var global: { currentChat: RoomInterface | undefined };
 
@@ -362,10 +362,10 @@ function Chat() {
 
   const handleBlockUser = async (e: React.FormEvent) => {
     // e.preventDefault();
-    // dispatch(editLight({ id: user.id, field: 'block', value: currentUser?.id }));
+    // dispatch(edit({ id: user.id, field: 'block', value: currentUser?.id }));
     // return;
 
-    let val: number = currentUser?.id ? currentUser?.id : 0;
+    let val: any = currentUser?.id ? currentUser?.id : 0;
     let alreadyBlocked;
 
     if (iBlockList.includes(val)) alreadyBlocked = true;
