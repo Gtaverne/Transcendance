@@ -18,6 +18,7 @@ const login = async (code: string) => {
 
   if (response.data) {
     console.log('We received an answer:', response.data.user.username);
+    Cookies.set('jwt', response.data.jwt, { path: API_URL });
     Cookies.set('jwt', response.data.jwt);
     if (response.data.user && response.data.user.doublefa > 0) {
       console.log('Double fa on the profile');
@@ -58,6 +59,7 @@ const loginmfa = async (jwt: string, code: string) => {
   if (response.data) {
     console.log('We received an answer:', response.data.user.username);
     Cookies.set('jwt', response.data.jwt);
+    Cookies.set('jwt', response.data.jwt, { path: API_URL });
     try {
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -88,7 +90,7 @@ const edit = async (id: number, field: string, value: any) => {
 
   const response = await axios.post(API_URL + 'users/editprofile/', data);
 
-  console.log('Response', response);
+  console.log('Response of edit', response);
 
   if (response.data && response.data.user) {
     // console.log('Data from the back: ' + response.data);
@@ -126,6 +128,7 @@ const editLight = async (id: number, field: string, value: any) => {
   ) {
     // console.log('Data from the back: ' + response.data);
     //   localStorage.setItem('user', JSON.stringify(response.data.user));
+
     localStorage.setItem(
       'iFollowList',
       JSON.stringify(response.data.iFollowList),

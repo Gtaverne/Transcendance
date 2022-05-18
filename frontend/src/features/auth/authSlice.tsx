@@ -3,9 +3,23 @@ import authService from './authService';
 import UserInterface from '../../interfaces/UserInterface';
 
 //Get user from localstorage
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-const iFollowList = JSON.parse(localStorage.getItem('iFollowList') || '[]');
-const iBlockedList = JSON.parse(localStorage.getItem('iBlockedList') || '[]');
+const getItem = (item: string) => {
+  try {
+    return JSON.parse(localStorage.getItem(item) || '{}');
+  } catch (e) {}
+  return {};
+};
+
+const user = getItem('user');
+const iFollowList = getItem('iFollowList');
+const iBlockedList = getItem('iBlockedList');
+
+// const iFollowList = JSON.parse(localStorage.getItem('iFollowList') || '[]');
+// const iBlockedList = JSON.parse(localStorage.getItem('iBlockedList') || '[]');
+
+// const user = JSON.parse('{}');
+// const iFollowList = JSON.parse('[]');
+// const iBlockedList = JSON.parse('[]');
 
 interface userInterface {
   user: any;
@@ -34,13 +48,13 @@ export const login = createAsyncThunk(
     // console.log(code);
     try {
       const profile = await authService.login(code);
-      if (profile && profile.doublefa > 0 ) {
+      if (profile && profile.doublefa > 0) {
         console.log('Authslice doublefa');
         return {
-          user: profile
-        }
+          user: profile,
+        };
       }
-      return profile
+      return profile;
     } catch (error) {
       // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
       console.log('We caught an error');
@@ -49,7 +63,6 @@ export const login = createAsyncThunk(
     }
   },
 );
-
 
 export const loginmfa = createAsyncThunk(
   'auth/loginmfa',
@@ -57,7 +70,7 @@ export const loginmfa = createAsyncThunk(
     // console.log(code);
     try {
       const profile = await authService.loginmfa(input.jwt, input.code);
-      return profile
+      return profile;
     } catch (error) {
       // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
       console.log('We caught an error');
@@ -66,7 +79,6 @@ export const loginmfa = createAsyncThunk(
     }
   },
 );
-
 
 //Edit User
 export const edit = createAsyncThunk(
@@ -163,31 +175,31 @@ export const authSlice = createSlice({
         state.iBlockedList = action.payload.iBlockedList;
         state.iFollowList = action.payload.iFollowList;
       })
-	  .addCase(edit.rejected, (state, action) => {
-		console.log('Redux Edit Rejected');
+      .addCase(edit.rejected, (state, action) => {
+        console.log('Redux Edit Rejected');
 
-		state.isLoading = false;
-		state.isError = true;
-		state.message = action.payload;
-		state.user = null;
-	  })
-	  .addCase(editLight.pending, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+      .addCase(editLight.pending, (state) => {
         state.isLoading = true;
       })
-	  .addCase(editLight.fulfilled, (state, action) => {
+      .addCase(editLight.fulfilled, (state, action) => {
         console.log('Redux EditLight fulfilled');
 
         state.isLoading = false;
         state.isSuccess = true;
         state.iBlockedList = action.payload.iBlockedList;
         state.iFollowList = action.payload.iFollowList;
-		console.log(action.payload.iBlockedList)
+        console.log(action.payload.iBlockedList);
       })
-	  .addCase(editLight.rejected, (state, action) => {
+      .addCase(editLight.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-		console.log('editlight failed')
+        console.log('editlight failed');
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;

@@ -15,9 +15,15 @@ const UserProfile = (props: Props) => {
   const navigate = useNavigate();
   const [editProfile, setEditProfile] = useState(false);
 
-  const { user, iFollowList, iBlockedList, isError, isLoading, isSuccess, message } = useSelector(
-    (state: RootStateOrAny) => state.auth,
-  );
+  const {
+    user,
+    iFollowList,
+    iBlockedList,
+    isError,
+    isLoading,
+    isSuccess,
+    message,
+  } = useSelector((state: RootStateOrAny) => state.auth);
 
   var profile = user;
   const [fetchedProfile, setFetchedProfile] = useState(profile);
@@ -37,14 +43,13 @@ const UserProfile = (props: Props) => {
       if (user.doublefa === 0) {
         // var tmp = new UserIterface
         console.log('Activate 2fa');
-        navigate(`/configure2fa/${user.id}`)
-        dispatch (reset)
-
+        navigate(`/configure2fa/${user.id}`);
+        dispatch(reset);
       } else {
         console.log('Deactivate 2fa');
-        dispatch (reset)
         //BENJAMIN: exemple de dispatch(edit(...))
-        dispatch(edit({id: user.id, field: 'doublefa', value: 0}))
+        dispatch(edit({ id: user.id, field: 'doublefa', value: 0 }));
+        dispatch(reset);
       }
     }
   };
@@ -58,21 +63,54 @@ const UserProfile = (props: Props) => {
       noloop = 1;
 
       const fetchUser = async () => {
-        const userData = await apiGetter('users/' + params.id);
+        const userData = await apiGetter('users/profile/' + params.id);
         if (userData) {
           setFetchedProfile({ ...userData });
         }
       };
       fetchUser();
     }
-    dispatch(reset)
+    dispatch(reset);
   }, [dispatch, params, login, user, iFollowList, iBlockedList]);
 
+  const onEdition = async () => {
+    if (editProfile === true && user.id === fetchedProfile.id) {
+      dispatch(
+        edit({
+          id: user.id,
+          field: 'username',
+          value: fetchedProfile.username,
+        }),
+      );
+
+      
+
+    }
+
+    setEditProfile((prevState) => !prevState);
+  };
+
   const onBlock = async () => {
-    if (user ) {
+    if (user) {
       if (iBlockedList.includes(fetchedProfile.id)) {
         console.log('unblock');
-        dispatch(edit({id: user.id, field: 'iBlockedList', value: ['unblock', fetchedProfile.id]}))
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'iBlockedList',
+            value: ['unblock', fetchedProfile.id],
+          }),
+        );
+        dispatch(reset);
+      } else {
+        console.log('block');
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'iBlockedList',
+            value: ['block', fetchedProfile.id],
+          }),
+        );
       }
     }
   };
@@ -85,16 +123,9 @@ const UserProfile = (props: Props) => {
       {user && user.id && user.id === fetchedProfile.id ? (
         <>
           <h2>Welcome home</h2>
-          <button
-            className="logButton"
-            color="#f194ff"
-            onClick={() => {
-              // editProfile && console.log('ready to edit');
-              setEditProfile((prevState) => !prevState);
-            }}
-          >
+          <button className="largeButton" color="#f194ff" onClick={onEdition}>
             <FaSignOutAlt />
-            Edit
+            {editProfile ? 'End edition' : 'Edit'}
           </button>
         </>
       ) : (
@@ -103,20 +134,24 @@ const UserProfile = (props: Props) => {
 
           <button className="largeButton" onClick={onFollow}>
             <FaUser />
-            {iFollowList.includes(fetchedProfile.id) ? 'un' : '' }follow
+            {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
           </button>
 
           <button className="largeButton" onClick={onBlock}>
             <FaSignOutAlt />
-            {iBlockedList.includes(fetchedProfile.id) ? 'un' : '' }block
+            {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
           </button>
         </>
       )}
 
       <div></div>
       <img className="profilepage" src={fetchedProfile.avatar} />
+
+      {/* Name */}
       {editProfile ? (
-        <>
+        // How do we make spaces?
+        <div>
+          Change pseudo:
           <input
             type="text"
             id="username"
@@ -124,36 +159,28 @@ const UserProfile = (props: Props) => {
             onChange={onMutate}
             required
           />
-        </>
+        </div>
       ) : (
         <p>Username: {fetchedProfile.username}</p>
       )}
+
+      <p>Level: {fetchedProfile.lvl}</p>
+
       <p>email: {fetchedProfile.email}</p>
 
       {user && user.id && editProfile && user.id === fetchedProfile.id ? (
-      <p>
-        Double Factor Authentication: 
-        {fetchedProfile.doublefa === 0 ? (
+        <p>
+          Double Factor Authentication:
           <>
-             deactivated
             <button className="largeButton" onClick={onMfa}>
               <FaLock />
-              Activate 2fa
+              {user.doublefa === 0 ? 'Activate 2fa' : 'Deactivate 2fa'}
             </button>
           </>
-        ) : (
-          <>
-             activated
-            <button className="largeButton" onClick={onMfa}>
-              <FaLock />
-              Deactivate 2fa
-            </button>
-          </>
-        )}
-      </p> )
-      : 
-      (<>
-      </>)}
+        </p>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

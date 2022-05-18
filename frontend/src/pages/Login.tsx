@@ -53,12 +53,13 @@ function Login({}: Props) {
     }
 
     if (user && user.username) {
+      navigate('/');
     } else if (code !== '' && user && !user.username) {
       console.log('From login, login with code: ', code);
       dispatch(login(code));
       setFirstLoop(false);
       if (user && user.username) {
-        console.log('Navigate to landing');
+        console.log('Navigate to home');
         navigate('/');
       }
     } else {
@@ -88,10 +89,6 @@ function Login({}: Props) {
 
   if (isError) {
     return <div>Our backend denied your login</div>;
-  }
-
-  if (user && user.username) {
-    navigate('/');
   }
 
   if (mfaRequired) {

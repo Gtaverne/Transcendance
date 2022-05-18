@@ -107,7 +107,7 @@ function Configure2FA({}: Props) {
           </div>
           <div>
             <button className="largeButton" onClick={onTestMFA}>
-              Test authenticator
+              Send code
             </button>
           </div>
         </>

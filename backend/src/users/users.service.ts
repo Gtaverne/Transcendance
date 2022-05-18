@@ -299,7 +299,7 @@ export class UsersService {
       if (answer.user.doublefa === 0) {
         const user = await this.usersRepository.findOne({
           where: { id: answer.user.id },
-          select: ['id', 'username', 'avatar', 'email', 'lvl'],
+          select: ['id', 'username', 'avatar', 'doublefa', 'email', 'lvl'],
           relations: ['iFollowList', 'iBlockedList'],
         });
         let iFollowList: number[] = [];
@@ -371,7 +371,7 @@ export class UsersService {
           console.log('Ready to fetch profile with id:', idFromToken);
           const user = await this.usersRepository.findOne({
             where: { id: idFromToken },
-            select: ['id', 'username', 'avatar', 'email', 'lvl'],
+            select: ['id', 'username', 'avatar', 'email', 'doublefa', 'lvl'],
             relations: ['iFollowList', 'iBlockedList'],
           });
           let iFollowList: number[] = [];
@@ -485,6 +485,12 @@ export class UsersService {
       data.value[0] === 'unblock'
     ) {
       console.log('unblock ', data.value[1]);
+    } else if (
+      data.field === 'iBlockedList' &&
+      typeof data.value &&
+      data.value[0] === 'block'
+    ) {
+      console.log('block ', data.value[1]);
     } else {
       console.log('Could not edit field: ' + data.field);
       return null;
@@ -493,6 +499,7 @@ export class UsersService {
     console.log('We updated the field ' + data.field + ' in the db');
     const user = await this.usersRepository.findOne({
       where: { id: data.id },
+      select: ['id', 'username', 'lvl', 'avatar', 'doublefa', 'email'],
       relations: ['iFollowList', 'iBlockedList'],
     });
     let iFollowList: number[] = [];
