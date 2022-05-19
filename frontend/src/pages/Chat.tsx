@@ -474,10 +474,7 @@ function Chat() {
   };
 
   const handleKeypress = async (e: any) => {
-    if (e.key === 'Enter') {
-      handleSubmit(e);
-	  console.log(2);
-    }
+    if (e.key === 'Enter') handleSubmit(e);
   };
 
   return (
