@@ -39,9 +39,9 @@ function Login({}: Props) {
     } catch (error) {
       console.log('Request to MFA validation failed');
     }
-    if (!user!.username) {
-      //popup: Please retry code
-    }
+    // if (!user!.username) {
+    //   //popup: Please retry code
+    // }
   };
 
   useEffect(() => {

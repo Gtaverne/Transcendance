@@ -16,6 +16,8 @@ import { GamesModule } from './games/games.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { MessagesModule } from './messages/messages.module';
 import { TutoModule } from './tuto/tuto.module';
+import { MicrocdnController } from './microcdn/microcdn.controller';
+import { MicrocdnModule } from './microcdn/microcdn.module';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { TutoModule } from './tuto/tuto.module';
     MessagesModule,
     TypeOrmModule.forRoot(config),
     TutoModule,
+    MicrocdnModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
 import { login, edit, reset } from '../features/auth/authSlice';
+import StorageManager from '../components/StorageManager';
 
 import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
@@ -82,9 +83,6 @@ const UserProfile = (props: Props) => {
           value: fetchedProfile.username,
         }),
       );
-
-      
-
     }
 
     setEditProfile((prevState) => !prevState);
@@ -125,7 +123,7 @@ const UserProfile = (props: Props) => {
           <h2>Welcome home</h2>
           <button className="largeButton" color="#f194ff" onClick={onEdition}>
             <FaSignOutAlt />
-            {editProfile ? 'End edition' : 'Edit'}
+            {editProfile ? ' Validate edition' : 'Edit'}
           </button>
         </>
       ) : (
@@ -145,7 +143,14 @@ const UserProfile = (props: Props) => {
       )}
 
       <div></div>
-      <img className="profilepage" src={fetchedProfile.avatar} />
+
+      {editProfile ? (
+        <StorageManager />
+      ) : (
+        <>
+          <img className="profilepage" src={fetchedProfile.avatar} />
+        </>
+      )}
 
       {/* Name */}
       {editProfile ? (
