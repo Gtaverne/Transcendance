@@ -12,7 +12,7 @@ import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
 import { edit, reset } from '../features/auth/authSlice';
 
-// declare var global: { currentChat: RoomInterface | undefined };
+declare var global: { currentChat: RoomInterface | undefined };
 
 function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
@@ -119,15 +119,14 @@ function Chat() {
       process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
     );
     setConversations(res.data);
-    // console.log(global.currentChat, currentChat);
-	console.log("getConversations", currentChat)
-    if (currentChat) {
+    console.log('getConversations', global.currentChat);
+    if (global.currentChat) {
       console.log(1, 'updating current chat infos', res.data.length);
       for (let i = 0; i < res.data.length; i++) {
         // console.log(1.5, 'updating current chat infos');
-        if (res.data[i].id === currentChat?.id) {
+        if (res.data[i].id === global.currentChat?.id) {
           setCurrentChat(res.data[i]);
-          //   global.currentChat = res.data[i];
+          global.currentChat = res.data[i];
           setRoleList(res.data[i]);
           console.log(2, 'updating current chat infos', res.data[i].id);
         }
@@ -142,7 +141,10 @@ function Chat() {
       );
       setConversationsCanJoin(res.data);
       for (let i = 0; i < res.data.length; i++)
-        if (res.data[i].id === currentChat?.id) setCurrentChat(undefined);
+        if (res.data[i].id === currentChat?.id) {
+          setCurrentChat(undefined);
+          global.currentChat = undefined;
+        }
     } catch (err) {
       console.log(err);
     }
@@ -162,7 +164,7 @@ function Chat() {
   useEffect(() => {
     getConversations();
     getConversationsCanJoin();
-    // global.currentChat = undefined;
+    global.currentChat = undefined;
     getIBlockList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -268,7 +270,7 @@ function Chat() {
       setTimeout(getConversationsCanJoin, 250);
     } else {
       console.log('Access Unauthorized');
-	}
+    }
   };
 
   const handleNavigate = (e: React.FormEvent) => {
@@ -355,7 +357,7 @@ function Chat() {
       console.log('successfully left the room');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
-      //   global.currentChat = undefined;
+      global.currentChat = undefined;
       setCurrentChat(undefined);
     }
   };
@@ -471,6 +473,10 @@ function Chat() {
     }
   };
 
+  const handleKeypress = async (e: any) => {
+    if (e.key === 'Enter') handleSubmit(e);
+  };
+
   return (
     <>
       <div className="messenger">
@@ -486,6 +492,7 @@ function Chat() {
                 <div
                   onClick={() => {
                     setCurrentChat(c);
+                    global.currentChat = c;
                     setCurrentUser(undefined);
                     setRoleList(c);
                     setChangePassword('');
@@ -613,6 +620,7 @@ function Chat() {
                       className="chatMessageInput"
                       placeholder="write something..."
                       onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={handleKeypress}
                       value={newMessage}
                     ></textarea>
                     <button className="chatSubmitButton" onClick={handleSubmit}>
