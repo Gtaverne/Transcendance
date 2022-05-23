@@ -3,10 +3,16 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
 import { login, edit, reset } from '../features/auth/authSlice';
-import StorageManager from '../components/StorageManager';
+// import StorageManager from '../components/StorageManager';
+import axios, { AxiosRequestConfig } from 'axios';
+import * as qs from 'qs';
+import * as fs from 'fs';
+import Cookies from 'js-cookie';
 
 import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
+
+const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || '';
 
 type Props = {};
 
@@ -15,6 +21,13 @@ const UserProfile = (props: Props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [editProfile, setEditProfile] = useState(false);
+  const [profilePic, setProfilePic] = useState<Blob>();
+  const [preview, setPreview] = useState('');
+  const [urlPic, setURLPic] = useState('');
+  const [queryData, setQueryData] = useState({
+    query: '',
+  });
+  const params = useParams();
 
   const {
     user,
@@ -28,11 +41,49 @@ const UserProfile = (props: Props) => {
 
   var profile = user;
   const [fetchedProfile, setFetchedProfile] = useState(profile);
-  const [queryData, setQueryData] = useState({
-    query: '',
-  });
+
+  useEffect(() => {
+    console.log('We get in useeffect');
+
+    if (noloop === 0) {
+      noloop = 1;
+      console.log('We try to fetch');
+
+      const fetchUser = async () => {
+        const userData = await apiGetter('users/profile/' + params.id);
+        if (userData) {
+          setFetchedProfile({ ...userData });
+          console.log('We fetched a profile: ');
+        }
+      };
+      fetchUser();
+    }
+
+    if (!profilePic) {
+      setPreview('');
+    } else {
+      const objectUrl = URL.createObjectURL(profilePic);
+      setURLPic(objectUrl);
+      // console.log(objectUrl)
+      setPreview(objectUrl);
+    }
+
+    dispatch(reset);
+  }, [
+    dispatch,
+    params,
+    login,
+    user,
+    edit,
+    iFollowList,
+    iBlockedList,
+    profilePic,
+  ]);
+
+  var rofile = user;
 
   const onMutate = (e: any) => {
+    console.log('Mutation');
     setFetchedProfile((prevState: any) => ({
       ...prevState,
       [e.target.id]: e.target.value,
@@ -55,26 +106,11 @@ const UserProfile = (props: Props) => {
     }
   };
 
-  const [results, setResults] = useState('');
+  const onEdition = async (e: any) => {
+    e.preventDefault();
 
-  const params = useParams();
+    console.log('In onEdition');
 
-  useEffect(() => {
-    if (noloop === 0) {
-      noloop = 1;
-
-      const fetchUser = async () => {
-        const userData = await apiGetter('users/profile/' + params.id);
-        if (userData) {
-          setFetchedProfile({ ...userData });
-        }
-      };
-      fetchUser();
-    }
-    dispatch(reset);
-  }, [dispatch, params, login, user, iFollowList, iBlockedList]);
-
-  const onEdition = async () => {
     if (editProfile === true && user.id === fetchedProfile.id) {
       dispatch(
         edit({
@@ -83,10 +119,79 @@ const UserProfile = (props: Props) => {
           value: fetchedProfile.username,
         }),
       );
-    }
+      if (preview !== '' && Cookies.get('jwt')) {
+        // upload avatar in back
+        console.log('Ready to upload: ', profilePic ? profilePic : '');
+        const myData = new FormData();
+        const config = {
+          headers: {
+            'Content-Type':
+              'multipart/form-data; boundary=' + Math.random().toString()[2],
+          },
+        };
 
+        myData.append('file', profilePic ? profilePic : '');
+        // console.log('Data: ', data.get('file'));
+
+        try {
+          // Axios does not work with uploadform
+          const res = await fetch(
+            STORAGE_PATH + `/upload/${user.id}?jwt=` + Cookies.get('jwt'),
+
+            {
+              method: 'POST',
+              body: myData,
+            },
+          );
+        } catch (error) {
+          console.log('Avatar upload failed');
+          dispatch(
+            edit({
+              id: user.id,
+              field: 'avatar',
+              value: STORAGE_PATH + `/avatar/default`,
+            }),
+          );
+        }
+        window.location.reload();
+      }
+      //Search if there is a more elegant way to remove a picture from cache -_-
+
+    }
+    console.log('Change edition');
     setEditProfile((prevState) => !prevState);
+
   };
+
+  const onNewpp = (e: React.FormEvent) => {
+    const files = (e.target as HTMLInputElement).files;
+
+    console.log('We received this picture: ', files);
+    if (files && files.length > 0) {
+      setProfilePic(files[0]);
+    }
+  };
+
+  //   const onUpload = () => {
+  //   console.log('Uploading');
+
+  //   var data = new FormData();
+  //   data.append('file', profilePic ? profilePic : '');
+
+  //   try {
+  //     console.log(STORAGE_PATH + '/upload/' + user.id);
+  //     axios.post(STORAGE_PATH + '/upload/' + user.id, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //       params: { jwt: Cookies.get('jwt') },
+  //     });
+
+  //     console.log('We tried to get a pp');
+  //   } catch (error) {
+  //     console.log('The picture upload failed');
+  //   }
+  // };
 
   const onBlock = async () => {
     if (user) {
@@ -118,7 +223,7 @@ const UserProfile = (props: Props) => {
   return (
     <div className="userProfile">
       <div></div>
-      {user && user.id && user.id === fetchedProfile.id ? (
+      {user && user.id && user.id === fetchedProfile?.id ? (
         <>
           <h2>Welcome home</h2>
           <button className="largeButton" color="#f194ff" onClick={onEdition}>
@@ -145,7 +250,24 @@ const UserProfile = (props: Props) => {
       <div></div>
 
       {editProfile ? (
-        <StorageManager />
+        // Upload profile picture
+        <>
+          {preview ? (
+            <>
+              <img className="profilepage" src={preview} />
+            </>
+          ) : (
+            <>
+              <img className="profilepage" src={user.avatar} />
+            </>
+          )}
+
+          <div>Upload your avatar</div>
+          {/* <form onSubmit={onUpload}> */}
+          <input type="file" id="file" accept="image/jpg" onChange={onNewpp} />
+          {/* <button type="submit">Upload</button>
+          </form> */}
+        </>
       ) : (
         <>
           <img className="profilepage" src={fetchedProfile.avatar} />

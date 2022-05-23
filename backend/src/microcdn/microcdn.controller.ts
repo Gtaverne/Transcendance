@@ -19,30 +19,37 @@ import {
 import { query, Request, response, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MicrocdnService } from './microcdn.service';
+import * as fs from 'fs';
+import { Readable } from 'typeorm/platform/PlatformTools';
+var jwt = require('jsonwebtoken');
+const Token_Secret = process.env.JWT_Secret;
 
 @Controller('microcdn')
 export class MicrocdnController {
   constructor(private microcdnService: MicrocdnService) {}
 
   @Get('/avatar/:id')
-  async getAvatar(
-    @Param() params,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<any> {
-    const user = await this.microcdnService.getAvatar(params.id);
+  async getAvatar(@Param() params, @Res() response: Response) {
+    const path = this.microcdnService.getAvatarPath(params.id);
 
-    response.set({
-      'Content-Type': 'image/png',
-    });
-    response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
-    response.json(user);
-
-    return this.microcdnService.getAvatar(params.id);
+    const data = fs.createReadStream(path);
+    response.type('image/png');
+    data.pipe(response);
   }
 
-  @Post('uploadpic/:id')
+  @Post('upload/:id')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
+  uploadFile(
+    @UploadedFile() file: any,
+    @Param() params: any,
+    @Query('jwt') token: string,
+  ) {
+    const idFromToken = jwt.verify(token, Token_Secret);
+    if (params.id === idFromToken) {
+      const path = this.microcdnService.getAvatarPath(params.id);
+      fs.writeFileSync(path, file.buffer);
+    } else {
+      console.log('Unauthorized to edit avatar');
+    }
   }
 }

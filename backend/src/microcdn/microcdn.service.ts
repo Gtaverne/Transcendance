@@ -4,12 +4,9 @@ import { Get, Injectable, Param } from '@nestjs/common';
 export class MicrocdnService {
   constructor() {}
 
-  async getAvatar(id: number): Promise<any> {
+  getAvatarPath(id: number): string {
     console.log('Get avatar of id: ', id);
-    // const file = createReadStream(join(process.cwd(), 'package.json'));
-    // file.pipe(file);
-
     
-    return 'plop';
+    return `./src/microcdn/avatar/${id}.jpg`;
   }
 }

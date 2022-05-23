@@ -10,7 +10,7 @@ function Landing({}: Props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.id ) {
+    if (user?.username ) {
       navigate('/');
     }
   }, [user]);

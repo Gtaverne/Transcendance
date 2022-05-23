@@ -47,10 +47,10 @@ function Login({}: Props) {
   useEffect(() => {
     noloop = noloop + 1;
 
-    if (firstLoop === false || noloop > 1) {
-      console.log('Already looped');
-      setFirstLoop(false);
-    }
+    // if (firstLoop === false || noloop > 1) {
+    //   console.log('Already looped');
+    //   setFirstLoop(false);
+    // }
 
     if (user && user.username) {
       navigate('/');

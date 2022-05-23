@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || '';
 
@@ -17,11 +18,20 @@ function StorageManager({}: Props) {
     console.log('Upload that picture in our CDN');
     formData.append(`profileof${user.id}`, profilePic);
 
-    axios.post(STORAGE_PATH, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    try {
+
+      console.log(STORAGE_PATH + '/upload/' + user.id);
+      axios.post(STORAGE_PATH + '/upload/' + user.id, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        params: { jwt: Cookies.get('jwt') },
+      });
+
+      console.log('We tried to get a pp');
+    } catch (error) {
+      console.log('The picture upload failed');
+    }
   };
 
   const onChange = (e: React.FormEvent) => {
