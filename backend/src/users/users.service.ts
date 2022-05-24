@@ -491,6 +491,7 @@ export class UsersService {
       data.value[0] === 'block'
     ) {
       console.log('block ', data.value[1]);
+      
     } else {
       console.log('Could not edit field: ' + data.field);
       return null;

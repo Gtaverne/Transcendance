@@ -59,6 +59,10 @@ const UserProfile = (props: Props) => {
       fetchUser();
     }
 
+    dispatch(reset);
+  }, [dispatch, params, login, user, edit, iFollowList, iBlockedList]);
+
+  useEffect(() => {
     if (!profilePic) {
       setPreview('');
     } else {
@@ -69,18 +73,9 @@ const UserProfile = (props: Props) => {
     }
 
     dispatch(reset);
-  }, [
-    dispatch,
-    params,
-    login,
-    user,
-    edit,
-    iFollowList,
-    iBlockedList,
-    profilePic,
-  ]);
+  }, [dispatch, login, user, profilePic]);
 
-  var rofile = user;
+  var profile = user;
 
   const onMutate = (e: any) => {
     console.log('Mutation');
@@ -143,6 +138,14 @@ const UserProfile = (props: Props) => {
               body: myData,
             },
           );
+          dispatch(
+            edit({
+              id: user.id,
+              field: 'avatar',
+              value: STORAGE_PATH + `/avatar/${user.id}`,
+            }),
+          );
+
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
@@ -153,14 +156,12 @@ const UserProfile = (props: Props) => {
             }),
           );
         }
+        //Search if there is a more elegant way to remove a picture from cache -_-
         window.location.reload();
       }
-      //Search if there is a more elegant way to remove a picture from cache -_-
-
     }
     console.log('Change edition');
     setEditProfile((prevState) => !prevState);
-
   };
 
   const onNewpp = (e: React.FormEvent) => {
@@ -171,27 +172,6 @@ const UserProfile = (props: Props) => {
       setProfilePic(files[0]);
     }
   };
-
-  //   const onUpload = () => {
-  //   console.log('Uploading');
-
-  //   var data = new FormData();
-  //   data.append('file', profilePic ? profilePic : '');
-
-  //   try {
-  //     console.log(STORAGE_PATH + '/upload/' + user.id);
-  //     axios.post(STORAGE_PATH + '/upload/' + user.id, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //       params: { jwt: Cookies.get('jwt') },
-  //     });
-
-  //     console.log('We tried to get a pp');
-  //   } catch (error) {
-  //     console.log('The picture upload failed');
-  //   }
-  // };
 
   const onBlock = async () => {
     if (user) {
@@ -308,6 +288,13 @@ const UserProfile = (props: Props) => {
       ) : (
         <></>
       )}
+      <div className="friendlist">
+        {user?.iFollowList.map(() => (
+          <div>
+            <img className="tbd" src={user.avatar} alt="" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
