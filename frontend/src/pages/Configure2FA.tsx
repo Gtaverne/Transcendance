@@ -26,32 +26,30 @@ function Configure2FA({}: Props) {
   const onMFA = async () => {
     setQRCode('');
     dispatch(reset);
-    // dispatch(
-    //   edit({
-    //     id: user.id,
-    //     field: 'doublefa',
-    //     value: user.doublefa % 10 === 0 ? user.doublefa + 1 : user.doublefa,
-    //   }),
-    //   );
-    const code = await axios.get(
-      process.env.REACT_APP_URL_BACK + 'users/mfasetup',
-      {
-        params: { jwt: Cookies.get('jwt') },
-      },
-    );
 
-    if (!code.data || code.data === 'logout') {
-      dispatch(logout);
-      console.log('Invalid login credentials, user has been logout');
-      navigate('/');
+    if (user.doublefa !==0) {
+      console.log('User already configurated 2fa');
     } else {
-      qrcode.toDataURL(code.data.secret, function (err, data) {
-        if (err) {
-          console.log('Error in que qrcode generation: ', err);
-        } else {
-          setQRCode(data);
-        }
-      });
+      const code = await axios.get(
+        process.env.REACT_APP_URL_BACK + 'users/mfasetup',
+        {
+          params: { jwt: Cookies.get('jwt') },
+        },
+      );
+
+      if (!code.data || code.data === 'logout') {
+        dispatch(logout);
+        console.log('Invalid login credentials, user has been logout');
+        navigate('/');
+      } else {
+        qrcode.toDataURL(code.data.secret, function (err, data) {
+          if (err) {
+            console.log('Error in que qrcode generation: ', err);
+          } else {
+            setQRCode(data);
+          }
+        });
+      }
     }
   };
 
@@ -68,7 +66,6 @@ function Configure2FA({}: Props) {
 
       const validMFA = resMFA.data.mfaverification;
       if (validMFA) {
-
         dispatch(
           edit({
             id: user.id,

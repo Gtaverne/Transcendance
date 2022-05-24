@@ -3,16 +3,15 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
 import { login, edit, reset } from '../features/auth/authSlice';
-// import StorageManager from '../components/StorageManager';
-import axios, { AxiosRequestConfig } from 'axios';
-import * as qs from 'qs';
-import * as fs from 'fs';
 import Cookies from 'js-cookie';
-
 import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
+import UserMiniature from '../components/UserMiniature';
 
 const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || '';
+if (STORAGE_PATH === '') {
+  console.log('Missing STORAGE_PATH in .env');
+}
 
 type Props = {};
 
@@ -23,7 +22,6 @@ const UserProfile = (props: Props) => {
   const [editProfile, setEditProfile] = useState(false);
   const [profilePic, setProfilePic] = useState<Blob>();
   const [preview, setPreview] = useState('');
-  const [urlPic, setURLPic] = useState('');
   const [queryData, setQueryData] = useState({
     query: '',
   });
@@ -41,6 +39,8 @@ const UserProfile = (props: Props) => {
 
   var profile = user;
   const [fetchedProfile, setFetchedProfile] = useState(profile);
+  const [fetchedFollowers, setFetchedFollowers] = useState([]);
+  const [fetchedFollowing, setFetchedFollowing] = useState(iFollowList);
 
   useEffect(() => {
     console.log('We get in useeffect');
@@ -50,10 +50,18 @@ const UserProfile = (props: Props) => {
       console.log('We try to fetch');
 
       const fetchUser = async () => {
-        const userData = await apiGetter('users/profile/' + params.id);
-        if (userData) {
-          setFetchedProfile({ ...userData });
-          console.log('We fetched a profile: ');
+        try {
+          const userData = await apiGetter('users/profile/' + params.id);
+          const userFollower = await apiGetter('users/followers/' + params.id);
+          const userFollowing = await apiGetter('users/following/' + params.id);
+          if (userData) {
+            setFetchedProfile({ ...userData });
+            setFetchedFollowers(userFollower);
+            setFetchedFollowing(userFollowing);
+            console.log('We fetched a profile: ');
+          }
+        } catch (error) {
+          console.log('Could not load user');
         }
       };
       fetchUser();
@@ -67,13 +75,11 @@ const UserProfile = (props: Props) => {
       setPreview('');
     } else {
       const objectUrl = URL.createObjectURL(profilePic);
-      setURLPic(objectUrl);
-      // console.log(objectUrl)
       setPreview(objectUrl);
+      //Search if there is a more elegant way to remove a picture from cache -_-
+      // window.location.reload();
     }
-
-    dispatch(reset);
-  }, [dispatch, login, user, profilePic]);
+  }, [user, profilePic]);
 
   var profile = user;
 
@@ -130,9 +136,8 @@ const UserProfile = (props: Props) => {
 
         try {
           // Axios does not work with uploadform
-          const res = await fetch(
+          await fetch(
             STORAGE_PATH + `/upload/${user.id}?jwt=` + Cookies.get('jwt'),
-
             {
               method: 'POST',
               body: myData,
@@ -145,7 +150,6 @@ const UserProfile = (props: Props) => {
               value: STORAGE_PATH + `/avatar/${user.id}`,
             }),
           );
-
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
@@ -156,11 +160,8 @@ const UserProfile = (props: Props) => {
             }),
           );
         }
-        //Search if there is a more elegant way to remove a picture from cache -_-
-        window.location.reload();
       }
     }
-    console.log('Change edition');
     setEditProfile((prevState) => !prevState);
   };
 
@@ -198,7 +199,30 @@ const UserProfile = (props: Props) => {
     }
   };
 
-  const onFollow = async () => {};
+  const onFollow = async () => {
+    if (user) {
+      if (iFollowList.includes(fetchedProfile.id)) {
+        console.log('Unfollow');
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'iFollowList',
+            value: ['unfollow', fetchedProfile.id],
+          }),
+        );
+        dispatch(reset);
+      } else {
+        console.log('follow');
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'iFollowList',
+            value: ['follow', fetchedProfile.id],
+          }),
+        );
+      }
+    }
+  };
 
   return (
     <div className="userProfile">
@@ -288,10 +312,21 @@ const UserProfile = (props: Props) => {
       ) : (
         <></>
       )}
-      <div className="friendlist">
-        {user?.iFollowList.map(() => (
+
+      <div className="userlist">
+        <h3>Following: {fetchedFollowing.length} </h3>
+        {fetchedFollowing.map((c: number, i: number) => (
           <div>
-            <img className="tbd" src={user.avatar} alt="" />
+            <UserMiniature id={c} key={i} />
+          </div>
+        ))}
+      </div>
+      
+      <div className="userlist">
+        <h3>Follower: {fetchedFollowers.length} </h3>
+        {fetchedFollowers.map((c: number, i: number) => (
+          <div>
+            <UserMiniature id={c} key={i} />
           </div>
         ))}
       </div>

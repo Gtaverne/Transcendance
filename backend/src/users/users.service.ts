@@ -8,7 +8,7 @@ import * as qs from 'qs';
 import * as dotenv from 'dotenv';
 import { response } from 'express';
 import { RoomsService } from 'src/rooms/rooms.service';
-import { useJwt } from 'react-jwt';
+// import { useJwt } from 'react-jwt';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 import { UserDTO } from './dto/user.dto';
 import { EditorDTO } from './dto/editor.dto';
@@ -89,6 +89,29 @@ export class UsersService {
     return iFollowList;
   }
 
+  async findFollowers(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['followingMeList'],
+    });
+    let followingMeList: number[] = [];
+    for (let i = 0; i < user.followingMeList.length; i++)
+      followingMeList.push(user.followingMeList[i].id);
+    return followingMeList;
+  }
+
+
+  async findFollowing(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['iFollowList'],
+    });
+    let iFollowList: number[] = [];
+    for (let i = 0; i < user.iFollowList.length; i++)
+      iFollowList.push(user.iFollowList[i].id);
+    return iFollowList;
+  }
+
   async findBlocked(id: number) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
@@ -125,6 +148,7 @@ export class UsersService {
     return user;
   }
 
+  //Important: do not add relations as it will export secrets to the front
   async findOneForFront(id: number) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
@@ -135,7 +159,10 @@ export class UsersService {
   }
 
   async findOneWithName(name: string) {
-    const user = await this.usersRepository.findOne({ username: name });
+    const user = await this.usersRepository.findOne({
+      where: { username: name },
+      select: ['id', 'username', 'lvl', 'avatar', 'email'],
+    });
     return user;
   }
 
@@ -178,6 +205,7 @@ export class UsersService {
     return user.accessToList;
   }
 
+  //TO REMOVE as it will export secrets of the accesslist !!!!!!
   async accessListUser(id: number) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
@@ -283,15 +311,6 @@ export class UsersService {
 
     token = (await axios(config)).data.access_token;
 
-    //TODO: Ask if the short version is enough
-    // await axios(config)
-    //   .then(function (response: AxiosResponse) {
-    //     token = response.data.access_token;
-    //   })
-    //   .catch(function (error) {
-    //     console.log('Could not get a token from 42');
-    //   });
-
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
       console.log('answer.user.username: ', answer.user.username);
@@ -309,7 +328,7 @@ export class UsersService {
         for (let i = 0; i < user.iBlockedList.length; i++)
           iBlockedList.push(user.iBlockedList[i].id);
 
-        answer.user = user;
+        answer.user = await this.findOneForFront(answer.user.id);
         answer.iBlockedList = iBlockedList;
         answer.iFollowList = iFollowList;
         answer.jwt = this.generateToken(answer.user.id);
@@ -338,9 +357,6 @@ export class UsersService {
 
   async login2fa(token: string, code: string): Promise<any> {
     console.log('Token: ', token, ' code: ', code);
-    // const str = JSON.parse(token);
-    // console.log('str: ', str)
-    // console.log('In login2fa, id: ', id, ' jwt: ', jwt);
     var answer = {
       user: new UsersEntity(),
       iBlockedList: [],
@@ -383,7 +399,7 @@ export class UsersService {
 
           console.log('User has been fetched');
 
-          answer.user = user;
+          answer.user = await this.findOneForFront(answer.user.id);
           answer.iBlockedList = iBlockedList;
           answer.iFollowList = iFollowList;
           answer.jwt = this.generateToken(idFromToken);
@@ -463,7 +479,7 @@ export class UsersService {
       typeof data.value === 'string' &&
       data.value !== ''
     ) {
-      //check pas de doublons
+      //check pas de doublons d'id
       await this.usersRepository.update(data.id!, {
         username: data.value,
       });
@@ -480,18 +496,47 @@ export class UsersService {
     ) {
       await this.usersRepository.update(data.id!, { doublefa: data.value });
     } else if (
+      // UNBLOCKING A DUDE
       data.field === 'iBlockedList' &&
-      typeof data.value &&
-      data.value[0] === 'unblock'
+      typeof data.value[0] === 'string' &&
+      typeof data.value[1] === 'number' &&
+      (data.value[0] === 'block' || data.value[0] === 'unblock')
     ) {
-      console.log('unblock ', data.value[1]);
+      console.log('Trying to ', data.value[0]);
+      try {
+        const test = await this.blockerManager(
+          data.id!,
+          data.value[1],
+          data.value[0],
+        );
+        if (test === false) {
+          return null;
+        }
+      } catch (error) {
+        console.log('The blocker manager crashed');
+        return null;
+      }
     } else if (
-      data.field === 'iBlockedList' &&
-      typeof data.value &&
-      data.value[0] === 'block'
+      // UNBLOCKING A DUDE
+      data.field === 'iFollowList' &&
+      typeof data.value[0] === 'string' &&
+      typeof data.value[1] === 'number' &&
+      (data.value[0] === 'follow' || data.value[0] === 'unfollow')
     ) {
-      console.log('block ', data.value[1]);
-      
+      console.log('Trying to ', data.value[0]);
+      try {
+        const test = await this.followerManager(
+          data.id!,
+          data.value[1],
+          data.value[0],
+        );
+        if (test === false) {
+          return null;
+        }
+      } catch (error) {
+        console.log('The follower manager crashed');
+        return null;
+      }
     } else {
       console.log('Could not edit field: ' + data.field);
       return null;
@@ -510,8 +555,9 @@ export class UsersService {
     for (let i = 0; i < user.iBlockedList.length; i++)
       iBlockedList.push(user.iBlockedList[i].id);
 
+    const userForFront = await this.findOneForFront(data.id);
     const res = {
-      user: user,
+      user: userForFront,
       iFollowList: iFollowList,
       iBlockedList: iBlockedList,
     };
@@ -519,11 +565,86 @@ export class UsersService {
     return res;
   }
 
-  async blockUser(data: ChangeRoleDTO) {
-    // return false;
-    //first check with georges comment update user
-    //this function should be finished, need update in the front do display accurately
+  async blockerManager(userid: number, target: number, goal: string) {
+    if (userid === target) {
+      console.log("You can't block or unblock yourself");
+      return false;
+    }
+    if (goal === 'block' || goal === 'unblock') {
+      const userBlocking = await this.usersRepository.findOne({
+        where: { id: userid },
+        relations: ['iBlockedList'],
+      });
+      const userTarget = await this.usersRepository.findOne(target);
+      for (let i = 0; i < userBlocking.iBlockedList.length; i++) {
+        if (userBlocking.iBlockedList[i].id === userTarget.id) {
+          console.log('User Target is already Blocked');
+          if (goal === 'unblock') {
+            console.log('Unblocking him');
+            userBlocking.iBlockedList.splice(i, 1);
+            await this.usersRepository.save(userBlocking);
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+      if (goal === 'block') {
+        console.log('Blocking User');
+        userBlocking.iBlockedList.push(userTarget);
+        await this.usersRepository.save(userBlocking);
+        return true;
+      } else {
+        console.log('Trying to unblock a non-blocked user');
+        return false;
+      }
+    } else {
+      console.log('Wrong Request Role');
+      return false;
+    }
+  }
 
+  async followerManager(userid: number, target: number, goal: string) {
+    if (userid === target) {
+      console.log("You can't follow or unfollow yourself");
+      return false;
+    }
+    if (goal === 'follow' || goal === 'unfollow') {
+      const userFollowing = await this.usersRepository.findOne({
+        where: { id: userid },
+        relations: ['iFollowList'],
+      });
+      const userTarget = await this.usersRepository.findOne(target);
+      for (let i = 0; i < userFollowing.iFollowList.length; i++) {
+        if (userFollowing.iFollowList[i].id === userTarget.id) {
+          console.log('User Target is already Blocked');
+          if (goal === 'unfollow') {
+            console.log('Unfollow him');
+            userFollowing.iFollowList.splice(i, 1);
+            await this.usersRepository.save(userFollowing);
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+      if (goal === 'follow') {
+        console.log('Follow User');
+        userFollowing.iFollowList.push(userTarget);
+        await this.usersRepository.save(userFollowing);
+        return true;
+      } else {
+        console.log('Trying to unblock a non-blocked user');
+        return false;
+      }
+    } else {
+      console.log('Wrong Request Role');
+      return false;
+    }
+  }
+
+  //Function to remove, use edit with a user and ['block', idtoblock]
+  async blockUser(data: ChangeRoleDTO) {
     if (data.role !== 'block') {
       console.log('Wrong Request Role');
       return false;

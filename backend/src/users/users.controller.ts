@@ -28,9 +28,20 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersServices: UsersService) {}
 
+  //Terminologie ambigue, ce sont des followers ou des following
   @Get('/friends/:id')
   findFriends(@Param() params): Promise<number[]> {
     return this.usersServices.findFriends(params.id);
+  }
+
+  @Get('/followers/:id')
+  findFollowers(@Param() params): Promise<number[]> {
+    return this.usersServices.findFollowers(params.id);
+  }
+
+  @Get('/following/:id')
+  findFollowing(@Param() params): Promise<number[]> {
+    return this.usersServices.findFollowing(params.id);
   }
 
   @Get('/blocked/:id')
@@ -58,11 +69,15 @@ export class UsersController {
     console.log('callback, code: ', code);
     try {
       const user = await this.usersServices.login(cd);
-      response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+      response.header({
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+      });
       response.json(user);
     } catch (error) {
-      console.log('Crash in the login function')
-      response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+      console.log('Crash in the login function');
+      response.header({
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+      });
       response.json({});
     }
     // response.setHeader('Set-Cookie', cookie.serialize('jwtbck', user.jwt) )  ;
@@ -83,19 +98,17 @@ export class UsersController {
     return secret;
   }
 
-
   @Get('/mfaverify')
   async mfaverify(
     @Req() request: Request,
     @Res() response: Response,
     @Query('jwt') token: string,
     @Query('code') code: string,
-    ): Promise<Boolean>  {
-      
-      // console.log('token: ', token, '  code: ', code)
-      const verification = await this.usersServices.verificationMFA(token, code)
-      response.json({mfaverification : verification})
-      return verification
+  ): Promise<Boolean> {
+    // console.log('token: ', token, '  code: ', code)
+    const verification = await this.usersServices.verificationMFA(token, code);
+    response.json({ mfaverification: verification });
+    return verification;
   }
 
   @Get('/login2fa')
@@ -104,14 +117,13 @@ export class UsersController {
     @Res() response: Response,
     @Query('jwt') token: string,
     @Query('code') code: string,
-    ): Promise<any>  {
-      
-      const user = await this.usersServices.login2fa(token, code)
+  ): Promise<any> {
+    const user = await this.usersServices.login2fa(token, code);
 
-      console.log('In the controller, user is: ', JSON.stringify(user.user))
-      response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
-      response.json(user);
-      return user
+    console.log('In the controller, user is: ', JSON.stringify(user.user));
+    response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+    response.json(user);
+    return user;
   }
 
   @Get('aCleanPlusTard')
