@@ -76,8 +76,6 @@ const UserProfile = (props: Props) => {
     } else {
       const objectUrl = URL.createObjectURL(profilePic);
       setPreview(objectUrl);
-      //Search if there is a more elegant way to remove a picture from cache -_-
-      // window.location.reload();
     }
   }, [user, profilePic]);
 
@@ -100,7 +98,6 @@ const UserProfile = (props: Props) => {
         dispatch(reset);
       } else {
         console.log('Deactivate 2fa');
-        //BENJAMIN: exemple de dispatch(edit(...))
         dispatch(edit({ id: user.id, field: 'doublefa', value: 0 }));
         dispatch(reset);
       }
@@ -124,13 +121,7 @@ const UserProfile = (props: Props) => {
         // upload avatar in back
         console.log('Ready to upload: ', profilePic ? profilePic : '');
         const myData = new FormData();
-        const config = {
-          headers: {
-            'Content-Type':
-              'multipart/form-data; boundary=' + Math.random().toString()[2],
-          },
-        };
-
+  
         myData.append('file', profilePic ? profilePic : '');
         // console.log('Data: ', data.get('file'));
 
@@ -150,6 +141,8 @@ const UserProfile = (props: Props) => {
               value: STORAGE_PATH + `/avatar/${user.id}`,
             }),
           );
+          //Search if there is a more elegant way to remove a picture from cache -_-
+          window.location.reload();
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
@@ -315,18 +308,18 @@ const UserProfile = (props: Props) => {
 
       <div className="userlist">
         <h3>Following: {fetchedFollowing.length} </h3>
-        {fetchedFollowing.map((c: number, i: number) => (
-          <div>
-            <UserMiniature id={c} key={i} />
+        {fetchedFollowing.map((c: number) => (
+          <div key={c.toString()} >
+            <UserMiniature id={c} />
           </div>
         ))}
       </div>
-      
+
       <div className="userlist">
         <h3>Follower: {fetchedFollowers.length} </h3>
-        {fetchedFollowers.map((c: number, i: number) => (
-          <div>
-            <UserMiniature id={c} key={i} />
+        {fetchedFollowers.map((c: number) => (
+          <div key={c.toString()} >
+            <UserMiniature id={c}  />
           </div>
         ))}
       </div>

@@ -23,6 +23,9 @@ import { UserDTO } from './dto/user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
+var jwt = require('jsonwebtoken');
+const Token_Secret = process.env.JWT_Secret;
+
 //retourne le premier endpoint qui match la route
 @Controller('users')
 export class UsersController {
@@ -46,6 +49,7 @@ export class UsersController {
 
   @Get('/blocked/:id')
   findBlocked(@Param() params): Promise<number[]> {
+    console.log('Find Blocked by id', params.id)
     return this.usersServices.findBlocked(params.id);
   }
 
@@ -155,8 +159,12 @@ export class UsersController {
   //les param sont ceux du chemin de la requete
   //ATTENTION, CETTE ROUTE DEVRA ETRE NETTOYEE
   @Get('/profile/:id')
-  async findOneForFront(@Param() params): Promise<UsersEntity> {
-    return this.usersServices.findOneForFront(params.id);
+  async findOneForFront(
+    @Param() params,
+    @Query('jwt') token: string,
+  ): Promise<UsersEntity> {
+    const idFromToken = jwt.verify(token, Token_Secret)
+    return this.usersServices.findOneForFront(params.id, +idFromToken);
   }
 
   @Get('/:id')

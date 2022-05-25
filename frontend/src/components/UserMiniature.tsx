@@ -5,7 +5,6 @@ import UserInterface from '../interfaces/UserInterface';
 
 type Props = {
   id: any;
-  key: any
 }
 
 function UserMiniature({id}: Props) {

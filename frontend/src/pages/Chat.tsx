@@ -1,4 +1,5 @@
 import axios from 'axios';
+import apiGetter from '../features/apicalls/apiGetter';
 import React, { useEffect, useRef, useState } from 'react';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import ChatOnline from '../components/ChatOnline';
@@ -152,9 +153,12 @@ function Chat() {
 
   const getIBlockList = async () => {
     try {
-      const res = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'users/blocked/' + user.id,
-      );
+      //Benjamin: check ce remplacement
+      // const res = await axios.get(
+      //   process.env.REACT_APP_URL_BACK + 'users/blocked/' + user.id,
+      // )
+      const res = await apiGetter('users/blocked/' + user.id)
+      ;
       setIBlockList(res.data);
     } catch (err) {
       console.log(err);

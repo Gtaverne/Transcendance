@@ -33,16 +33,13 @@ import { MicrocdnModule } from './microcdn/microcdn.module';
   providers: [AppService],
 })
 export class AppModule {
-  
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes(UsersController);
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes({ path: 'products', method: RequestMethod.GET });
-    consumer
-      .apply(LoggerMiddleware)
-      //Exclure le callback de Login
-      //.exclude({ path: 'users', method: RequestMethod.POST });
-      .exclude({ path: 'users/callback', method: RequestMethod.POST });
+      .exclude({ path: '/users/callback', method: RequestMethod.GET })
+      .forRoutes(UsersController);
+  //   consumer
+  //     .apply(LoggerMiddleware)
+  //     .forRoutes({ path: 'products', method: RequestMethod.GET });
   }
 }

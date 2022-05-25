@@ -15,8 +15,7 @@ export const useAuthStatus = () => {
   useEffect(() => {
     if (
       user &&
-      user.id //&&
-      // Cookies.get('jwt')
+      user.id && user.username
     ) {
       setLoggedIn(true);
     } else {

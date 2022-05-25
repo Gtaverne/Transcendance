@@ -100,7 +100,6 @@ export class UsersService {
     return followingMeList;
   }
 
-
   async findFollowing(id: number) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
@@ -149,13 +148,27 @@ export class UsersService {
   }
 
   //Important: do not add relations as it will export secrets to the front
-  async findOneForFront(id: number) {
-    const user = await this.usersRepository.findOne({
-      where: { id: id },
-      select: ['id', 'username', 'lvl', 'avatar', 'email'],
-    });
-    console.log(JSON.stringify(user));
-    return user;
+  async findOneForFront(id: number, whoIsAsking: number) {
+    console.log('Fetch user: ', id, ' request by: ', whoIsAsking)
+    if (!whoIsAsking || whoIsAsking === 0) {
+      const user = await this.usersRepository.findOne({
+        where: { id: id },
+        select: ['id', 'username', 'avatar'],
+      });
+      return user;
+    } else if (whoIsAsking === id) {
+      const user = await this.usersRepository.findOne({
+        where: { id: id },
+        select: ['id', 'username', 'lvl', 'avatar', 'email', 'doublefa'],
+      });
+      return user;
+    } else {
+      const user = await this.usersRepository.findOne({
+        where: { id: id },
+        select: ['id', 'username', 'lvl', 'avatar', 'email'],
+      });
+      return user;
+    }
   }
 
   async findOneWithName(name: string) {
@@ -328,7 +341,8 @@ export class UsersService {
         for (let i = 0; i < user.iBlockedList.length; i++)
           iBlockedList.push(user.iBlockedList[i].id);
 
-        answer.user = await this.findOneForFront(answer.user.id);
+        answer.user = await this.findOneForFront(answer.user.id, answer.user.id);
+        console.log('Normal auth, user: ', answer.user);
         answer.iBlockedList = iBlockedList;
         answer.iFollowList = iFollowList;
         answer.jwt = this.generateToken(answer.user.id);
@@ -343,11 +357,9 @@ export class UsersService {
         );
 
         var doublefaUser = new UsersEntity();
-        // doublefaUser.username = 'Validate MFA';
         doublefaUser.id = answer.user.id;
         doublefaUser.doublefa = answer.user.doublefa;
         answer.user = doublefaUser;
-        console.log('Ready to return: ', answer.user.username);
       }
     } else {
       console.log('No 42 token provided');
@@ -397,9 +409,10 @@ export class UsersService {
           for (let i = 0; i < user.iBlockedList.length; i++)
             iBlockedList.push(user.iBlockedList[i].id);
 
-          console.log('User has been fetched');
+          console.log('2fa, id: ', answer.user.id);
 
-          answer.user = await this.findOneForFront(answer.user.id);
+          answer.user = await this.findOneForFront(idFromToken, idFromToken);
+          console.log(answer.user.username);
           answer.iBlockedList = iBlockedList;
           answer.iFollowList = iFollowList;
           answer.jwt = this.generateToken(idFromToken);
@@ -472,7 +485,17 @@ export class UsersService {
   }
 
   async editprofile(data: EditorDTO): Promise<any> {
-    console.log('We are in the user.service');
+    try {
+      const idFromToken = jwt.verify(data.jwt, Token_Secret);
+      // console.log('ID from token: ', idFromToken, ' data.id: ', data.id)
+      if (+idFromToken !== +data.id) {
+        console.log('Token not corresponding to id');
+        return null;
+      }
+    } catch (error) {
+      console.log('Could not verify token');
+      return null;
+    }
 
     if (
       data.field === 'username' &&
@@ -555,7 +578,7 @@ export class UsersService {
     for (let i = 0; i < user.iBlockedList.length; i++)
       iBlockedList.push(user.iBlockedList[i].id);
 
-    const userForFront = await this.findOneForFront(data.id);
+    const userForFront = await this.findOneForFront(data.id, data.id);
     const res = {
       user: userForFront,
       iFollowList: iFollowList,
