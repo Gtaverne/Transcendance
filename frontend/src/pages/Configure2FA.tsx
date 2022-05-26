@@ -77,6 +77,14 @@ function Configure2FA({}: Props) {
         //Popup, MFA activated
       } else {
         //Popup 'Wrong code, MFA not activated
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'doublefa',
+            // we remove doublefa
+            value: 0,
+          }),
+        );
       }
     } catch (error) {
       console.log('Request to MFA validation failed');
@@ -84,7 +92,7 @@ function Configure2FA({}: Props) {
   };
 
   return (
-    <>
+    <div className="userProfile">
       <div>Configure2FA</div>
       <button className="largeButton" onClick={onMFA}>
         2FA Google
@@ -111,7 +119,7 @@ function Configure2FA({}: Props) {
       ) : (
         <></>
       )}
-    </>
+    </div>
   );
 }
 

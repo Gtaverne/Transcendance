@@ -85,7 +85,7 @@ const loginmfa = async (jwt: string, code: string) => {
 const edit = async (id: number, field: string, value: any) => {
   const data = { id: id, field: field, value: value, jwt: Cookies.get('jwt') };
 
-  const response = await axios.post(API_URL + 'users/editprofile/', data);
+  const response = await axios.post(API_URL + 'users/editprofile/', data, {params: {jwt: Cookies.get('jwt')}});
 
   if (response === null) {
     console.log('Logout user')

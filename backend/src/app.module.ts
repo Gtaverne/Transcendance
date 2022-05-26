@@ -36,7 +36,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .exclude({ path: '/users/callback', method: RequestMethod.GET })
+      .exclude({ path: '/users/callback', method: RequestMethod.GET }, { path: '/users/login2fa', method: RequestMethod.ALL })
       .forRoutes(UsersController);
   //   consumer
   //     .apply(LoggerMiddleware)
