@@ -119,3 +119,9 @@ code {
   align-self: center;
   margin: 30px;
 }
+
+.userPageWrapper {
+	background-color: blue;
+	height:100%;
+	width:100%;
+}

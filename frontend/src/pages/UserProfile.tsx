@@ -52,10 +52,14 @@ const UserProfile = (props: Props) => {
       const fetchUser = async () => {
         try {
           const user = await apiGetter('users/profile/' + params.id);
-          const userFollowerRaw = await apiGetter('users/followers/' + params.id);
-          const userFollowingRaw = await apiGetter('users/following/' + params.id);
-          const userFollower = userFollowerRaw.data
-          const userFollowing = userFollowingRaw.data
+          const userFollowerRaw = await apiGetter(
+            'users/followers/' + params.id,
+          );
+          const userFollowingRaw = await apiGetter(
+            'users/following/' + params.id,
+          );
+          const userFollower = userFollowerRaw.data;
+          const userFollowing = userFollowingRaw.data;
           if (user.data) {
             setFetchedProfile({ ...user.data });
             setFetchedFollowers(userFollower);
@@ -123,7 +127,7 @@ const UserProfile = (props: Props) => {
         // upload avatar in back
         console.log('Ready to upload: ', profilePic ? profilePic : '');
         const myData = new FormData();
-  
+
         myData.append('file', profilePic ? profilePic : '');
         // console.log('Data: ', data.get('file'));
 
@@ -220,110 +224,105 @@ const UserProfile = (props: Props) => {
   };
 
   return (
-    <div className="userProfile">
-      <div></div>
-      {user && user.id && user.id === fetchedProfile?.id ? (
-        <>
-          <h2>Welcome home</h2>
-          <button className="largeButton" color="#f194ff" onClick={onEdition}>
-            <FaSignOutAlt />
-            {editProfile ? ' Validate edition' : 'Edit'}
-          </button>
-        </>
-      ) : (
-        <>
-          <h3>Another player</h3>
-
-          <button className="largeButton" onClick={onFollow}>
-            <FaUser />
-            {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
-          </button>
-
-          <button className="largeButton" onClick={onBlock}>
-            <FaSignOutAlt />
-            {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
-          </button>
-        </>
-      )}
-
-      <div></div>
-
-      {editProfile ? (
-        // Upload profile picture
-        <>
-          {preview ? (
-            <>
-              <img className="profilepage" src={preview} />
-            </>
-          ) : (
-            <>
-              <img className="profilepage" src={user.avatar} />
-            </>
-          )}
-
-          <div>Upload your avatar</div>
-          {/* <form onSubmit={onUpload}> */}
-          <input type="file" id="file" accept="image/jpg" onChange={onNewpp} />
-          {/* <button type="submit">Upload</button>
-          </form> */}
-        </>
-      ) : (
-        <>
-          <img className="profilepage" src={fetchedProfile.avatar} />
-        </>
-      )}
-
-      {/* Name */}
-      {editProfile ? (
-        // How do we make spaces?
-        <div>
-          Change pseudo:
-          <input
-            type="text"
-            id="username"
-            value={fetchedProfile.username}
-            onChange={onMutate}
-            required
-          />
-        </div>
-      ) : (
-        <p>Username: {fetchedProfile.username}</p>
-      )}
-
-      <p>Level: {fetchedProfile.lvl}</p>
-
-      <p>email: {fetchedProfile.email}</p>
-
-      {user && user.id && editProfile && user.id === fetchedProfile.id ? (
-        <p>
-          Double Factor Authentication:
+    <div className="userPageWrapper">
+      <div className="userProfile">
+        {user && user.id && user.id === fetchedProfile?.id ? (
           <>
-            <button className="largeButton" onClick={onMfa}>
-              <FaLock />
-              {user.doublefa === 0 ? 'Activate 2fa' : 'Deactivate 2fa'}
+            <h2>Your Profile</h2>
+            <button className="largeButton" color="#f194ff" onClick={onEdition}>
+              <FaSignOutAlt />
+              {editProfile ? ' Validate edition' : 'Edit'}
             </button>
           </>
-        </p>
-      ) : (
-        <></>
-      )}
+        ) : (
+          <>
+            <h3>{fetchedProfile.username}'s profile</h3>
+            <button className="largeButton" onClick={onFollow}>
+              <FaUser />
+              {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
+            </button>
+            <button className="largeButton" onClick={onBlock}>
+              <FaSignOutAlt />
+              {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
+            </button>
+          </>
+        )}
+        {editProfile ? (
+          // Upload profile picture
+          <>
+            {preview ? (
+              <>
+                <img className="profilepage" src={preview} />
+              </>
+            ) : (
+              <>
+                <img className="profilepage" src={user.avatar} />
+              </>
+            )}
 
-      <div className="userlist">
-        <h3>Following: {fetchedFollowing.length} </h3>
-        {fetchedFollowing.map((c: number) => (
-          <div key={c.toString()} >
-            <UserMiniature id={c} />
+            <div>Upload your avatar</div>
+            {/* <form onSubmit={onUpload}> */}
+            <input
+              type="file"
+              id="file"
+              accept="image/jpg"
+              onChange={onNewpp}
+            />
+            {/* <button type="submit">Upload</button>
+          </form> */}
+          </>
+        ) : (
+          <>
+            <img className="profilepage" src={fetchedProfile.avatar} />
+          </>
+        )}
+        {/* Name */}
+        {editProfile ? (
+          // How do we make spaces?
+          <div>
+            Change pseudo:
+            <input
+              type="text"
+              id="username"
+              value={fetchedProfile.username}
+              onChange={onMutate}
+              required
+            />
           </div>
-        ))}
-      </div>
-
-      <div className="userlist">
-        <h3>Follower: {fetchedFollowers.length} </h3>
-        {fetchedFollowers.map((c: number) => (
-          <div key={c.toString()} >
-            <UserMiniature id={c}  />
-          </div>
-        ))}
+        ) : (
+          <p>Username: {fetchedProfile.username}</p>
+        )}
+        <p>Level: {fetchedProfile.lvl}</p>
+        <p>email: {fetchedProfile.email}</p>
+        {user && user.id && editProfile && user.id === fetchedProfile.id ? (
+          <p>
+            Double Factor Authentication:
+            <>
+              <button className="largeButton" onClick={onMfa}>
+                <FaLock />
+                {user.doublefa === 0 ? 'Activate 2fa' : 'Deactivate 2fa'}
+              </button>
+            </>
+          </p>
+        ) : (
+          <></>
+        )}
+        <div className="userlist">
+          <h3>Following: {fetchedFollowing.length} </h3>
+          {fetchedFollowing.map((c: number) => (
+            <div key={c.toString()}>
+              <UserMiniature id={c} />
+            </div>
+          ))}
+        </div>
+        <div className="userlist">
+          <h3>Follower: {fetchedFollowers.length} </h3>
+          {fetchedFollowers.map((c: number) => (
+            <div key={c.toString()}>
+              <UserMiniature id={c} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
