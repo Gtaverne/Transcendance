@@ -4,6 +4,12 @@ npm install --save @nestjs/typeorm typeorm pg
 //better to set synchronize false if in production in orm.config
 
 
+GTAVERNE:
+todo:
+- Check double username
+- Les Alertes avec le 2FA
+
+
 -->
 # ft_transcendence
 

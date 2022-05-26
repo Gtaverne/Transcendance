@@ -12,9 +12,9 @@ function UserMiniature({id}: Props) {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userData = await apiGetter('users/profile/' + id);
-      if (userData) {
-        setFetchedProfile({ ...userData });
+      const user = await apiGetter('users/profile/' + id);
+      if (user.data) {
+        setFetchedProfile({ ...user.data });
         console.log('We fetched a profile: ');
       }
     };

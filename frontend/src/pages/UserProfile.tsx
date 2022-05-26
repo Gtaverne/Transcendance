@@ -51,11 +51,13 @@ const UserProfile = (props: Props) => {
 
       const fetchUser = async () => {
         try {
-          const userData = await apiGetter('users/profile/' + params.id);
-          const userFollower = await apiGetter('users/followers/' + params.id);
-          const userFollowing = await apiGetter('users/following/' + params.id);
-          if (userData) {
-            setFetchedProfile({ ...userData });
+          const user = await apiGetter('users/profile/' + params.id);
+          const userFollowerRaw = await apiGetter('users/followers/' + params.id);
+          const userFollowingRaw = await apiGetter('users/following/' + params.id);
+          const userFollower = userFollowerRaw.data
+          const userFollowing = userFollowingRaw.data
+          if (user.data) {
+            setFetchedProfile({ ...user.data });
             setFetchedFollowers(userFollower);
             setFetchedFollowing(userFollowing);
             console.log('We fetched a profile: ');
