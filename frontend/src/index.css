@@ -119,9 +119,56 @@ code {
   align-self: center;
   margin: 30px;
 }
-
+/* User profile  */
 .userPageWrapper {
-	background-color: blue;
-	height:100%;
-	width:100%;
+  /* background-color: yellow; */
+  margin-block-start: 0;
+  margin-block-end: 0;
+  height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 300px 1fr;
+
+  position: fixed;
+  text-decoration: none;
+}
+
+.userList {
+  margin-left: 10px;
+  text-align: left;
+  /* background-color: red; */
+  display: flex;
+  grid-column: span 1;
+  text-decoration: none;
+}
+
+.userDescription {
+  margin-left: 10px;
+  text-align: left;
+  /* background-color: blue; */
+  grid-column: span 1;
+}
+
+.actionButton {
+  margin-left: 10px;
+
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #999999;
+  color: white;
+  grid-column: span 1;
+}
+
+.miniUser {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 35px 35px;
+}
+
+.miniUserLink {
+  grid-column: span 1;
 }

@@ -149,7 +149,7 @@ export class UsersService {
 
   //Important: do not add relations as it will export secrets to the front
   async findOneForFront(id: number, whoIsAsking: number) {
-    console.log('Fetch user: ', id, ' request by: ', whoIsAsking)
+    console.log('Fetch user: ', id, ' request by: ', whoIsAsking);
     if (!whoIsAsking || whoIsAsking === 0) {
       const user = await this.usersRepository.findOne({
         where: { id: id },
@@ -341,7 +341,10 @@ export class UsersService {
         for (let i = 0; i < user.iBlockedList.length; i++)
           iBlockedList.push(user.iBlockedList[i].id);
 
-        answer.user = await this.findOneForFront(answer.user.id, answer.user.id);
+        answer.user = await this.findOneForFront(
+          answer.user.id,
+          answer.user.id,
+        );
         console.log('Normal auth, user: ', answer.user);
         answer.iBlockedList = iBlockedList;
         answer.iFollowList = iFollowList;
@@ -471,7 +474,21 @@ export class UsersService {
 
     if (res.length === 0) {
       console.log('Creating profile');
-      dude.username = loggedProfile.login;
+      var i = 0;
+      try {
+        var lgn = loggedProfile.login;
+        let unik = await this.usersRepository.find({
+          where: { username: lgn },
+        });
+        while (unik.length !== 0) {
+          lgn = loggedProfile.login + i;
+          i += 1;
+          unik = await this.usersRepository.find({
+            where: { username: lgn },
+          });
+        }
+      } catch (error) {}
+      dude.username = loggedProfile.login + (i > 0 ? i : '');
       dude.avatar = loggedProfile.image_url;
       dude.email = loggedProfile.email;
 
@@ -503,8 +520,18 @@ export class UsersService {
       data.value !== ''
     ) {
       //check pas de doublons d'id
+      let i = 0
+      let login = data.value
+      let res = await this.usersRepository.find({
+        username: data.value})
+      while (res.length > 0) {
+        login = data.value + i
+        i = i + 1
+        res = await this.usersRepository.find({
+          username: login})
+      }
       await this.usersRepository.update(data.id!, {
-        username: data.value,
+        username: login,
       });
     } else if (
       data.field === 'avatar' &&

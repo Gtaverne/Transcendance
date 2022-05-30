@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
+import Spinner from '../components/Spinner';
 
 const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || '';
 if (STORAGE_PATH === '') {
@@ -37,6 +38,10 @@ const UserProfile = (props: Props) => {
     message,
   } = useSelector((state: RootStateOrAny) => state.auth);
 
+  const [friendList, setFriendList] = useState<Array<number>>([]);
+  const [requestList, setRequestList] = useState<Array<number>>([]);
+  const [stalkList, setStalkList] = useState<Array<number>>([]);
+
   var profile = user;
   const [fetchedProfile, setFetchedProfile] = useState(profile);
   const [fetchedFollowers, setFetchedFollowers] = useState([]);
@@ -47,7 +52,7 @@ const UserProfile = (props: Props) => {
 
     if (noloop === 0) {
       noloop = 1;
-      console.log('We try to fetch');
+      console.log('We try to fetch ', params.id);
 
       const fetchUser = async () => {
         try {
@@ -84,6 +89,29 @@ const UserProfile = (props: Props) => {
       setPreview(objectUrl);
     }
   }, [user, profilePic]);
+
+  useEffect(() => {
+    const friend: number[] = fetchedFollowers.filter((number) =>
+      fetchedFollowing.includes(number),
+    );
+    console.log('Friendlist: ', friend);
+
+    const stalk: number[] = fetchedFollowing.filter(
+      (value: number) => !friend.includes(value),
+    );
+
+    const pend: number[] = fetchedFollowers.filter(
+      (value: number) => !friend.includes(value),
+    );
+
+    const req: number[] = pend.filter(
+      (value: number) => !iBlockedList.includes(value),
+    );
+
+    setFriendList(friend);
+    setStalkList(stalk);
+    setRequestList(req);
+  }, [user, fetchedProfile, fetchedFollowers, fetchedFollowing, iBlockedList]);
 
   var profile = user;
 
@@ -223,28 +251,39 @@ const UserProfile = (props: Props) => {
     }
   };
 
+  // Beginning of the result
+  if (!user?.id || !fetchedProfile?.id) {
+    console.log('No data fetched');
+    navigate('/landing');
+    return <Spinner />;
+  }
+
   return (
     <div className="userPageWrapper">
-      <div className="userProfile">
+      <div className="userDescription">
         {user && user.id && user.id === fetchedProfile?.id ? (
-          <>
+          <div>
             <h2>Your Profile</h2>
             <button className="largeButton" color="#f194ff" onClick={onEdition}>
               <FaSignOutAlt />
               {editProfile ? ' Validate edition' : 'Edit'}
             </button>
-          </>
+          </div>
         ) : (
           <>
-            <h3>{fetchedProfile.username}'s profile</h3>
-            <button className="largeButton" onClick={onFollow}>
-              <FaUser />
-              {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
-            </button>
-            <button className="largeButton" onClick={onBlock}>
-              <FaSignOutAlt />
-              {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
-            </button>
+            <div>
+              <h3>{fetchedProfile.username}'s profile</h3>
+              <button className="largeButton" onClick={onFollow}>
+                <FaUser />
+                {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
+              </button>
+            </div>
+            <div>
+              <button className="largeButton" onClick={onBlock}>
+                <FaSignOutAlt />
+                {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
+              </button>
+            </div>
           </>
         )}
         {editProfile ? (
@@ -268,8 +307,6 @@ const UserProfile = (props: Props) => {
               accept="image/jpg"
               onChange={onNewpp}
             />
-            {/* <button type="submit">Upload</button>
-          </form> */}
           </>
         ) : (
           <>
@@ -292,7 +329,6 @@ const UserProfile = (props: Props) => {
         ) : (
           <p>Username: {fetchedProfile.username}</p>
         )}
-        <p>Level: {fetchedProfile.lvl}</p>
         <p>email: {fetchedProfile.email}</p>
         {user && user.id && editProfile && user.id === fetchedProfile.id ? (
           <p>
@@ -307,23 +343,61 @@ const UserProfile = (props: Props) => {
         ) : (
           <></>
         )}
-        <div className="userlist">
-          <h3>Following: {fetchedFollowing.length} </h3>
-          {fetchedFollowing.map((c: number) => (
-            <div key={c.toString()}>
-              <UserMiniature id={c} />
-            </div>
-          ))}
-        </div>
-        <div className="userlist">
-          <h3>Follower: {fetchedFollowers.length} </h3>
-          {fetchedFollowers.map((c: number) => (
-            <div key={c.toString()}>
-              <UserMiniature id={c} />
-            </div>
-          ))}
+      </div>
+
+      <div className="userDescription">
+        Trophys
+        <p>Level: {fetchedProfile.lvl}</p>
+      </div>
+
+      <div className="userList">
+        <div className="userList">
+          <div>
+            <h3>Friends: {fetchedFollowing.length} </h3>
+            {friendList.map((c: number) => (
+              <div key={c.toString()}>
+                <UserMiniature targetid={c} friendable={1} blockable={1} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+      {user?.id === fetchedProfile?.id ? (
+        <>
+          <div className="userList">
+            <div>
+              <h3>People you follow: {stalkList.length} </h3>
+              {stalkList.map((c: number) => (
+                <div key={c.toString()}>
+                  <UserMiniature targetid={c} friendable={1} blockable={1} />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="userList">
+            <div>
+              <h3>Friend requests: {requestList.length} </h3>
+              {requestList.map((c: number) => (
+                <div key={c.toString()}>
+                  <UserMiniature targetid={c} friendable={1} blockable={1} />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="userList">
+            <div>
+              <h3>Blocked: {iBlockedList.length} </h3>
+              {iBlockedList.map((c: number) => (
+                <div key={c.toString()}>
+                  <UserMiniature targetid={c} friendable={0} blockable={1} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
