@@ -6,7 +6,6 @@ npm install --save @nestjs/typeorm typeorm pg
 
 GTAVERNE:
 todo:
-- Check double username
 - Les Alertes avec le 2FA
 
 
@@ -31,7 +30,7 @@ It is a fullstack web application.
 
 ### Launch :
 ```
-docker-compose up --build
+yarn dev ou yarn 
 ```
 
 ### .env :

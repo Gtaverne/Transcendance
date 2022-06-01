@@ -8,7 +8,9 @@
 		"client": "npm start --prefix frontend",
 		"server": "npm run start:dev --prefix backend",
 		"i": "cd frontend && npm i && cd .. && cd backend && npm i && cd ..",
-		"dev": "concurrently \"npm run server\" \"npm run client\""
+		"dev": "concurrently \"npm run server\" \"npm run client\"",
+		"build": "docker-compose build",
+		"up": "docker-compose up"
 	},
 	"repository": {
 		"type": "git",
@@ -23,6 +25,7 @@
 	"dependencies": {
 		"concurrently": "^7.1.0",
 		"react-dom": "^18.0.0",
-		"timeago.js": "^4.0.2"
+		"timeago.js": "^4.0.2",
+		"yarn": "^1.22.18"
 	}
 }

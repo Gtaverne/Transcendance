@@ -106,12 +106,13 @@ const Game: React.FC<ComponentProps> = (props: ComponentProps) => {
           Game Height: {windowHeight} | Game Width: {windowWidth}
         </p>
       </div>
-      <Sketch
+      {/* Rouston, we've got a problem with sketch */}
+      {/* <Sketch
         setup={setup}
         draw={draw}
         windowResized={windowResized}
         className="game"
-      />
+      /> */}
     </div>
   );
 };
