@@ -35,6 +35,12 @@ yarn dev ou yarn
 
 ### .env :
 You need to add an API Key from the 42 intranet
+When launching with docker-compose, you need a .env file containing the following info:
+
+POSTGRES_PASSWORD=postgres
+JWT_Secret=AWonderfulSecret
+Client_ID=SEE THE DOCUMENTATION OF 42
+Client_Secret=SEE THE DOCUMENTATION OF 42
 
 Enjoy :)
 

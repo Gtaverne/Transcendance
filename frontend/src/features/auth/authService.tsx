@@ -7,7 +7,6 @@ import UserInterface from '../../interfaces/UserInterface';
 // import { encode, TAlgorithm } from "jwt-simple";
 
 const API_URL = process.env.REACT_APP_URL_BACK;
-// const JWT_Secret = process.env.REACT_APP_JWT_Secret || 'defaultSecret'
 
 //Login user
 const login = async (code: string) => {

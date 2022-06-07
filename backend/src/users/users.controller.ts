@@ -25,6 +25,7 @@ import { UsersService } from './users.service';
 
 var jwt = require('jsonwebtoken');
 const Token_Secret = process.env.JWT_Secret;
+const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
 
 //retourne le premier endpoint qui match la route
 @Controller('users')
@@ -74,13 +75,13 @@ export class UsersController {
     try {
       const user = await this.usersServices.login(cd);
       response.header({
-        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Origin': FRONT_DOMAIN,
       });
       response.json(user);
     } catch (error) {
       console.log('Crash in the login function');
       response.header({
-        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Origin': FRONT_DOMAIN,
       });
       response.json({});
     }
@@ -125,7 +126,7 @@ export class UsersController {
     const user = await this.usersServices.login2fa(token, code);
 
     console.log('In the controller, user is: ', JSON.stringify(user.user));
-    response.header({ 'Access-Control-Allow-Origin': 'http://localhost:3000' });
+    response.header({ 'Access-Control-Allow-Origin': FRONT_DOMAIN });
     response.json(user);
     return user;
   }

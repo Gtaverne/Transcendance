@@ -1,25 +1,40 @@
 version: '3.8'
 services:
 
-  db:
-    container_name: db
-    image: postgres:latest
+  proxy:
+    container_name: proxy
+    image: nginx:latest
     restart: always
     ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=transcendance_db
-      - PGDATA=/var/lib/postgresql/data
-    hostname: database
+      - 3000:80
+      - 443:443
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - trans_network
+    depends_on:
+      - backend
+      - frontend
+
+  frontend:
+    container_name: frontend
+    hostname: frontend
+    depends_on:
+      - backend
+    build:
+      context: ./frontend/.
+    restart: always
+    environment:
+      - REACT_APP_CLIENT_ID=${Client_ID}
+      # - REACT_APP_Client_Secret=${Client_Secret}
+      - REACT_APP_URL_BACK=/backend/
+      - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn
     networks:
       - trans_network
 
   backend:
     container_name: backend
+    hostname: backend
     depends_on:
       - db
     build:
@@ -34,12 +49,31 @@ services:
       - INTRA_API=https://api.intra.42.fr/oauth/token
       - Auth_URL=https://api.intra.42.fr/oauth/authorize
       - Access_Token_URL=https://api.intra.42.fr/oauth/token
-      - Client_ID=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6
-      - Client_Secret=1b5f67e46005d92cc5bac66cbaa79a6c133e37fea09ce10df2950ff85625e2cf
+      - Client_ID=${Client_ID}
+      - Client_Secret=${Client_Secret}
       - JWT_Secret=${JWT_Secret}
     networks:
       - trans_network
     restart: always
+
+  db:
+    container_name: db
+    hostname: database
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=transcendance_db
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - trans_network
+    # A retirer en production
+    ports:
+      - 5432:5432
+
 
   adminer:
     container_name: adminer
@@ -47,6 +81,8 @@ services:
     restart: always
     ports:
       - 8080:8080
+    networks:
+      - trans_network
 
 
 volumes:

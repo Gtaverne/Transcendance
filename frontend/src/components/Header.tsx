@@ -3,7 +3,15 @@ import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import { login, logout, reset } from '../features/auth/authSlice';
 import useWindowSize from '../hooks/useWindowSize';
 
-const API_42 = process.env.REACT_APP_API_42;
+var API_42 = 'https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
+const Client_ID = process.env.REACT_APP_CLIENT_ID;
+
+if (Client_ID) {
+  API_42 = 'https://api.intra.42.fr/oauth/authorize?client_id=' + Client_ID + '&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code'
+  console.log('42 app client ID fetched: ', Client_ID);
+}
+
+
 const logo =
   'https://cdn.discordapp.com/attachments/778668594086936616/972774969593442354/Artboard.png';
 
@@ -48,7 +56,7 @@ function Header() {
           </>
         ) : (
           <li>
-            <a href="https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code">
+            <a href={API_42} >
               Login
             </a>
           </li>
@@ -58,3 +66,10 @@ function Header() {
   );
 }
 export default Header;
+
+/*
+<a href="https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code">
+Login
+</a>
+
+*/
