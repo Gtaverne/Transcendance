@@ -9,7 +9,7 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (!req.query.jwt || req.query.jwt === '') {
       console.log('Middleware: no token in that query: ', req.url);
-      return res.status(413);
+      return res.status(403).end();
     } else {
       try {
         const idFromToken = jwt.verify(req.query.jwt, Token_Secret);
@@ -17,11 +17,11 @@ export class LoggerMiddleware implements NestMiddleware {
           next();
         } else {
           console.log('Middleware: invalid token in  ', req.url);
-          return res.status(403);
+          return res.status(403).end();
         }
       } catch (error) {
         console.log('Middleware: invalid token in  ', req.url);
-        return res.status(403);
+        return res.status(403).end();
       }
 
       // console.log('Middleware: url: ', req.url, ' id from token=', idFromToken)

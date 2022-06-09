@@ -353,7 +353,7 @@ const UserProfile = (props: Props) => {
       <div className="userList">
         <div className="userList">
           <div>
-            <h3>Friends: {fetchedFollowing.length} </h3>
+            <h3>Friends: {friendList.length} </h3>
             {friendList.map((c: number) => (
               <div key={c.toString()}>
                 <UserMiniature targetid={c} friendable={1} blockable={1} />

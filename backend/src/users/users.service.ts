@@ -71,6 +71,8 @@ export class UsersService {
   }
 
   async create(user: UsersEntity) {
+
+    
     const newUser = await this.usersRepository.create(user);
     await this.usersRepository.save(newUser);
     console.log('We added to the db:', newUser);

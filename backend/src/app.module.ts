@@ -36,10 +36,14 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .exclude({ path: '/users/callback', method: RequestMethod.GET }, { path: '/users/login2fa', method: RequestMethod.ALL })
+      .exclude(
+        { path: 'api/users/callback', method: RequestMethod.GET },
+        { path: 'api/users/login2fa', method: RequestMethod.ALL },
+        { path: 'api/users/seed', method: RequestMethod.ALL },
+      )
       .forRoutes(UsersController);
-  //   consumer
-  //     .apply(LoggerMiddleware)
-  //     .forRoutes({ path: 'products', method: RequestMethod.GET });
+    //   consumer
+    //     .apply(LoggerMiddleware)
+    //     .forRoutes({ path: 'products', method: RequestMethod.GET });
   }
 }
