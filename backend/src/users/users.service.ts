@@ -37,23 +37,25 @@ export class UsersService {
 
   //For testing, we seed the db with dummy users
   async seed() {
-    const newUser = new UsersEntity();
-
     console.log('Seeding new users');
+    const Dudule = {
+      email : 'dudule@dudule.fr',
+      login : 'dudule',
+      image_url :
+        'https://i.kym-cdn.com/entries/icons/original/000/001/030/DButt.jpg',
+    }
+    
+    this.userFromDB(Dudule);
 
-    newUser.email = 'dudule@dudule.fr';
-    newUser.username = 'dudule';
-    newUser.avatar =
-      'https://i.kym-cdn.com/entries/icons/original/000/001/030/DButt.jpg';
-    const dudule = this.usersRepository.create(newUser);
-    await this.usersRepository.save(dudule);
+    const Diane = {
+      email: 'ddecourt@student.42.fr',
+      login: 'ddecourt',
+      image_url:
+        'https://media-exp1.licdn.com/dms/image/C4E22AQFnNQdXvgJMfA/feedshare-shrink_800/0/1646749757724?e=2147483647&v=beta&t=XhcJvjso7gO-wOYtcABGUR0jcLLnWLgpQ9o0WHFRvZM',
+        
 
-    newUser.email = 'ddecourt@student.42.fr';
-    newUser.username = 'ddecourt';
-    newUser.avatar =
-      'https://media-exp1.licdn.com/dms/image/C4E22AQFnNQdXvgJMfA/feedshare-shrink_800/0/1646749757724?e=2147483647&v=beta&t=XhcJvjso7gO-wOYtcABGUR0jcLLnWLgpQ9o0WHFRvZM';
-    const diane = this.usersRepository.create(newUser);
-    await this.usersRepository.save(diane);
+    }
+    this.userFromDB(Diane);
 
     const newRoom = {
       owner: 1,
@@ -71,14 +73,10 @@ export class UsersService {
   }
 
   async create(user: UsersEntity) {
-
-    
     const newUser = await this.usersRepository.create(user);
     await this.usersRepository.save(newUser);
     console.log('We added to the db:', newUser);
     return newUser;
-    // return JSON.stringify(newUser);
-    // return 'Tout est opérationnel :)';
   }
 
   async findFriends(id: number) {
@@ -470,7 +468,6 @@ export class UsersService {
     //Here we check if the user already exists
     const res = await this.usersRepository.find({
       where: { email: loggedProfile.email },
-      // select: ['id', 'username', 'avatar', 'email', 'lvl'],
     });
 
     var dude = new UsersEntity();
@@ -527,12 +524,12 @@ export class UsersService {
       let login = data.value
       let res = await this.usersRepository.find({
         username: data.value})
-      while (res.length > 0) {
+      while (res.length > 0 && res[0].id != data.id) {
         login = data.value + i
         i = i + 1
         res = await this.usersRepository.find({
           username: login})
-      }
+      }0
       await this.usersRepository.update(data.id!, {
         username: login,
       });

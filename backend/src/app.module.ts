@@ -37,6 +37,8 @@ export class AppModule {
     consumer
       .apply(LoggerMiddleware)
       .exclude(
+        // FOR DEV ONLY !!!
+        { path: '/', method: RequestMethod.ALL },
         { path: 'api/users/callback', method: RequestMethod.GET },
         { path: 'api/users/login2fa', method: RequestMethod.ALL },
         { path: 'api/users/seed', method: RequestMethod.ALL },

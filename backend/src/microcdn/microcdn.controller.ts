@@ -30,6 +30,7 @@ export class MicrocdnController {
 
   @Get('/avatar/:id')
   async getAvatar(@Param() params, @Res() response: Response) {
+
     const path = this.microcdnService.getAvatarPath(params.id);
 
     const data = fs.createReadStream(path);
@@ -45,8 +46,10 @@ export class MicrocdnController {
     @Query('jwt') token: string,
   ) {
     const idFromToken = jwt.verify(token, Token_Secret);
+    console.log('Post received something from id: ', idFromToken)
     if (params.id === idFromToken) {
       const path = this.microcdnService.getAvatarPath(params.id);
+      console.log('Here we write the file: ', path)
       fs.writeFileSync(path, file.buffer);
     } else {
       console.log('Unauthorized to edit avatar');

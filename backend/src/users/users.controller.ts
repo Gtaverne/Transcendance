@@ -63,10 +63,7 @@ export class UsersController {
 
   //Pour le login depuis l'intra 42
   @Get('/callback')
-  //Replace it by site address
-  // @Redirect('http://localhost:3000', 302)
   async callback(
-    @Req() request: Request,
     @Res() response: Response,
     @Query('code') code: Promise<string>,
   ): Promise<any> {

@@ -26,9 +26,8 @@ services:
     restart: always
     environment:
       - REACT_APP_CLIENT_ID=${Client_ID}
-      # - REACT_APP_Client_Secret=${Client_Secret}
       - REACT_APP_URL_BACK=http://localhost:3000/api/
-      - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn
+      - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn/
     networks:
       - trans_network
 
@@ -55,6 +54,8 @@ services:
     networks:
       - trans_network
     restart: always
+    volumes:
+      - cdn:/microcdn
 
   db:
     container_name: db
@@ -87,6 +88,13 @@ services:
 
 volumes:
   db_data:
+
+  cdn:
+    driver: local
+    driver_opts: 
+        type: 'none'
+        o: 'bind'
+        device: './microcdn'
 
 networks:
   trans_network:

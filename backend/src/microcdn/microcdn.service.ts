@@ -6,7 +6,7 @@ export class MicrocdnService {
 
   getAvatarPath(id: number): string {
     console.log('Get avatar of id: ', id);
-    
-    return `./src/microcdn/avatar/${id}.jpg`;
+
+    return `/microcdn/avatar/${id}.jpg`;
   }
 }

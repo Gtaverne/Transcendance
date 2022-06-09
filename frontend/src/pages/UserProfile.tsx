@@ -9,7 +9,7 @@ import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
 import Spinner from '../components/Spinner';
 
-const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || '';
+const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || 'http://localhost:5050/microcdn';
 if (STORAGE_PATH === '') {
   console.log('Missing STORAGE_PATH in .env');
 }
@@ -73,6 +73,8 @@ const UserProfile = (props: Props) => {
           }
         } catch (error) {
           console.log('Could not load user');
+          //Popup: 
+          navigate('/')
         }
       };
       fetchUser();
@@ -161,6 +163,7 @@ const UserProfile = (props: Props) => {
 
         try {
           // Axios does not work with uploadform
+          console.log('STORAGE_PATH: ', STORAGE_PATH);
           await fetch(
             STORAGE_PATH + `/upload/${user.id}?jwt=` + Cookies.get('jwt'),
             {
@@ -172,7 +175,7 @@ const UserProfile = (props: Props) => {
             edit({
               id: user.id,
               field: 'avatar',
-              value: STORAGE_PATH + `/avatar/${user.id}`,
+              value: STORAGE_PATH + `avatar/${user.id}`,
             }),
           );
           //Search if there is a more elegant way to remove a picture from cache -_-
