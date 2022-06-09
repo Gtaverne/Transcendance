@@ -30,6 +30,8 @@ services:
       - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn/
     networks:
       - trans_network
+    volumes:
+        - src_data:/app/
 
   backend:
     container_name: backend
@@ -37,7 +39,7 @@ services:
     depends_on:
       - db
     build:
-      context: ./backend/. 
+      context: ./backend/.
     environment:
       - POSTGRES_HOST=database
       - POSTGRES_PORT=5432
@@ -87,6 +89,12 @@ services:
 
 
 volumes:
+  src_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./
   db_data:
 
   cdn:

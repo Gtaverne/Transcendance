@@ -2,3 +2,4 @@
 node_modules
 tuto
 /db
+.env
