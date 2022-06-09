@@ -17,15 +17,15 @@ import { io } from 'socket.io-client';
 import { RootStateOrAny, useSelector } from 'react-redux';
 
 function App() {
-  const socket = useRef(io());
+  // const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
 
-  useEffect(() => {
-    if (user) {
-      socket.current = io('ws://localhost:5050');
-      socket.current.emit('addUser', user.id);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     socket.current = io('ws://localhost:5050');
+  //     socket.current.emit('addUser', user.id);
+  //   }
+  // }, [user]);
 
   return (
     <>

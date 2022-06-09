@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({ origin: FRONT_DOMAIN });
   app.useGlobalPipes(new ValidationPipe());
   //rajouter le prefix api devant toutes les routes
-  //app.setGlobalPrefix('/api'); 
+  app.setGlobalPrefix('/api'); 
   app.use(cookieParser()); //Checker la necessite des parentheses
 
   await app.listen(BACKEND_PORT);

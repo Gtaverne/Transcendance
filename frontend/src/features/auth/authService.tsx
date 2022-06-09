@@ -10,7 +10,7 @@ const API_URL = process.env.REACT_APP_URL_BACK;
 
 //Login user
 const login = async (code: string) => {
-  console.log('We got in login authService');
+  console.log('We got in login authService, URL_BACK IS: ', API_URL);
   const response = await axios.get(API_URL + 'users/callback', {
     params: { code: code },
   });
