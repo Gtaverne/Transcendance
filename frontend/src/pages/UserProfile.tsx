@@ -74,7 +74,7 @@ const UserProfile = (props: Props) => {
         } catch (error) {
           console.log('Could not load user');
           //Popup: 
-          navigate('/')
+          navigate('/userprofile/' + user.id)
         }
       };
       fetchUser();
@@ -165,7 +165,7 @@ const UserProfile = (props: Props) => {
           // Axios does not work with uploadform
           console.log('STORAGE_PATH: ', STORAGE_PATH);
           await fetch(
-            STORAGE_PATH + `/upload/${user.id}?jwt=` + Cookies.get('jwt'),
+            STORAGE_PATH + `upload/${user.id}?jwt=` + Cookies.get('jwt'),
             {
               method: 'POST',
               body: myData,

@@ -4,7 +4,7 @@ import { login, logout, reset } from '../features/auth/authSlice';
 import useWindowSize from '../hooks/useWindowSize';
 
 var API_42 =
-  'https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
+  'https://api.intra.42.fr/oauth/authorize?client_id=defe35a8d7ed70945036caa7f7b042c6c98ab8f01b768c3adcd9e54d5d301d9f&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
 
 const Client_ID = process.env.REACT_APP_CLIENT_ID;
 
@@ -68,9 +68,5 @@ function Header() {
 }
 export default Header;
 
-/*
-<a href="https://api.intra.42.fr/oauth/authorize?client_id=f950eb9f6505f95fd8146faeb36d1706ceda488419c445ab4fa7485903463bd6&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code">
-Login
-</a>
 
-*/
+

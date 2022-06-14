@@ -23,6 +23,8 @@ import * as fs from 'fs';
 import { Readable } from 'typeorm/platform/PlatformTools';
 var jwt = require('jsonwebtoken');
 const Token_Secret = process.env.JWT_Secret;
+const CDN_PATH = '/app/microcdn'
+
 
 @Controller('microcdn')
 export class MicrocdnController {
@@ -30,12 +32,18 @@ export class MicrocdnController {
 
   @Get('/avatar/:id')
   async getAvatar(@Param() params, @Res() response: Response) {
-
-    const path = this.microcdnService.getAvatarPath(params.id);
-
-    const data = fs.createReadStream(path);
-    response.type('image/png');
-    data.pipe(response);
+    console.log('THe CDN received a request, id= ', params.id);
+    try {
+      const path = this.microcdnService.getAvatarPath(params.id);
+      console.log('Microcdn path: ', path)
+      const data = fs.createReadStream(path);
+      response.type('image/png');
+      data.pipe(response);
+      return
+    } catch (error) {
+      console.log('No avatar found');
+      return
+    }
   }
 
   @Post('upload/:id')
@@ -46,11 +54,15 @@ export class MicrocdnController {
     @Query('jwt') token: string,
   ) {
     const idFromToken = jwt.verify(token, Token_Secret);
-    console.log('Post received something from id: ', idFromToken)
+    console.log('Post received something from id: ', idFromToken);
     if (params.id === idFromToken) {
-      const path = this.microcdnService.getAvatarPath(params.id);
-      console.log('Here we write the file: ', path)
-      fs.writeFileSync(path, file.buffer);
+      try {
+        const path = CDN_PATH + `/avatar/${params.id}.jpg`;
+        console.log('Here we write the file: ', path);
+        fs.writeFileSync(path, file.buffer);
+      } catch (error) {
+        console.log('Upload error');
+      }
     } else {
       console.log('Unauthorized to edit avatar');
     }

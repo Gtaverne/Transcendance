@@ -39,12 +39,12 @@ export class UsersService {
   async seed() {
     console.log('Seeding new users');
     const Dudule = {
-      email : 'dudule@dudule.fr',
-      login : 'dudule',
-      image_url :
+      email: 'dudule@dudule.fr',
+      login: 'dudule',
+      image_url:
         'https://i.kym-cdn.com/entries/icons/original/000/001/030/DButt.jpg',
-    }
-    
+    };
+
     this.userFromDB(Dudule);
 
     const Diane = {
@@ -52,9 +52,7 @@ export class UsersService {
       login: 'ddecourt',
       image_url:
         'https://media-exp1.licdn.com/dms/image/C4E22AQFnNQdXvgJMfA/feedshare-shrink_800/0/1646749757724?e=2147483647&v=beta&t=XhcJvjso7gO-wOYtcABGUR0jcLLnWLgpQ9o0WHFRvZM',
-        
-
-    }
+    };
     this.userFromDB(Diane);
 
     const newRoom = {
@@ -323,13 +321,17 @@ export class UsersService {
       data: data,
     };
 
+    console.log('Ready to make a request to intra42, code= ', code, data);
+
     token = (await axios(config)).data.access_token;
+
+    // console.log('We received a token from intra')
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
       console.log('answer.user.username: ', answer.user.username);
 
-      if (answer.user.doublefa === 0) {
+      if (!answer.user.doublefa || answer.user.doublefa === 0) {
         const user = await this.usersRepository.findOne({
           where: { id: answer.user.id },
           select: ['id', 'username', 'avatar', 'doublefa', 'email', 'lvl'],
@@ -483,14 +485,16 @@ export class UsersService {
         while (unik.length !== 0) {
           lgn = loggedProfile.login + i;
           i += 1;
+          console.log('Trying to create user: ', lgn);
           unik = await this.usersRepository.find({
             where: { username: lgn },
           });
         }
       } catch (error) {}
-      dude.username = loggedProfile.login + (i > 0 ? i : '');
+      dude.username = loggedProfile.login + (i > 0 ? i - 1 : '');
       dude.avatar = loggedProfile.image_url;
       dude.email = loggedProfile.email;
+      dude.doublefa = 0;
 
       await this.create(dude);
     } else {
@@ -520,16 +524,19 @@ export class UsersService {
       data.value !== ''
     ) {
       //check pas de doublons d'id
-      let i = 0
-      let login = data.value
+      let i = 0;
+      let login = data.value;
       let res = await this.usersRepository.find({
-        username: data.value})
+        username: data.value,
+      });
       while (res.length > 0 && res[0].id != data.id) {
-        login = data.value + i
-        i = i + 1
+        login = data.value + i;
+        i = i + 1;
         res = await this.usersRepository.find({
-          username: login})
-      }0
+          username: login,
+        });
+      }
+      0;
       await this.usersRepository.update(data.id!, {
         username: login,
       });

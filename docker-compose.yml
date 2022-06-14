@@ -23,11 +23,11 @@ services:
       - backend
     build:
       context: ./frontend/.
+      args:
+        - REACT_APP_CLIENT_ID=${CLIENT_ID}
+        - REACT_APP_URL_BACK=http://localhost:3000/api/
+        - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn/
     restart: always
-    environment:
-      - REACT_APP_CLIENT_ID=${Client_ID}
-      - REACT_APP_URL_BACK=http://localhost:3000/api/
-      - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn/
     networks:
       - trans_network
     volumes:
@@ -50,14 +50,14 @@ services:
       - INTRA_API=https://api.intra.42.fr/oauth/token
       - Auth_URL=https://api.intra.42.fr/oauth/authorize
       - Access_Token_URL=https://api.intra.42.fr/oauth/token
-      - Client_ID=${Client_ID}
-      - Client_Secret=${Client_Secret}
-      - JWT_Secret=${JWT_Secret}
+      - Client_ID=${CLIENT_ID}
+      - Client_Secret=${CLIENT_SECRET}
+      - JWT_Secret=${JWT_SECRET}
     networks:
       - trans_network
     restart: always
     volumes:
-      - cdn:/microcdn
+      - cdn:/app/microcdn
 
   db:
     container_name: db
@@ -95,6 +95,7 @@ volumes:
       type: none
       o: bind
       device: ./
+
   db_data:
 
   cdn:
