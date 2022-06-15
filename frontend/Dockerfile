@@ -1,14 +1,9 @@
 FROM node:18-alpine AS builder
 
-CMD ls
-
-RUN apk update
-RUN apk upgrade
-RUN apk add bash
 
 #https://stackoverflow.com/a/61535496/18012991
 
-WORKDIR /app/frontend
+WORKDIR /app
 
 #COPY . .
 #RUN yarn install && ls && pwd && yarn build

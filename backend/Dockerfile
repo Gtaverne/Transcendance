@@ -3,9 +3,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY . .
+#COPY . .
 
-RUN yarn install && yarn build
-# RUN chmod -R 777 /microcdn
+#RUN yarn install && yarn build
 
-CMD ["node", "dist/src/main.js"]
+#CMD ["node", "dist/src/main.js"]
+ENTRYPOINT yarn install; yarn run start

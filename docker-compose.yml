@@ -31,7 +31,7 @@ services:
     networks:
       - trans_network
     volumes:
-        - src_data:/app/
+      - front_data:/app/
 
   backend:
     container_name: backend
@@ -58,6 +58,7 @@ services:
     restart: always
     volumes:
       - cdn:/app/microcdn
+      - back_data:/app/
 
   db:
     container_name: db
@@ -89,18 +90,23 @@ services:
 
 
 volumes:
-  src_data:
+  back_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ./
-
+      device: ./backend/
+  front_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./frontend/
   db_data:
 
   cdn:
     driver: local
-    driver_opts: 
+    driver_opts:
         type: 'none'
         o: 'bind'
         device: './microcdn'
