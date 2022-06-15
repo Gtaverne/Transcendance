@@ -321,7 +321,7 @@ export class UsersService {
       data: data,
     };
 
-    console.log('Ready to make a request to intra42, code= ', code, data);
+    // console.log('Ready to make a request to intra42, code= ', code, data);
 
     token = (await axios(config)).data.access_token;
 
@@ -329,26 +329,28 @@ export class UsersService {
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);
-      console.log('answer.user.username: ', answer.user.username);
+      // console.log('answer.user: ', answer.user);
 
       if (!answer.user.doublefa || answer.user.doublefa === 0) {
-        const user = await this.usersRepository.findOne({
-          where: { id: answer.user.id },
-          select: ['id', 'username', 'avatar', 'doublefa', 'email', 'lvl'],
-          relations: ['iFollowList', 'iBlockedList'],
-        });
-        let iFollowList: number[] = [];
-        for (let i = 0; i < user.iFollowList.length; i++)
-          iFollowList.push(user.iFollowList[i].id);
-        let iBlockedList: number[] = [];
-        for (let i = 0; i < user.iBlockedList.length; i++)
-          iBlockedList.push(user.iBlockedList[i].id);
-
+        console.log('No 2FA')
         answer.user = await this.findOneForFront(
           answer.user.id,
           answer.user.id,
         );
-        console.log('Normal auth, user: ', answer.user);
+
+        const forLists = await this.usersRepository.findOne({
+          where: { id: answer.user.id },
+          relations: ['iFollowList', 'iBlockedList'],
+        });
+        
+        let iFollowList: number[] = [];
+        for (let i = 0; i < forLists.iFollowList.length; i++)
+          iFollowList.push(forLists.iFollowList[i].id);
+        let iBlockedList: number[] = [];
+        for (let i = 0; i < forLists.iBlockedList.length; i++)
+          iBlockedList.push(forLists.iBlockedList[i].id);
+        
+        // console.log('Normal auth, user: ', answer.user);
         answer.iBlockedList = iBlockedList;
         answer.iFollowList = iFollowList;
         answer.jwt = this.generateToken(answer.user.id);
@@ -391,14 +393,14 @@ export class UsersService {
       });
 
       const secret = user.secret;
-      console.log(secret);
+      // console.log(secret);
 
       const res = speakeasy.totp.verify({
         secret: secret,
         encoding: 'base32',
         token: code,
       });
-      console.log('MFA result:', res);
+      // console.log('MFA result:', res);
 
       if (res) {
         try {
@@ -485,7 +487,7 @@ export class UsersService {
         while (unik.length !== 0) {
           lgn = loggedProfile.login + i;
           i += 1;
-          console.log('Trying to create user: ', lgn);
+          // console.log('Trying to create user: ', lgn);
           unik = await this.usersRepository.find({
             where: { username: lgn },
           });
@@ -495,9 +497,11 @@ export class UsersService {
       dude.avatar = loggedProfile.image_url;
       dude.email = loggedProfile.email;
       dude.doublefa = 0;
-
-      await this.create(dude);
+      const forId = await this.create(dude);
+      dude.id = forId.id
+      // console.log('Creation is over: ', dude)
     } else {
+      // User already exists
       dude = res[0];
       console.log(`Welcome back, ${dude.username}`);
     }

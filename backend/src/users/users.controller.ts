@@ -76,7 +76,7 @@ export class UsersController {
       });
       response.json(user);
     } catch (error) {
-      console.log('Crash in the login function');
+      console.log('Crash in the login function: ', error);
       response.header({
         'Access-Control-Allow-Origin': FRONT_DOMAIN,
       });
