@@ -11,9 +11,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({ origin: FRONT_DOMAIN });
   app.useGlobalPipes(new ValidationPipe());
-  //rajouter le prefix api devant toutes les routes
+  //rajoute le prefixe api devant toutes les routes
   app.setGlobalPrefix('/api'); 
-  app.use(cookieParser()); //Checker la necessite des parentheses
+  app.use(cookieParser());
 
   await app.listen(BACKEND_PORT);
 

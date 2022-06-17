@@ -30,12 +30,28 @@ const CDN_PATH = '/app/microcdn'
 export class MicrocdnController {
   constructor(private microcdnService: MicrocdnService) {}
 
+  @Get('/content/:reference') 
+  async getContent(@Param() params, @Res() response: Response) {
+    console.log('CDN: Trying to get content ', params.reference)
+    try {
+      const path = this.microcdnService.getContentPath(params.reference);
+      // console.log('Microcdn path: ', path)
+      const data = fs.createReadStream(path);
+      response.type('image/png');
+      data.pipe(response);
+      return
+    } catch (error) {
+      console.log('No content found');
+      return
+    }
+  }
+
   @Get('/avatar/:id')
   async getAvatar(@Param() params, @Res() response: Response) {
     console.log('THe CDN received a request, id= ', params.id);
     try {
       const path = this.microcdnService.getAvatarPath(params.id);
-      console.log('Microcdn path: ', path)
+      // console.log('Microcdn path: ', path)
       const data = fs.createReadStream(path);
       response.type('image/png');
       data.pipe(response);

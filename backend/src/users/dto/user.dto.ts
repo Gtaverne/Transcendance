@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
+import { AchievementsEntity } from 'src/achievements/achievements.entity';
 import { BanEntity } from 'src/rooms/ban.entity';
 import { MuteEntity } from 'src/rooms/mute.entity';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
@@ -57,6 +58,9 @@ export class UserDTO {
   @IsArray()
   @IsOptional()
   readonly messagesList: MessagesEntity[];
+  @IsArray()
+  @IsOptional()
+  readonly achievementsList: AchievementsEntity[];
   @IsArray()
   @IsOptional()
   readonly accessToList: RoomsEntity[];

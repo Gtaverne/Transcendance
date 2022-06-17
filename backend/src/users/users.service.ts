@@ -146,6 +146,29 @@ export class UsersService {
     return user;
   }
 
+  async findUserForAchievementUpdate(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      select: ['id', 'username', 'avatar', 'lvl', 'createdAt', 'avatar'],
+      relations: [
+        'iFollowList',
+        'followingMeList',
+        'iBlockedList',
+        'blockedMeList',
+        'messagesList',
+        'ac',
+        'accessToList',
+        'gamePlayer1',
+        'gamePlayer2',
+        'ownedRooms',
+        'administratingRooms',
+        'mutedInARoom',
+        'bannedInARoom',
+      ],
+    });
+    return user;
+  }
+
   //Important: do not add relations as it will export secrets to the front
   async findOneForFront(id: number, whoIsAsking: number) {
     console.log('Fetch user: ', id, ' request by: ', whoIsAsking);
@@ -332,7 +355,7 @@ export class UsersService {
       // console.log('answer.user: ', answer.user);
 
       if (!answer.user.doublefa || answer.user.doublefa === 0) {
-        console.log('No 2FA')
+        console.log('No 2FA');
         answer.user = await this.findOneForFront(
           answer.user.id,
           answer.user.id,
@@ -342,14 +365,14 @@ export class UsersService {
           where: { id: answer.user.id },
           relations: ['iFollowList', 'iBlockedList'],
         });
-        
+
         let iFollowList: number[] = [];
         for (let i = 0; i < forLists.iFollowList.length; i++)
           iFollowList.push(forLists.iFollowList[i].id);
         let iBlockedList: number[] = [];
         for (let i = 0; i < forLists.iBlockedList.length; i++)
           iBlockedList.push(forLists.iBlockedList[i].id);
-        
+
         // console.log('Normal auth, user: ', answer.user);
         answer.iBlockedList = iBlockedList;
         answer.iFollowList = iFollowList;
@@ -441,7 +464,7 @@ export class UsersService {
 
   generateToken(data: any): string {
     const token = jwt.sign(data, Token_Secret);
-    // console.log('My jwt: ' + token)
+    console.log('My jwt: ' + token);
 
     return token;
   }
@@ -498,7 +521,7 @@ export class UsersService {
       dude.email = loggedProfile.email;
       dude.doublefa = 0;
       const forId = await this.create(dude);
-      dude.id = forId.id
+      dude.id = forId.id;
       // console.log('Creation is over: ', dude)
     } else {
       // User already exists

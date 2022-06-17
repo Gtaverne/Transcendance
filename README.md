@@ -30,7 +30,7 @@ It is a fullstack web application.
 
 ### Launch :
 ```
-yarn dev ou yarn 
+docker-compose up --build
 ```
 
 ### .env :

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
+import { AchievementsEntity } from 'src/achievements/achievements.entity';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
 import { MuteEntity } from 'src/rooms/mute.entity';
 import { BanEntity } from 'src/rooms/ban.entity';
@@ -42,6 +43,10 @@ export class UsersEntity extends BaseEntity {
   @ManyToMany(() => UsersEntity, (user) => user.iBlockedList)
   @JoinTable()
   blockedMeList: UsersEntity[];
+
+
+  @OneToMany(() => AchievementsEntity, (achievements) => achievements.achievers)
+  achievementsList: AchievementsEntity[];
 
   @OneToMany(() => MessagesEntity, (messages) => messages.owner)
   messagesList: MessagesEntity[];

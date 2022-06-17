@@ -18,6 +18,7 @@ import { MessagesModule } from './messages/messages.module';
 import { TutoModule } from './tuto/tuto.module';
 import { MicrocdnController } from './microcdn/microcdn.controller';
 import { MicrocdnModule } from './microcdn/microcdn.module';
+import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MicrocdnModule } from './microcdn/microcdn.module';
     TypeOrmModule.forRoot(config),
     TutoModule,
     MicrocdnModule,
+    AchievementsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -39,13 +41,11 @@ export class AppModule {
       .exclude(
         // FOR DEV ONLY !!!
         { path: '/', method: RequestMethod.ALL },
+        // Next paths should be in the exclusion list in production too
         { path: 'api/users/callback', method: RequestMethod.GET },
         { path: 'api/users/login2fa', method: RequestMethod.ALL },
         { path: 'api/users/seed', method: RequestMethod.ALL },
       )
       .forRoutes(UsersController);
-    //   consumer
-    //     .apply(LoggerMiddleware)
-    //     .forRoutes({ path: 'products', method: RequestMethod.GET });
   }
 }
