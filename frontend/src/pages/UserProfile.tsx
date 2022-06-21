@@ -8,6 +8,7 @@ import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
 import Spinner from '../components/Spinner';
+import { toast } from 'react-toastify';
 
 const STORAGE_PATH =
   process.env.REACT_APP_STORAGE_PATH || 'http://localhost:5050/microcdn';
@@ -120,6 +121,7 @@ const UserProfile = (props: Props) => {
 
   const onMutate = (e: any) => {
     console.log('Mutation');
+    toast.error('Fail');
     setFetchedProfile((prevState: any) => ({
       ...prevState,
       [e.target.id]: e.target.value,
