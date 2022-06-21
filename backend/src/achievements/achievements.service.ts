@@ -39,7 +39,7 @@ export class AchievementsService {
     newAch.achievementName = 'Level 1';
     newAch.achievemenDescription = 'You reached level 1';
     newAch.achievementLogo = CDN_PATH + '/siteimage/default.jpg';
-    newAch = this.achievementsRepository.create(newAch);
+    newAch = await this.achievementsRepository.create(newAch);
     console.log('Seeding successful');
     // await this;
 
@@ -56,7 +56,7 @@ export class AchievementsService {
       console.log('Ooops, you have not initiated the achievement table');
       await this.seedAchievements();
     }
-    
+
     console.log('Fetching a full user');
     const user = await this.usersService.findUserForAchievementUpdate(userid);
     console.log(user);

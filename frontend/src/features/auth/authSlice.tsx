@@ -84,13 +84,6 @@ export const loginmfa = createAsyncThunk(
 export const edit = createAsyncThunk(
   'auth/edit',
   async (input: any, thunkAPI) => {
-    //   //Je ne sais pas pourquoi on rentre dans cette boucle
-    // if (input.id !== user.id) {
-    //   console.log('input id', input.id);
-    //   console.log('user id', user && user.id);
-    //   return thunkAPI.rejectWithValue('ID mismatch');
-    // }
-
     try {
       return await authService.edit(input.id, input.field, input.value);
     } catch (error) {

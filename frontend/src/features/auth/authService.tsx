@@ -92,10 +92,8 @@ const edit = async (id: number, field: string, value: any) => {
     return {}
   }
 
-  console.log('Response of edit', response);
-
   if (response.data && response.data.user) {
-    // console.log('Data from the back: ' + response.data);
+    console.log('Data from the back: ' + response.data);
     localStorage.setItem('user', JSON.stringify(response.data.user));
     localStorage.setItem(
       'iFollowList',
@@ -113,6 +111,8 @@ const edit = async (id: number, field: string, value: any) => {
   return response.data;
 };
 
+
+//THis function should not work (no token)
 const editLight = async (id: number, field: string, value: any) => {
   const data = { id: id, field: field, value: value };
   if (value && value[0]) {

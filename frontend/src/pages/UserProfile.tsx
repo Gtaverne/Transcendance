@@ -9,7 +9,8 @@ import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
 import Spinner from '../components/Spinner';
 
-const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH || 'http://localhost:5050/microcdn';
+const STORAGE_PATH =
+  process.env.REACT_APP_STORAGE_PATH || 'http://localhost:5050/microcdn';
 if (STORAGE_PATH === '') {
   console.log('Missing STORAGE_PATH in .env');
 }
@@ -73,8 +74,8 @@ const UserProfile = (props: Props) => {
           }
         } catch (error) {
           console.log('Could not load user');
-          //Popup: 
-          navigate('/userprofile/' + user.id)
+          //Popup:
+          navigate('/userprofile/' + user.id);
         }
       };
       fetchUser();
@@ -171,6 +172,7 @@ const UserProfile = (props: Props) => {
               body: myData,
             },
           );
+          console.log('Profile picture edition');
           dispatch(
             edit({
               id: user.id,
@@ -179,7 +181,9 @@ const UserProfile = (props: Props) => {
             }),
           );
           //Search if there is a more elegant way to remove a picture from cache -_-
-          window.location.reload();
+          if (STORAGE_PATH + `avatar/${user.id}` === user.avatar) {
+            window.location.reload();
+          }
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
