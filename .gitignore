@@ -3,3 +3,5 @@ node_modules
 tuto
 /db
 .env
+/microcdn
+/microcdn/*
