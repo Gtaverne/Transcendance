@@ -17,7 +17,7 @@ function Login({}: Props) {
   const location = useLocation();
 
   const [mfaRequired, setMFARequired] = useState(false);
-  const [writtenCode, setWrittenCode] = useState('Type 6 digits');
+  const [writtenCode, setWrittenCode] = useState('');
 
   const { user, isError, isLoading, isSuccess, message } = useSelector(
     (state: RootStateOrAny) => state.auth,
@@ -101,6 +101,7 @@ function Login({}: Props) {
             value={writtenCode}
             onChange={onChange}
             required
+            placeholder="Type 6 digits"
           />
         </div>
         <div>

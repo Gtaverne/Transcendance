@@ -17,7 +17,7 @@ function Verify2FA({}: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const [QRCode, setQRCode] = useState('');
-  const [writtenCode, setWrittenCode] = useState('Type 6 digits');
+  const [writtenCode, setWrittenCode] = useState('');
 
   const onChange = (e: any) => {
     setWrittenCode(e.target.value);
@@ -55,6 +55,7 @@ function Verify2FA({}: Props) {
           value={writtenCode}
           onChange={onChange}
           required
+          placeholder="Type 6 digits"
         />
       </div>
       <div>

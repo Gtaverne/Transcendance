@@ -13,7 +13,7 @@ function Configure2FA({}: Props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [QRCode, setQRCode] = useState('');
-  const [writtenCode, setWrittenCode] = useState('Type 6 digits');
+  const [writtenCode, setWrittenCode] = useState('');
 
   //   useEffect(() => {
 
@@ -27,7 +27,7 @@ function Configure2FA({}: Props) {
     setQRCode('');
     dispatch(reset);
 
-    if (user.doublefa !==0) {
+    if (user.doublefa !== 0) {
       console.log('User already configurated 2fa');
     } else {
       const code = await axios.get(
@@ -108,6 +108,7 @@ function Configure2FA({}: Props) {
               value={writtenCode}
               onChange={onChange}
               required
+              placeholder="Type 6 digits"
             />
           </div>
           <div>
