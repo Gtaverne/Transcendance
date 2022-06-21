@@ -68,7 +68,7 @@ export class AchievementsService {
     //Every achievement should be tested...
 
     if (user.lvl >= 1 && !userAchievementsID.includes(1)) {
-      console.log('Adding an achievement');
+      
     }
 
     return [];
