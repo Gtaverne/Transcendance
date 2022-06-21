@@ -1,6 +1,9 @@
 # Mettre une version fixe
 FROM node:18-alpine
 
+RUN apk add --no-cache python3
+RUN apk add --no-cache build-base
+
 WORKDIR /app
 
 #COPY . .
