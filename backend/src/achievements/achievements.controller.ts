@@ -15,7 +15,7 @@ export class AchievementsController {
   }
 
   @Get('/update/:userid')
-  async updateAchievements(@Param() params): Promise<number[]> {
+  async updateAchievements(@Param() params): Promise<AchievementsEntity[]> {
     const achievementList = await this.achievementsServices.updateAchievements(
       params.userid,
     );
