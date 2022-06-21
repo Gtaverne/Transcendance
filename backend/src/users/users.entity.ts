@@ -45,7 +45,7 @@ export class UsersEntity extends BaseEntity {
   blockedMeList: UsersEntity[];
 
 
-  @OneToMany(() => AchievementsEntity, (achievements) => achievements.achievers)
+  @ManyToMany(() => AchievementsEntity, (achievements) => achievements.achievers)
   achievementsList: AchievementsEntity[];
 
   @OneToMany(() => MessagesEntity, (messages) => messages.owner)

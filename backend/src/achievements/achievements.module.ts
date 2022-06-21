@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { BanEntity } from 'src/rooms/ban.entity';
@@ -21,11 +21,10 @@ import { AchievementsService } from './achievements.service';
       MessagesEntity,
       BanEntity,
       MuteEntity,
-
     ]),
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   controllers: [AchievementsController],
-  providers: [AchievementsService, RoomsService,UsersService],
+  providers: [AchievementsService, RoomsService, UsersService],
 })
 export class AchievementsModule {}

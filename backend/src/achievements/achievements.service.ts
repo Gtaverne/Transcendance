@@ -33,17 +33,18 @@ export class AchievementsService {
   }
 
   async seedAchievements() {
-    var newAch = new AchievementsEntity();
+    var newAch = await this.achievementsRepository.create()
 
     //1 - a test on level
     newAch.achievementName = 'Level 1';
     newAch.achievemenDescription = 'You reached level 1';
     newAch.achievementLogo = CDN_PATH + '/siteimage/default.jpg';
-    newAch = await this.achievementsRepository.create(newAch);
+    newAch = await this.achievementsRepository.save(newAch);
     console.log('Seeding successful');
     // await this;
-
+    
     //2 - a test on number of followed people
+    return newAch
   }
 
   async updateAchievements(userid: number) {
@@ -54,12 +55,13 @@ export class AchievementsService {
 
     if (numOfAchievements == 0) {
       console.log('Ooops, you have not initiated the achievement table');
-      await this.seedAchievements();
+      const res = await this.seedAchievements();
+      console.log(res)
     }
 
     console.log('Fetching a full user');
     const user = await this.usersService.findUserForAchievementUpdate(userid);
-    console.log(user);
+    console.log('User fetched')
     let userAchievementsID: number[] = [];
     for (let i = 0; i < user.achievementsList.length; i++)
       userAchievementsID.push(user.achievementsList[i].id);

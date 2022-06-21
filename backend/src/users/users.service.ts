@@ -156,7 +156,7 @@ export class UsersService {
         'iBlockedList',
         'blockedMeList',
         'messagesList',
-        'ac',
+        'achievementsList',
         'accessToList',
         'gamePlayer1',
         'gamePlayer2',
