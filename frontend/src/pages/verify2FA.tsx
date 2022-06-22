@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { edit, reset, logout } from '../features/auth/authSlice';
+import { toast } from 'react-toastify';
 
 type Props = {};
 
@@ -38,11 +39,15 @@ function Verify2FA({}: Props) {
       const validMFA = resMFA.data.mfaverification;
       console.log('MFA: ', validMFA);
       if (validMFA) {
+        toast.success('Successfully logged in')
+
         // dispatch(login())
       } else {
+        toast.error('Wrong code, please retry');
       }
     } catch (error) {
       console.log('Request to MFA validation failed');
+      toast.error('Wrong code, please retry');
     }
   };
 

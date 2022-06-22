@@ -26,9 +26,6 @@ const UserProfile = (props: Props) => {
   const [editProfile, setEditProfile] = useState(false);
   const [profilePic, setProfilePic] = useState<Blob>();
   const [preview, setPreview] = useState('');
-  // const [queryData, setQueryData] = useState({
-  //   query: '',
-  // });
   const [achievementsList, setAchievementsList] = useState([]);
   const params = useParams();
 
@@ -78,6 +75,7 @@ const UserProfile = (props: Props) => {
         } catch (error) {
           console.log('Could not load user');
           //Popup:
+          toast.error('The user you looked for does not exist')
           navigate('/userprofile/' + user.id);
         }
       };

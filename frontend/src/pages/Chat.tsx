@@ -57,7 +57,7 @@ function Chat() {
 
   useEffect(() => {
     if (user) {
-      socket.current = io('ws://localhost:5050', {
+      socket.current = io('ws://localhost:3000/api', {
         // withCredentials: true,
         query: { id: user.id },
       });

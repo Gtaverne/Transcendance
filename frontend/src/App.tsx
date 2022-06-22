@@ -18,15 +18,15 @@ import { io } from 'socket.io-client';
 import { RootStateOrAny, useSelector } from 'react-redux';
 
 function App() {
-  // const socket = useRef(io());
+  const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     socket.current = io('ws://localhost:5050');
-  //     socket.current.emit('addUser', user.id);
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (user) {
+      socket.current = io('ws://localhost:3000/api/socket.io');
+      socket.current.emit('addUser', user.id);
+    }
+  }, [user]);
 
   return (
     <>
@@ -39,7 +39,6 @@ function App() {
             </Route>
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
-            {/* <Route path="/verifymfa/:code" element={<Verify2FA />} /> */}
             <Route path="/userprofile/:id" element={<PrivateRoute />}>
               <Route path="/userprofile/:id" element={<UserProfile />} />
             </Route>

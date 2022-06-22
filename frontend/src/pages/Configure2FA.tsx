@@ -5,6 +5,7 @@ import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import { edit, reset, logout } from '../features/auth/authSlice';
 import qrcode from 'qrcode';
 import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 type Props = {};
 
@@ -75,8 +76,11 @@ function Configure2FA({}: Props) {
           }),
         );
         //Popup, MFA activated
+        toast.success('MFA has been successfully activated')
+        navigate(`/userprofile/${user.id}`)
       } else {
-        //Popup 'Wrong code, MFA not activated
+        toast.error('Wrong code, please retry')
+
         dispatch(
           edit({
             id: user.id,
@@ -85,6 +89,7 @@ function Configure2FA({}: Props) {
             value: 0,
           }),
         );
+
       }
     } catch (error) {
       console.log('Request to MFA validation failed');
