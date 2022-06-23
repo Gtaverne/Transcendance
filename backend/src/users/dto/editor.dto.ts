@@ -9,7 +9,4 @@ export class EditorDTO {
   readonly field: string;
   @IsNotEmpty()
   readonly value: any;
-  @IsString()
-  @IsNotEmpty()
-  readonly jwt: string;
 }

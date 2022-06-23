@@ -14,7 +14,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
-// import cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 // import * as cookie from 'cookie';
 import { query, Request, response, Response } from 'express';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
@@ -76,14 +76,12 @@ export class UsersController {
       });
       response.json(user);
     } catch (error) {
-      console.log('Crash in the login function: ', error);
+      // console.log('Login loop');
       response.header({
         'Access-Control-Allow-Origin': FRONT_DOMAIN,
       });
       response.json({});
     }
-    // response.setHeader('Set-Cookie', cookie.serialize('jwtbck', user.jwt) )  ;
-    // response.cookie('jwt_meh', user.jwt, {domain: 'http://localhost:3000',sameSite: 'none', secure: false});
     return 'It should be ok';
   }
 
@@ -104,11 +102,13 @@ export class UsersController {
   async mfaverify(
     @Req() request: Request,
     @Res() response: Response,
-    @Query('jwt') token: string,
     @Query('code') code: string,
   ): Promise<Boolean> {
     // console.log('token: ', token, '  code: ', code)
-    const verification = await this.usersServices.verificationMFA(token, code);
+    const verification = await this.usersServices.verificationMFA(
+      request.cookies.jwt,
+      code,
+    );
     response.json({ mfaverification: verification });
     return verification;
   }
@@ -159,16 +159,18 @@ export class UsersController {
   @Get('/profile/:id')
   async findOneForFront(
     @Param() params,
-    @Query('jwt') token: string,
+    @Req() request: Request,
   ): Promise<UsersEntity> {
-    const idFromToken = jwt.verify(token, TOKEN_SECRET);
+    const idFromToken = jwt.verify(request.cookies.jwt, TOKEN_SECRET);
     return this.usersServices.findOneForFront(params.id, +idFromToken);
   }
 
-  @Get('/:id')
-  async findOne(@Param() params): Promise<UsersEntity> {
-    return this.usersServices.findOne(params.id);
-  }
+  // @Get('/:id')
+  // async findOne(
+  //   @Param() params,
+  // ): Promise<UsersEntity> {
+  //   return this.usersServices.findOne(params.id);
+  // }
 
   @Get()
   async findAll(@Param() params): Promise<UsersEntity[]> {
@@ -185,16 +187,17 @@ export class UsersController {
   }
 
   @Post('/editprofile/')
-  async editprofile(@Body() data: EditorDTO): Promise<any> {
-    return this.usersServices.editprofile(data);
+  async editprofile(
+    @Req() request: Request,
+    @Body() data: EditorDTO,
+  ): Promise<any> {
+    return this.usersServices.editprofile(data, request.cookies.jwt);
   }
 
-  @Post()
-  //   @HttpCode(204)
-  //   @Header('Authorization', 'Bearer XAOIFUAOSijfoIJASF')
-  async create(@Body() user: UserDTO): Promise<UsersEntity> {
-    return this.usersServices.create(user);
-  }
+  // @Post()
+  // async create(@Body() user: UserDTO): Promise<UsersEntity> {
+  //   return this.usersServices.create(user);
+  // }
 
   @Put('/:id')
   update(@Param() params, @Body() user: UserDTO): Promise<UsersEntity> {

@@ -7,11 +7,12 @@ const TOKEN_SECRET = process.env.JWT_Secret;
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    if (req.url === '/') {
-      console.log('Passing empty request');
-      next();
-    }
-    if (!req.query.jwt || req.query.jwt === '') {
+    // if (req.url === '/') {
+    //   console.log('Passing empty request')
+    //   next()
+    // }
+    const tkn = req.cookies.jwt;
+    if (!tkn || tkn === '') {
       console.log('Middleware: no token in that query: ', req.url);
       return res.status(403).end();
     } else {
