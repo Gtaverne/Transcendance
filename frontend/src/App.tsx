@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
@@ -17,9 +17,41 @@ import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { RootStateOrAny, useSelector } from 'react-redux';
 
+function MainRooter()
+{
+    const location = useLocation();
+
+
+    return (<>
+        {location.pathname !== "/" ? <Header /> : <></>}
+        <Routes>
+          <Route path="/" element={<PrivateRoute />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/userprofile/:id" element={<PrivateRoute />}>
+            <Route path="/userprofile/:id" element={<UserProfile />} />
+          </Route>
+          <Route path="/configure2fa/:id" element={<PrivateRoute />}>
+            <Route path="/configure2fa/:id" element={<Configure2FA />} />
+          </Route>
+          <Route path="/chat" element={<PrivateRoute />}>
+            <Route path="/chat" element={<Chat />} />
+          </Route>
+          <Route path="/game" element={<PrivateRoute />}>
+            <Route path="/game" element={<Game />} />
+          </Route>
+        </Routes>
+    </>);
+}
+
 function App() {
   const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
+
+
+
   // useEffect(() => {
   //   if (user) {
   //     socket.current = io('ws://localhost:3000/');
@@ -30,28 +62,7 @@ function App() {
   return (
     <>
       <Router>
-        <div>
-          <Header />
-          <Routes>
-            <Route path="/" element={<PrivateRoute />}>
-              <Route path="/" element={<Home />} />
-            </Route>
-            <Route path="/landing" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/userprofile/:id" element={<PrivateRoute />}>
-              <Route path="/userprofile/:id" element={<UserProfile />} />
-            </Route>
-            <Route path="/configure2fa/:id" element={<PrivateRoute />}>
-              <Route path="/configure2fa/:id" element={<Configure2FA />} />
-            </Route>
-            <Route path="/chat" element={<PrivateRoute />}>
-              <Route path="/chat" element={<Chat />} />
-            </Route>
-            <Route path="/game" element={<PrivateRoute />}>
-              <Route path="/game" element={<Game />} />
-            </Route>
-          </Routes>
-        </div>
+        <MainRooter />
       </Router>
       <ToastContainer />
     </>

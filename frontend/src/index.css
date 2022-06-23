@@ -18,6 +18,10 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-image: url("./pages/assets/paralax/0.png");
+  background-position: top;
+  background-size: cover;
+  height: 100px;
 }
 
 .site-header ul,
@@ -29,6 +33,8 @@ code {
 
 .site-header ul a {
   text-decoration: none;
+  color: white;
+  font-weight: bold;
 }
 
 .homeButton {
@@ -37,7 +43,13 @@ code {
 }
 
 .homeButton img {
-  height: 50px;
+  height: 45px;
+  padding-left: 10px;
+  transition: all 0.1s ease;
+}
+
+.homeButton img:hover {
+  transform: scale(1.05);
 }
 
 .profilepic {

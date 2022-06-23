@@ -1,0 +1,320 @@
+.background
+{
+    height: 100vh;
+    width: 100vw;
+    background-size: cover;
+    overflow: hidden;
+
+}
+
+.glassContainer
+{
+    height: 100%;
+    display: inline-block;
+    vertical-align: top;
+
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0 -47px 0 0 rgba(255,255,255,0.11), 0px 6px 0 0px #FFFFFF, 30px 2px 60px 0 rgba(0,0,0,0.80);
+    padding-left: 25px;
+    padding-right: 50px;
+    transition: all 0.4s ease;
+
+}
+
+.glassAngle
+{
+    width: calc(100px / 1.4142135624);
+    height: calc(100px / 1.4142135624);
+    transform: translateY(14px) translateX(14px) rotateZ(45deg);
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0 -34px 0 0 rgba(255,255,255,0.11), 6px 6px 0 0px #FFFFFF;
+    z-index: 10;
+    transition: all 0.4s ease;
+}
+.glassAngleContainer
+{
+    display: inline-block;
+    vertical-align: top;
+    width: 50px;
+    height: 106px;
+    overflow: hidden;
+    position: absolute;
+    z-index: 10;
+    margin-left: -49px;
+
+}
+
+@font-face {
+    font-family: PlayPretend;
+    src: url("./assets/PlayPretend.otf") format("opentype");
+}
+
+.glassButton
+{
+
+    font-size: 40px;
+
+    height: 100px;
+
+    font-family: PlayPretend;
+    font-size: 45px;
+    color: #F4EAFF;
+    margin-left: auto;
+    transform: translateX(50%) translateX(-50%);
+    transition: all 0.4s cubic-bezier(.46,1.65,.37,.88);
+    cursor: pointer;
+    margin-bottom: 24px;
+
+    position:relative;
+
+    max-width: 600px;
+
+    user-select: none;
+
+
+}
+
+.glassButton:hover
+{
+    transform: translateX(50%) scale(1.14) translateX(-50%);
+    z-index: 999;
+}
+
+
+.glassButton:active
+{
+    transition: all 0.2s cubic-bezier(.46,1.65,.37,.88);
+    transform: translateX(50%) scale(1.1) translateX(-50%);
+}
+
+.glassButton .glassShine
+{
+    content: '-';
+    z-index: 9;
+    position: absolute;
+    top: 0px;
+    margin-left: -60px;
+    background: url("./assets/shine.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    z-index: 20;
+    opacity: 0;
+    transition: all 0.4s ease;
+
+}
+
+.glassSelectionRing
+{
+    position: absolute;
+    z-index: 21;
+    background: url("./assets/selring.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    margin-left: -84px;
+    margin-top: -26px;
+
+    height: 156px;
+    width: 800px;
+    transition: all 0.4s ease;
+    transform: translateX(20px) translateX(-400px) translateX(400px);
+
+
+    opacity: 0;
+}
+
+.glassButton:hover .glassSelectionRing
+{
+
+    transform: translateX(-25px) translateX(-400px) scale(1.3) translateX(400px);
+    opacity: 1;
+}
+
+
+.glassButton:active .glassSelectionRing
+{
+    opacity: 0.7;
+    transition: all 0.2s ease;
+
+}
+
+.glassButton:hover .glassShine
+{
+    opacity: 1;
+    margin-left: -80px;
+}
+
+.glassButton:hover .glassContainer
+{
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.43) 100%);
+}
+
+.glassButton:hover .glassAngle
+{
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.43) 100%);
+}
+
+.glassButton:active .glassContainer
+{
+    background-image: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.43) 100%);
+}
+
+.glassButton:active .glassAngle
+{
+    background-image: linear-gradient(135deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.43) 100%);
+}
+
+
+
+.bottom
+{
+    position: fixed;
+    text-align: right;
+    right: 0px;
+    bottom: 50px;
+
+}
+
+@media (max-width: 1200px) {
+    .bottom
+    {
+        transform: translate(50%, 50%) scale(0.75) translate(-50%, -50%) ;
+    }
+}
+
+@media (max-width: 700px) {
+    .bottom
+    {
+        transform: translate(50%, 50%) scale(0.5) translate(-50%, -50%) ;
+    }
+}
+
+.glassLogo
+{
+    display: inline-block;
+    margin-top: 25px;
+}
+
+.glassName
+{
+    display: inline-block;
+    line-height: 105px;
+    vertical-align: top;
+    margin-left: 20px;
+}
+
+.bigLogo
+{
+    margin-left: 80px;
+    margin-top: 80px;
+}
+
+.statusbar *
+{
+    display: inline-block;
+    vertical-align: top;
+}
+
+.userView
+{
+    color: white;
+    font-family: HelveticaNeue-Bold, HelveticaNeue, Helvetica;
+    font-size: 26px;
+    vertical-align: middle;
+    float: right;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-weight: bold;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+}
+
+.userView:hover
+{
+    filter: brightness(0.95);
+    transform: scale(1.05);
+}
+
+.userImage
+{
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    background-size: cover;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin: 30px;
+    margin-left: 20px;
+    box-shadow: 0 2px 42px 0 rgba(0,0,0,0.84);
+}
+
+
+.backgroundLayers *
+{
+    position: fixed;
+    z-index: -1;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    background-size: cover;
+    background-position: center;
+}
+
+
+.layerZero
+{
+    background-image: url("./assets/paralax/0.png");
+    transform: scale(1.2);
+
+}
+
+
+.layerOne
+{
+    background-image: url("./assets/paralax/1.png");
+    transform: scale(1.1);
+
+}
+
+
+.layerTwo
+{
+    background-image: url("./assets/paralax/2.png");
+    transform: scale(1.04);
+}
+
+
+.layerThree
+{
+    background-image: url("./assets/paralax/3.png");
+}
+
+.score
+{
+    position: fixed;
+    color: white;
+    text-align: center;
+    width: 100%;
+    font-family: PlayPretend;
+    font-size: 85px;
+    top: 18px;
+    color: #C9C5C5;
+    text-shadow: 0 2px 70px #FF00AD;
+    height: 200px;
+    line-height: 200px;
+
+}
+
+@keyframes leftRight {
+    0% {
+        transform: translateX(5%);
+    }
+    100% {
+        transform: translateX(-5%);
+    }
+}
