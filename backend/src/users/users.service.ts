@@ -344,11 +344,7 @@ export class UsersService {
       data: data,
     };
 
-    // console.log('Ready to make a request to intra42, code= ', code, data);
-
     token = (await axios(config)).data.access_token;
-
-    // console.log('We received a token from intra')
 
     if (token) {
       answer.user = await this.getUserDataFrom42(token);

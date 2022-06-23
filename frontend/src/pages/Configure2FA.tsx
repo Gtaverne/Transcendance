@@ -76,7 +76,7 @@ function Configure2FA({}: Props) {
           }),
         );
         //Popup, MFA activated
-        toast.success('MFA has been successfully activated')
+        toast.success('Google Authenticator has been successfully activated')
         navigate(`/userprofile/${user.id}`)
       } else {
         toast.error('Wrong code, please retry')
