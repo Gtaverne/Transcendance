@@ -535,7 +535,6 @@ export class UsersService {
   async editprofile(data: EditorDTO): Promise<any> {
     try {
       const idFromToken = jwt.verify(data.jwt, Token_Secret);
-      // console.log('ID from token: ', idFromToken, ' data.id: ', data.id)
       if (+idFromToken !== +data.id) {
         console.log('Token not corresponding to id');
         return null;

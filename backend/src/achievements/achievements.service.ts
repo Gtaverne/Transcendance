@@ -65,10 +65,7 @@ export class AchievementsService {
   }
 
   async updateAchievements(userid: number) {
-    console.log('Trying to update achievements');
     var numOfAchievements = await this.achievementsRepository.count();
-
-    console.log('Number of different achievements: ', numOfAchievements);
 
     if (numOfAchievements == 0) {
       console.log('Ooops, you have not initiated the achievement table');
@@ -76,12 +73,7 @@ export class AchievementsService {
       console.log(res);
     }
 
-    console.log('Fetching a full user');
     const user = await this.usersService.findUserForAchievementUpdate(userid);
-    console.log(
-      'User fetched, here are his achievements: ',
-      user.achievementsList,
-    );
     let userAchievementsID: number[] = [];
     for (let i = 0; i < user.achievementsList.length; i++)
       userAchievementsID.push(user.achievementsList[i].id);
@@ -126,6 +118,6 @@ export class AchievementsService {
 
     const update = await this.usersService.findUserForAchievementUpdate(userid);
 
-    return update.achievementsList
+    return update.achievementsList;
   }
 }

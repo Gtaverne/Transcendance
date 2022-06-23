@@ -97,7 +97,7 @@ function Login({}: Props) {
 
   if (mfaRequired) {
     return (
-      <div>
+      <div className="userProfile">
         <div>
           <input
             type="text"

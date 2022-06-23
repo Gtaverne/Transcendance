@@ -131,14 +131,12 @@ const UserProfile = (props: Props) => {
       fetchAchievements();
     } else {
     }
-    console.log('achievementsList: ', achievementsList);
+    // console.log('achievementsList: ', achievementsList);
   }, [params, fetchedProfile, login, user]);
 
   var profile = user;
 
   const onMutate = (e: any) => {
-    console.log('Mutation');
-    toast.error('Fail');
     setFetchedProfile((prevState: any) => ({
       ...prevState,
       [e.target.id]: e.target.value,
