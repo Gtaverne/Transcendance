@@ -32,16 +32,16 @@ export class MicrocdnService {
 
   getAvatarPath(id: number): string {
     const path = CDN_PATH + `/avatar/${id}.jpg`;
-    console.log('Get avatar of id: ', id, ' trying path: ', path);
+    // console.log('Get avatar of id: ', id, ' trying path: ', path);
     // console.log('PAth exists? ', fs.existsSync(path));
 
     try {
       if (fs.existsSync(path)) {
-        console.log('Picture found');
+        // console.log('Picture found');
 
         return path;
       } else {
-        console.log('Return default');
+        console.log('Return default picture');
         return '/app/microcdn/avatar/default.jpg';
       }
     } catch (error) {

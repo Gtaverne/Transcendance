@@ -171,7 +171,7 @@ export class UsersService {
 
   //Important: do not add relations as it will export secrets to the front
   async findOneForFront(id: number, whoIsAsking: number) {
-    console.log('Fetch user: ', id, ' request by: ', whoIsAsking);
+    // console.log('Fetch user: ', id, ' request by: ', whoIsAsking);
     if (!whoIsAsking || whoIsAsking === 0) {
       const user = await this.usersRepository.findOne({
         where: { id: id },
@@ -395,7 +395,7 @@ export class UsersService {
   }
 
   async login2fa(token: string, code: string): Promise<any> {
-    console.log('Token: ', token, ' code: ', code);
+    // console.log('Token: ', token, ' code: ', code);
     var answer = {
       user: new UsersEntity(),
       iBlockedList: [],
@@ -460,7 +460,7 @@ export class UsersService {
 
   generateToken(data: any): string {
     const token = jwt.sign(data, Token_Secret);
-    console.log('My jwt: ' + token);
+    // console.log('My jwt: ' + token);
 
     return token;
   }
@@ -481,7 +481,7 @@ export class UsersService {
         resp = response.data;
       })
       .catch(function (error) {
-        console.log(error);
+        console.log('Could not fetch profile from 42');
       });
     const res = await this.userFromDB(resp);
     return res;
@@ -528,9 +528,9 @@ export class UsersService {
     return dude;
   }
 
-  async editprofile(data: EditorDTO): Promise<any> {
+  async editprofile(data: EditorDTO, token: string): Promise<any> {
     try {
-      const idFromToken = jwt.verify(data.jwt, Token_Secret);
+      const idFromToken = jwt.verify(token, Token_Secret);
       if (+idFromToken !== +data.id) {
         console.log('Token not corresponding to id');
         return null;
