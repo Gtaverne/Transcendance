@@ -24,7 +24,7 @@ import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
 var jwt = require('jsonwebtoken');
-const Token_Secret = process.env.JWT_Secret;
+const TOKEN_SECRET = process.env.JWT_Secret;
 const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
 
 //retourne le premier endpoint qui match la route
@@ -50,7 +50,7 @@ export class UsersController {
 
   @Get('/blocked/:id')
   findBlocked(@Param() params): Promise<number[]> {
-    console.log('Find Blocked by id', params.id)
+    console.log('Find Blocked by id', params.id);
     return this.usersServices.findBlocked(params.id);
   }
 
@@ -161,7 +161,7 @@ export class UsersController {
     @Param() params,
     @Query('jwt') token: string,
   ): Promise<UsersEntity> {
-    const idFromToken = jwt.verify(token, Token_Secret)
+    const idFromToken = jwt.verify(token, TOKEN_SECRET);
     return this.usersServices.findOneForFront(params.id, +idFromToken);
   }
 
@@ -176,7 +176,11 @@ export class UsersController {
   }
 
   @Post('/blockuser/')
-  async blockUser(@Body() data: ChangeRoleDTO): Promise<boolean> {
+  async blockUser(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     return this.usersServices.blockUser(data);
   }
 

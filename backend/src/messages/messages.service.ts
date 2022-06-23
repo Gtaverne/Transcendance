@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { MessagesEntity } from './messages.entity';
 
+var jwt = require('jsonwebtoken');
+const TOKEN_SECRET = process.env.JWT_Secret;
+
 @Injectable()
 export class MessagesService {
   constructor(
@@ -15,7 +18,8 @@ export class MessagesService {
     private roomsService: RoomsService,
   ) {}
 
-  async create(createMessage: CreateMessageDTO) {
+  async create(createMessage: CreateMessageDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != createMessage.owner) return;
     const newMessage = await this.messagesRepository.create();
 
     const owner = await this.usersService.findOne(createMessage.owner);

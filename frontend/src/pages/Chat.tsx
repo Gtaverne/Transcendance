@@ -12,6 +12,7 @@ import './chat.css';
 import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
@@ -289,7 +290,7 @@ function Chat() {
     const res = await apiPoster('rooms/changeowner/', data);
 
     if (res) {
-      console.log('You are not owner anymore');
+      toast.success('Success');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -308,7 +309,7 @@ function Chat() {
     const res = await apiPoster('rooms/changeadmin/', data);
 
     if (res) {
-      console.log('Admin list updated');
+      toast.success('Success');
       refreshOthers();
       setTimeout(getConversations, 250);
       //   setRoleList(currentChat!);
@@ -343,7 +344,7 @@ function Chat() {
       role: 'leave',
     });
     if (res) {
-      console.log('successfully left the room');
+      toast.success('Room Left Successfully');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
       global.currentChat = undefined;
@@ -394,7 +395,8 @@ function Chat() {
     });
     if (res) {
       setTimeout(getConversations, 250);
-      setChangePassword('Success');
+      refreshOthers();
+      toast.success('Password Updated');
     } else {
       setChangePassword('Fail');
     }
@@ -410,7 +412,7 @@ function Chat() {
       time: mute ? mute : 0,
     });
     if (res) {
-      console.log('successfully muted');
+      toast.success('Successfully Muted');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -426,7 +428,7 @@ function Chat() {
       time: ban ? ban : 0,
     });
     if (res) {
-      console.log('successfully band');
+      toast.success('Successfully Ban');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -441,7 +443,7 @@ function Chat() {
       role: usernameInvite ? usernameInvite : '',
     });
     if (res) {
-      console.log('successfully invited');
+      toast.success('Invitation Successfull');
       refreshOthers();
       setTimeout(getConversations, 250);
     }

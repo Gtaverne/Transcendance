@@ -2,21 +2,21 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 var jwt = require('jsonwebtoken');
-const Token_Secret = process.env.JWT_Secret;
+const TOKEN_SECRET = process.env.JWT_Secret;
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (req.url === '/') {
-      console.log('Passing empty request')
-      next()
+      console.log('Passing empty request');
+      next();
     }
     if (!req.query.jwt || req.query.jwt === '') {
       console.log('Middleware: no token in that query: ', req.url);
       return res.status(403).end();
     } else {
       try {
-        const idFromToken = jwt.verify(req.query.jwt, Token_Secret);
+        const idFromToken = jwt.verify(req.query.jwt, TOKEN_SECRET);
         if (idFromToken > 0) {
           next();
         } else {

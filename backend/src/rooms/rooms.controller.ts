@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { UsersEntity } from 'src/users/users.entity';
 import { ChangeRoleDTO } from './dto/change-status.dto';
 import { CreateRoomDTO } from './dto/create-room.dto';
@@ -7,52 +7,84 @@ import { MuteBanDTO } from './dto/mute-ban.dto';
 import { RoomsEntity } from './rooms.entity';
 import { RoomsService } from './rooms.service';
 
+var jwt = require('jsonwebtoken');
+const TOKEN_SECRET = process.env.JWT_Secret;
+
 @Controller('rooms')
 export class RoomsController {
   constructor(private roomsServices: RoomsService) {}
 
   @Post('/invite/')
-  async invite(@Body() data: ChangeRoleDTO): Promise<boolean> {
-    return this.roomsServices.invite(data);
+  async invite(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    return this.roomsServices.invite(data, token);
   }
 
   @Post('/join/')
-  async join(@Body() join: JoinRoomDTO): Promise<RoomsEntity> {
-    return this.roomsServices.join(join);
+  async join(
+    @Body() join: JoinRoomDTO,
+    @Query('jwt') token: string,
+  ): Promise<RoomsEntity> {
+    return this.roomsServices.join(join, token);
   }
 
   @Post('/mute/')
-  async mute(@Body() data: MuteBanDTO): Promise<boolean> {
-    return this.roomsServices.mute(data);
+  async mute(
+    @Body() data: MuteBanDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    return this.roomsServices.mute(data, token);
   }
 
   @Post('/ban/')
-  async ban(@Body() data: MuteBanDTO): Promise<boolean> {
-    return this.roomsServices.ban(data);
+  async ban(
+    @Body() data: MuteBanDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    return this.roomsServices.ban(data, token);
   }
 
   @Post('/changepassword/')
-  async changePassword(@Body() data: ChangeRoleDTO): Promise<boolean> {
-    return this.roomsServices.changePassword(data);
+  async changePassword(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    return this.roomsServices.changePassword(data, token);
   }
 
   @Post('/leaveroom/')
-  async leaveRoom(@Body() data: ChangeRoleDTO): Promise<boolean> {
+  async leaveRoom(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     return this.roomsServices.leaveRoom(data);
   }
 
   @Post('/changeowner/')
-  async changeOwner(@Body() data: ChangeRoleDTO): Promise<boolean> {
-    return this.roomsServices.changeOwner(data);
+  async changeOwner(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    return this.roomsServices.changeOwner(data, token);
   }
 
   @Post('/changeadmin/')
-  async changeAdmin(@Body() data: ChangeRoleDTO): Promise<boolean> {
-    return this.roomsServices.changeAdmin(data);
+  async changeAdmin(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    return this.roomsServices.changeAdmin(data, token);
   }
 
   @Post()
-  async create(@Body() room: CreateRoomDTO): Promise<RoomsEntity> {
+  async create(
+    @Body() room: CreateRoomDTO,
+    @Query('jwt') token: string,
+  ): Promise<RoomsEntity> {
+    if (jwt.verify(token, TOKEN_SECRET) != room.owner) return;
     return this.roomsServices.create(room);
   }
 

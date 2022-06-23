@@ -22,7 +22,7 @@ dotenv.config({ path: './.env' });
 const Access_Token_URL = process.env.Access_Token_URL;
 const Client_ID = process.env.Client_ID;
 const Client_Secret = process.env.Client_Secret;
-const Token_Secret = process.env.JWT_Secret;
+const TOKEN_SECRET = process.env.JWT_Secret;
 const App_Name = 'Carlos Pongos';
 const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
 
@@ -265,7 +265,7 @@ export class UsersService {
     console.log('The token', token);
 
     try {
-      const idFromToken = jwt.verify(token, Token_Secret);
+      const idFromToken = jwt.verify(token, TOKEN_SECRET);
 
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
@@ -292,7 +292,7 @@ export class UsersService {
   async verificationMFA(token: string, code: string): Promise<Boolean> {
     try {
       console.log('code: ', code, 'token: ', token);
-      const idFromToken = jwt.verify(token, Token_Secret);
+      const idFromToken = jwt.verify(token, TOKEN_SECRET);
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
         select: ['secret'],
@@ -404,7 +404,7 @@ export class UsersService {
     };
 
     try {
-      const translatedToked = jwt.verify(token, Token_Secret);
+      const translatedToked = jwt.verify(token, TOKEN_SECRET);
       const idFromToken = translatedToked.id;
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
@@ -459,7 +459,7 @@ export class UsersService {
   }
 
   generateToken(data: any): string {
-    const token = jwt.sign(data, Token_Secret);
+    const token = jwt.sign(data, TOKEN_SECRET);
     console.log('My jwt: ' + token);
 
     return token;
@@ -530,7 +530,7 @@ export class UsersService {
 
   async editprofile(data: EditorDTO): Promise<any> {
     try {
-      const idFromToken = jwt.verify(data.jwt, Token_Secret);
+      const idFromToken = jwt.verify(data.jwt, TOKEN_SECRET);
       if (+idFromToken !== +data.id) {
         console.log('Token not corresponding to id');
         return null;
