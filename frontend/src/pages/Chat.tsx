@@ -1,5 +1,6 @@
 import axios from 'axios';
 import apiGetter from '../features/apicalls/apiGetter';
+import apiPoster from '../features/apicalls/apiPoster';
 import React, { useEffect, useRef, useState } from 'react';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import ChatOnline from '../components/ChatOnline';
@@ -11,7 +12,6 @@ import './chat.css';
 import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
-import { edit, reset } from '../features/auth/authSlice';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
@@ -62,7 +62,7 @@ function Chat() {
         // withCredentials: true,
         // path: 'http://localhost:3000/socket.io',
         query: { id: user.id },
-        transports: ["websocket", "polling"],
+        transports: ['websocket', 'polling'],
         forceNew: true,
       });
     }
@@ -128,9 +128,7 @@ function Chat() {
   }
 
   const getConversations = async () => {
-    const res = await axios.get(
-      process.env.REACT_APP_URL_BACK + 'rooms/user/' + user.id,
-    );
+    const res = await apiGetter('rooms/user/' + user.id);
     setConversations(res.data);
     console.log('getConversations', global.currentChat);
     if (global.currentChat) {
@@ -149,9 +147,7 @@ function Chat() {
 
   const getConversationsCanJoin = async () => {
     try {
-      const res = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'rooms/canjoin/' + user.id,
-      );
+      const res = await apiGetter('rooms/canjoin/' + user.id);
       setConversationsCanJoin(res.data);
       for (let i = 0; i < res.data.length; i++)
         if (res.data[i].id === currentChat?.id) {
@@ -165,10 +161,6 @@ function Chat() {
 
   const getIBlockList = async () => {
     try {
-      //Benjamin: check ce remplacement
-      // const res = await axios.get(
-      //   process.env.REACT_APP_URL_BACK + 'users/blocked/' + user.id,
-      // )
       const res = await apiGetter('users/blocked/' + user.id);
       setIBlockList(res.data);
     } catch (err) {
@@ -188,9 +180,7 @@ function Chat() {
     const getMessages = async () => {
       if (currentChat) {
         try {
-          const res = await axios.get(
-            process.env.REACT_APP_URL_BACK + 'messages/' + currentChat?.id,
-          );
+          const res = await apiGetter('messages/' + currentChat?.id);
           setMessages(res.data);
         } catch (err) {
           console.log(err);
@@ -211,10 +201,7 @@ function Chat() {
       message: newMessage,
     };
 
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'messages/',
-      msg,
-    );
+    const res = await apiPoster('messages/', msg);
 
     socket.current.emit('transmitMessage', res.data);
     console.log('SOCKET SEND MESSAGE');
@@ -248,10 +235,7 @@ function Chat() {
       password: convPassword,
     };
 
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/',
-      room,
-    );
+    const res = await apiPoster('rooms/', room);
 
     socket.current.emit('newInfo', {
       owner: user.id,
@@ -275,10 +259,7 @@ function Chat() {
       private: privatePassword && privatePassword !== '' ? true : false,
     };
 
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/join/',
-      joinDTO,
-    );
+    const res = await apiPoster('rooms/join/', joinDTO);
 
     if (res.data) {
       console.log('Updating conv after join');
@@ -305,10 +286,7 @@ function Chat() {
       role: 'owner',
     };
 
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/changeowner/',
-      data,
-    );
+    const res = await apiPoster('rooms/changeowner/', data);
 
     if (res) {
       console.log('You are not owner anymore');
@@ -327,10 +305,7 @@ function Chat() {
       role: 'admin',
     };
 
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/changeadmin/',
-      data,
-    );
+    const res = await apiPoster('rooms/changeadmin/', data);
 
     if (res) {
       console.log('Admin list updated');
@@ -361,15 +336,12 @@ function Chat() {
 
   const handleLeaveRoom = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/leaveroom/',
-      {
-        user,
-        channelId: currentChat?.id,
-        appointedId: 0,
-        role: 'leave',
-      },
-    );
+    const res = await apiPoster('rooms/leaveroom/', {
+      user,
+      channelId: currentChat?.id,
+      appointedId: 0,
+      role: 'leave',
+    });
     if (res) {
       console.log('successfully left the room');
       setTimeout(getConversations, 250);
@@ -390,15 +362,12 @@ function Chat() {
     if (iBlockList.includes(val)) alreadyBlocked = true;
     else alreadyBlocked = false;
 
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'users/blockuser/',
-      {
-        user,
-        channelId: currentChat?.id,
-        appointedId: currentUser?.id,
-        role: 'block',
-      },
-    );
+    const res = await apiPoster('users/blockuser/', {
+      user,
+      channelId: currentChat?.id,
+      appointedId: currentUser?.id,
+      role: 'block',
+    });
     if (res && alreadyBlocked) {
       console.log('successfully unblocked user');
       let temp = iBlockList;
@@ -417,15 +386,12 @@ function Chat() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/changepassword/',
-      {
-        user,
-        channelId: currentChat?.id,
-        appointedId: changePassword ? 0 : -1,
-        role: changePassword ? changePassword : '-',
-      },
-    );
+    const res = await apiPoster('rooms/changepassword/', {
+      user,
+      channelId: currentChat?.id,
+      appointedId: changePassword ? 0 : -1,
+      role: changePassword ? changePassword : '-',
+    });
     if (res) {
       setTimeout(getConversations, 250);
       setChangePassword('Success');
@@ -436,16 +402,13 @@ function Chat() {
 
   const handleMute = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/mute/',
-      {
-        user,
-        channelId: currentChat?.id,
-        appointedId: currentUser?.id,
-        role: 'mute',
-        time: mute ? mute : 0,
-      },
-    );
+    const res = await apiPoster('rooms/mute/', {
+      user,
+      channelId: currentChat?.id,
+      appointedId: currentUser?.id,
+      role: 'mute',
+      time: mute ? mute : 0,
+    });
     if (res) {
       console.log('successfully muted');
       refreshOthers();
@@ -455,16 +418,13 @@ function Chat() {
 
   const handleBan = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/ban/',
-      {
-        user,
-        channelId: currentChat?.id,
-        appointedId: currentUser?.id,
-        role: 'ban',
-        time: ban ? ban : 0,
-      },
-    );
+    const res = await apiPoster('rooms/ban/', {
+      user,
+      channelId: currentChat?.id,
+      appointedId: currentUser?.id,
+      role: 'ban',
+      time: ban ? ban : 0,
+    });
     if (res) {
       console.log('successfully band');
       refreshOthers();
@@ -474,15 +434,12 @@ function Chat() {
 
   const handleUsernameInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await axios.post(
-      process.env.REACT_APP_URL_BACK + 'rooms/invite/',
-      {
-        user,
-        channelId: currentChat?.id,
-        appointedId: 0,
-        role: usernameInvite ? usernameInvite : '',
-      },
-    );
+    const res = await apiPoster('rooms/invite/', {
+      user,
+      channelId: currentChat?.id,
+      appointedId: 0,
+      role: usernameInvite ? usernameInvite : '',
+    });
     if (res) {
       console.log('successfully invited');
       refreshOthers();

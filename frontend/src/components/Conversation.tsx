@@ -2,6 +2,7 @@ import axios from 'axios';
 import { FormEvent, useEffect, useState } from 'react';
 import RoomInterface from '../interfaces/RoomInterface';
 import UserInterface from '../interfaces/UserInterface';
+import apiGetter from '../features/apicalls/apiGetter';
 import './conversation.css';
 const imageURL =
   'https://thumbs.dreamstime.com/b/people-talking-icon-one-set-web-icons-vector-people-talking-icon-one-set-web-vector-icons-137796837.jpg';
@@ -32,9 +33,7 @@ function Conversation({
 
   useEffect(() => {
     const getUsers = async () => {
-      const res = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'rooms/users/' + conversation.id,
-      );
+      const res = await apiGetter('rooms/users/' + conversation.id);
       setUsers(res.data);
       //   console.log(res.data);
     };
