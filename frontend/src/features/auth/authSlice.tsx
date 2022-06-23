@@ -14,13 +14,6 @@ const user = getItem('user');
 const iFollowList = getItem('iFollowList');
 const iBlockedList = getItem('iBlockedList');
 
-// const iFollowList = JSON.parse(localStorage.getItem('iFollowList') || '[]');
-// const iBlockedList = JSON.parse(localStorage.getItem('iBlockedList') || '[]');
-
-// const user = JSON.parse('{}');
-// const iFollowList = JSON.parse('[]');
-// const iBlockedList = JSON.parse('[]');
-
 interface userInterface {
   user: any;
   iFollowList: any;
@@ -56,8 +49,7 @@ export const login = createAsyncThunk(
       }
       return profile;
     } catch (error) {
-      // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
-      console.log('We caught an error');
+      console.log('We caught an error:', error);
 
       return thunkAPI.rejectWithValue('Could not login');
     }
@@ -72,8 +64,7 @@ export const loginmfa = createAsyncThunk(
       const profile = await authService.loginmfa(input.jwt, input.code);
       return profile;
     } catch (error) {
-      // const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
-      console.log('We caught an error');
+      console.log('We caught an error', error);
 
       return thunkAPI.rejectWithValue('Could not login');
     }
@@ -93,7 +84,7 @@ export const edit = createAsyncThunk(
   },
 );
 
-//Edit User but not User (just friends and blocked list)
+//Edit User's relations (just friends and blocked list)
 export const editLight = createAsyncThunk(
   'auth/editLight',
   async (input: any, thunkAPI) => {
@@ -196,8 +187,8 @@ export const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
-        state.iBlockedList = [42];
-        state.iFollowList = [42];
+        state.iBlockedList = [];
+        state.iFollowList = [];
       });
   },
 });

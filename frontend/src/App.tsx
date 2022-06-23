@@ -18,7 +18,7 @@ import { io } from 'socket.io-client';
 import { RootStateOrAny, useSelector } from 'react-redux';
 
 function App() {
-  // const socket = useRef(io());
+  const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   // useEffect(() => {
   //   if (user) {
@@ -38,7 +38,6 @@ function App() {
             </Route>
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
-            {/* <Route path="/verifymfa/:code" element={<Verify2FA />} /> */}
             <Route path="/userprofile/:id" element={<PrivateRoute />}>
               <Route path="/userprofile/:id" element={<UserProfile />} />
             </Route>

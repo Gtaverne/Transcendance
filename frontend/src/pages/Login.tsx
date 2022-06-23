@@ -4,6 +4,7 @@ import { login, loginmfa, reset } from '../features/auth/authSlice';
 import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 type Props = {};
 
@@ -36,23 +37,26 @@ function Login({}: Props) {
         code: writtenCode,
       };
       dispatch(loginmfa(MFAParams));
+
+      if (!user || !user.username) {
+        //popup: Please retry code
+      } else {
+      }
     } catch (error) {
       console.log('Request to MFA validation failed');
     }
-    // if (!user!.username) {
-    //   //popup: Please retry code
-    // }
   };
 
   useEffect(() => {
     noloop = noloop + 1;
 
-    // if (firstLoop === false || noloop > 1) {
-    //   console.log('Already looped');
-    //   setFirstLoop(false);
-    // }
+    if (firstLoop === false || noloop > 1) {
+      console.log('Already looped');
+      setFirstLoop(false);
+    }
 
     if (user && user.username) {
+      // toast.success('Login successful');
       navigate('/');
     } else if (code !== '' && user && !user.username) {
       console.log('From login, login with code: ', code);
@@ -88,7 +92,7 @@ function Login({}: Props) {
   }
 
   if (isError) {
-    return <div>Our backend denied your login</div>;
+    return <div>The backend denied your login</div>;
   }
 
   if (mfaRequired) {

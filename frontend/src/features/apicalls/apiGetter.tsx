@@ -7,6 +7,7 @@ async function apiGetter(route: string): Promise<any> {
   const resp = await axios.get(URL_BACK + route, {
     params: { jwt: Cookies.get('jwt') },
   });
+
   return resp;
 }
 

@@ -23,8 +23,6 @@ export class LoggerMiddleware implements NestMiddleware {
         console.log('Middleware: invalid token in  ', req.url);
         return res.status(403).end();
       }
-
-      // console.log('Middleware: url: ', req.url, ' id from token=', idFromToken)
     }
   }
 }

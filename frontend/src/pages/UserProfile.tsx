@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
+import AchievementMiniature from '../components/AchievementMiniature';
 import Spinner from '../components/Spinner';
 import { toast } from 'react-toastify';
 
@@ -25,9 +26,7 @@ const UserProfile = (props: Props) => {
   const [editProfile, setEditProfile] = useState(false);
   const [profilePic, setProfilePic] = useState<Blob>();
   const [preview, setPreview] = useState('');
-  const [queryData, setQueryData] = useState({
-    query: '',
-  });
+  const [achievementsList, setAchievementsList] = useState([]);
   const params = useParams();
 
   const {
@@ -76,6 +75,7 @@ const UserProfile = (props: Props) => {
         } catch (error) {
           console.log('Could not load user');
           //Popup:
+          toast.error('The user you looked for does not exist')
           navigate('/userprofile/' + user.id);
         }
       };
@@ -116,6 +116,23 @@ const UserProfile = (props: Props) => {
     setStalkList(stalk);
     setRequestList(req);
   }, [user, fetchedProfile, fetchedFollowers, fetchedFollowing, iBlockedList]);
+
+  useEffect(() => {
+    console.log('We get in fetchAchievements');
+    const fetchAchievements = async () => {
+      try {
+        const ach = await apiGetter(`achievements/update/${params.id}`);
+        setAchievementsList(ach.data);
+      } catch (error) {
+        console.log('Could not fetch achievements');
+      }
+    };
+    if (fetchedProfile.id !== 0) {
+      fetchAchievements();
+    } else {
+    }
+    console.log('achievementsList: ', achievementsList);
+  }, [params, fetchedProfile, login, user]);
 
   var profile = user;
 
@@ -336,7 +353,10 @@ const UserProfile = (props: Props) => {
             />
           </div>
         ) : (
-          <p>Username: {fetchedProfile.username}</p>
+          <div>
+            <p>Username: {fetchedProfile.username}</p>
+            <p>Level: {fetchedProfile.lvl}</p>
+          </div>
         )}
         <p>email: {fetchedProfile.email}</p>
         {user && user.id && editProfile && user.id === fetchedProfile.id ? (
@@ -355,8 +375,12 @@ const UserProfile = (props: Props) => {
       </div>
 
       <div className="userDescription">
-        Trophys
-        <p>Level: {fetchedProfile.lvl}</p>
+        <h2>Trophys</h2>
+        {achievementsList.map((c: any) => (
+              <div key={c.id.toString()}>
+                <AchievementMiniature achievement={c}  />
+              </div>
+            ))}
       </div>
 
       <div className="userList">

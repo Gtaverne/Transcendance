@@ -15,7 +15,7 @@ const login = async (code: string) => {
     params: { code: code },
   });
 
-  if (response.data) {
+  if (response.data && response.data.user) {
     console.log('We received an answer:', response.data.user.username);
     Cookies.set('jwt', response.data.jwt, { path: API_URL });
     Cookies.set('jwt', response.data.jwt);
