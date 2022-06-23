@@ -15,7 +15,8 @@ import { MessagesEntity } from 'src/messages/messages.entity';
 
 @WebSocketGateway({
   //   cors: { origin: 'http://localhost:3000', credentials: true },
-  cors: { origin: '*' },
+  namespace: 'chat',
+  cors: true,
 })
 export class RoomsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect

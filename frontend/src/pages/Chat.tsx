@@ -57,11 +57,22 @@ function Chat() {
 
   useEffect(() => {
     if (user) {
-      socket.current = io('ws://localhost:5050', {
+      console.log('SEND CONN SOCKETT');
+      socket.current = io('http://localhost:3000/chat', {
         // withCredentials: true,
+        // path: 'http://localhost:3000/socket.io',
         query: { id: user.id },
+        transports: ["websocket", "polling"],
+        forceNew: true,
       });
     }
+
+    socket.current.on('connect_error', (e) => {
+      // revert to classic upgrade
+      //socket.io.opts.transports = ["polling", "websocket"];
+      console.log('ERROROR');
+    });
+
     socket.current.on('getTransmitMessage', (data) => {
       console.log(
         'Socket message detected',
@@ -109,6 +120,7 @@ function Chat() {
     socket.current.on('getUsers', (u) => {
       setOnlineUsers(u);
     });
+    console.log('NES SOCKET ADD GET USERS');
   }, [user]);
 
   if (!user) {
@@ -157,8 +169,7 @@ function Chat() {
       // const res = await axios.get(
       //   process.env.REACT_APP_URL_BACK + 'users/blocked/' + user.id,
       // )
-      const res = await apiGetter('users/blocked/' + user.id)
-      ;
+      const res = await apiGetter('users/blocked/' + user.id);
       setIBlockList(res.data);
     } catch (err) {
       console.log(err);
@@ -206,6 +217,7 @@ function Chat() {
     );
 
     socket.current.emit('transmitMessage', res.data);
+    console.log('SOCKET SEND MESSAGE');
 
     setMessages([...messages, res.data]);
     setNewMessage('');
@@ -221,6 +233,7 @@ function Chat() {
       channelId: 0,
       message: '-',
     });
+    console.log('SOCKET REFRESH');
   };
 
   const handleSubmitConv = async (e: React.FormEvent) => {
