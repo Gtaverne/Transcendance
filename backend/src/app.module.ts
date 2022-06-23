@@ -45,6 +45,7 @@ export class AppModule {
         { path: 'api/users/callback', method: RequestMethod.GET },
         { path: 'api/users/login2fa', method: RequestMethod.ALL },
         { path: 'api/users/seed', method: RequestMethod.ALL },
+        { path: 'api/microcdn/(.*)', method: RequestMethod.ALL },
       )
       .forRoutes('*');
   }
