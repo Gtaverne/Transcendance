@@ -92,9 +92,15 @@ code {
 }
 
 .landingPage {
-  margin-top: 100px;
   text-align: center;
   vertical-align: middle;
+  background: rgba(0, 0, 0, 0.69);
+  color: white;
+  height: 100vh;
+}
+
+.landingPage img {
+  margin-top: 100px;
 }
 
 .landingPage a {

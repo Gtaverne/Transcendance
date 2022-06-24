@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { edit, reset, logout } from '../features/auth/authSlice';
 import { toast } from 'react-toastify';
+import Overlay from '../components/Overlay';
 
 type Props = {};
 
@@ -52,7 +53,7 @@ function Verify2FA({}: Props) {
   };
 
   return (
-    <div>
+    <Overlay title={"Verify 2FA"}>
       <div>
         <input
           type="text"
@@ -68,7 +69,7 @@ function Verify2FA({}: Props) {
           Test authenticator
         </button>
       </div>
-    </div>
+    </Overlay>
   );
 }
 

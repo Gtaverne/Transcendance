@@ -13,6 +13,7 @@ import { io } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Overlay from '../components/Overlay';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
@@ -20,7 +21,7 @@ function Chat() {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
   const [conversationsCanJoin, setConversationsCanJoin] = useState<
     RoomInterface[]
-  >([]);
+    >([]);
   const [currentChat, setCurrentChat] = useState<RoomInterface | undefined>(
     undefined,
   );
@@ -78,24 +79,24 @@ function Chat() {
       console.log(
         'Socket message detected',
         data.room.id,
-        currentChat?.id,
+        global.currentChat?.id,
         data,
       );
       setArrivalMessage(data);
-      if (currentChat && currentChat.id === data.room.id) {
+      if (global.currentChat && global.currentChat.id === data.room.id) {
         console.log('Message in the current room');
       }
     });
     socket.current.on('getNewInfo', (data) => {
-      console.log('Socket getNewInfo detected', currentChat);
+      console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     });
-    if (currentChat && currentChat?.admins?.length) {
-      setRoleList(currentChat);
+    if (global.currentChat && global.currentChat?.admins?.length) {
+      setRoleList(global.currentChat);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChat, user]);
+  }, [user]);
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -454,7 +455,7 @@ function Chat() {
   };
 
   return (
-    <>
+    <Overlay title="Chat">
       <div className="messenger">
         <div className="chatMenu">
           <div className="chatMenuWrapper">
@@ -702,7 +703,7 @@ function Chat() {
                       </button>
                     )}
                     {(currentChatAdmins.includes(user.id) ||
-                      currentChat?.owner?.id === user.id) &&
+                        currentChat?.owner?.id === user.id) &&
                       !currentChatAdmins.includes(currentUser?.id) &&
                       currentChat?.owner?.id !== currentUser?.id &&
                       !currentChat?.isDm && (
@@ -777,7 +778,7 @@ function Chat() {
           </div>
         </div>
       </div>
-    </>
+    </Overlay>
   );
 }
 export default Chat;

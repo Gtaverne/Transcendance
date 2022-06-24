@@ -12,6 +12,10 @@ import logo from './assets/logo.svg';
 import chatIcon from './assets/icons/chat.svg';
 import startIcon from './assets/icons/start.svg';
 import leaderboardIcon from './assets/icons/leaderboard.svg';
+import StartIcon from '../components/Icons/StartIcon';
+import LeaderboardIcon from '../components/Icons/LeaderboardIcon';
+import ChatIcon from '../components/Icons/ChatIcon';
+import LogoIcon from '../components/Icons/LogoIcon';
 
 function Home() {
     const [percX, setPercX] = useState(0);
@@ -36,18 +40,14 @@ function Home() {
 //   }
 
     return (
-        <div>
-            <div className="backgroundLayers">
-                <div className="layerZero" style={{transform: `scale(1.15)  translateX(${percX*5}%) translateY(${percY*5}%)`}}></div>
-                <div className="layerOne" style={{transform: `scale(1.1)  translateX(${percX*2.5}%) translateY(${percY*2.5}%)`}}></div>
-                <div className="layerTwo" style={{transform: `scale(1.05)  translateX(${percX*1.25}%) translateY(${percY*1.25}%)`}}></div>
-                <div className="layerThree" style={{transform: `scale(1.025)  translateX(${percX*0.625}%) translateY(${percY*0.625}%)`}}></div>
-            </div>
+        <div onMouseMove={({clientX, clientY}) => onMouseMove(clientX, clientY)}>
 
-            <div className="background" onMouseMove={({clientX, clientY}) => onMouseMove(clientX, clientY)}>
+            <div className="background">
 
                 <div className="statusbar">
-                    <img src={logo} className="bigLogo"></img>
+                    <div className="bigLogo">
+                        <LogoIcon/>
+                    </div>
                     <Link to={'/userprofile/' + user.id}>
                         <div className="userView">
                             {user && user.username}
@@ -60,19 +60,19 @@ function Home() {
                 <div className="bottom">
                     <Link to="/game">
                         <GlassButton title="START GAME" onClick={() => {}}>
-                            <img src={startIcon}></img>
+                            <StartIcon/>
                         </GlassButton>
                     </Link>
                     <Link to="/chat">
                         <GlassButton title="ONLINE CHAT">
-                            <img src={chatIcon}></img>
+                            <ChatIcon/>
                         </GlassButton>
                     </Link>
                     <GlassButton title="LEADERBOARD">
-                        <img src={leaderboardIcon}></img>
+                        <LeaderboardIcon/>
                     </GlassButton>
                     <GlassButton title="CURRENT GAMES">
-                        <img src={leaderboardIcon}></img>
+                        <LeaderboardIcon/>
                     </GlassButton>
                 </div>
             </div>

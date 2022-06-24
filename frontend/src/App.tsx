@@ -14,17 +14,43 @@ import Landing from './pages/Landing';
 // import { useEffect } from 'react';
 import moment from 'moment';
 import PrivateRoute from './components/PrivateRoute';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { RootStateOrAny, useSelector } from 'react-redux';
+
+import './pages/Home.css';
+
 
 function MainRooter()
 {
     const location = useLocation();
+    const [percX, setPercX] = useState(0);
+    const [percY, setPercY] = useState(0);
 
 
-    return (<>
-        {location.pathname !== "/" && location.pathname !== "/game" ? <Header /> : <></>}
+    const onMouseMove = (clientX: number, clientY: number) => {
+      let ratioX = clientX / window.innerWidth;
+      let ratioY = clientY / window.innerHeight;
+
+      let percX = 1 - ratioX * 2;
+      let percY = 1 - ratioY * 2;
+
+      setPercX(percX);
+      setPercY(percY);
+    };
+
+    //        {location.pathname !== "/" && location.pathname !== "/game" ? <Header /> : <></>}
+
+    return (<div onMouseMove={({clientX, clientY}) => onMouseMove(clientX, clientY)}>
+
+
+        <div className="backgroundLayers">
+          <div className="layerZero" style={{transform: `scale(1.15)  translateX(${percX*5}%) translateY(${percY*5}%)`}}></div>
+          <div className="layerOne" style={{transform: `scale(1.1)  translateX(${percX*2.5}%) translateY(${percY*2.5}%)`}}></div>
+          <div className="layerTwo" style={{transform: `scale(1.05)  translateX(${percX*1.25}%) translateY(${percY*1.25}%)`}}></div>
+          <div className="layerThree" style={{transform: `scale(1.025)  translateX(${percX*0.625}%) translateY(${percY*0.625}%)`}}></div>
+        </div>
+
         <Routes>
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/" element={<Home />} />
@@ -44,7 +70,7 @@ function MainRooter()
             <Route path="/game" element={<Pong />} />
           </Route>
         </Routes>
-    </>);
+    </div>);
 }
 
 function App() {
