@@ -273,9 +273,11 @@ const PongFrame = () => {
   }, []);
 
   return (
-    <div className="backgroundFrame">
-      <div ref={mount} className="game" style={{opacity: isLoaded ? "1" : "0"}}/>
+    <div className="back">
+      <div ref={mount} className="game"/>
+      <div className="backgroundFrame" style={{opacity: isLoaded ? "0" : "1"}}></div>
     </div>
+
   )
 
 
@@ -456,6 +458,8 @@ const Pong = () => {
 
   return (
     <div>
+      <PongFrame></PongFrame>
+
       <div className="backButton">
         <Link to={"/"}>Exit</Link>
       </div>
@@ -484,7 +488,6 @@ const Pong = () => {
       </div>
 
       : <></>}
-      <PongFrame></PongFrame>
     </div>
   )
 
