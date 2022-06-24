@@ -294,21 +294,6 @@
     background-image: url("./assets/paralax/3.png");
 }
 
-.score
-{
-    position: fixed;
-    color: white;
-    text-align: center;
-    width: 100%;
-    font-family: PlayPretend;
-    font-size: 85px;
-    top: 18px;
-    color: #C9C5C5;
-    text-shadow: 0 2px 70px #FF00AD;
-    height: 200px;
-    line-height: 200px;
-
-}
 
 @keyframes leftRight {
     0% {

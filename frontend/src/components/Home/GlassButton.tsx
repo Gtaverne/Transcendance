@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useLayoutEffect, useRef, Component } from 'react';
+import React from 'react';
 import useSound from 'use-sound';
 
 import '../../pages/Home.css';
-
 
 import clicksound from './click.mp3';
 import clocksound from './clock.mp3';

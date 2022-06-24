@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Chat from './pages/Chat';
 import Game from './pages/Game';
+import Pong from './pages/Pong';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
 import Configure2FA from './pages/Configure2FA';
@@ -23,7 +24,7 @@ function MainRooter()
 
 
     return (<>
-        {location.pathname !== "/" ? <Header /> : <></>}
+        {location.pathname !== "/" && location.pathname !== "/game" ? <Header /> : <></>}
         <Routes>
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/" element={<Home />} />
@@ -40,7 +41,7 @@ function MainRooter()
             <Route path="/chat" element={<Chat />} />
           </Route>
           <Route path="/game" element={<PrivateRoute />}>
-            <Route path="/game" element={<Game />} />
+            <Route path="/game" element={<Pong />} />
           </Route>
         </Routes>
     </>);
