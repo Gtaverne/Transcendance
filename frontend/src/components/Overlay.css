@@ -59,6 +59,7 @@
     text-align: center;
     margin: auto auto;
     flex:1;
+    padding-right: 88px;
 }
 
 .overlayContainer {
@@ -66,4 +67,5 @@
     background: white;
     flex: 1 0;
     width: 100%;
+    height: calc(100% - 70px);
 }
