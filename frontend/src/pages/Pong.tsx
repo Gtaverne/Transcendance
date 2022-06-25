@@ -16,6 +16,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, Component } from '
 import RoomInterface from '../interfaces/RoomInterface';
 import { Material } from 'three';
 import { Link } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 declare var global: {
   game: {
@@ -290,6 +291,8 @@ const Pong = () => {
   const [scores, setScores] = useState({scoreA: 0, scoreB: 0});
 
   const [started, setStarted] = useState(false);
+  const socket = useRef(io());
+  const [queueing, setQueueing] = useState(false);
 
 
   var [play] = useSound(bouncesound, { volume: 0.4});
@@ -319,6 +322,42 @@ const Pong = () => {
       bounceB: 0,
       startTime: startTime,
     };
+  }
+
+  const startQueue = () =>
+  {
+    socket.current = io("http://localhost:3000/games");
+    socket.current.on("connect", () => {
+      console.log("Connected");
+    });
+    socket.current.on("disconnect",() => {
+      setQueueing(false);
+      setStarted(false);
+      resetGame(9223372036854775807);
+    });
+    socket.current.on("gameStarted", (ballX, ballY, velX, velY) => {
+      resetGame(new Date().getTime());
+      global.game.ballY = ballY;
+      global.game.ballX = ballX;
+      global.game.velX = velX;
+      global.game.velY = velY;
+      setStarted(true);
+    });
+    socket.current.on("ball", (ballX, ballY, velX, velY) => {
+      global.game.ballY = ballY;
+      global.game.ballX = ballX;
+      global.game.velX = velX;
+      global.game.velY = velY;
+      if (ballX > 10)
+        global.game.bounceB = Math.PI;
+    });
+    socket.current.on("opoMove", (opoX) => {
+      global.game.opoX = opoX;
+    });
+    socket.current.on("receivePoint", (opoX) => {
+      global.game.scoreA++;
+    });
+    setQueueing(true);
   }
 
 
@@ -356,7 +395,9 @@ const Pong = () => {
     document.addEventListener("keyup", keyUpHandler, false);
 
 
+
     var ballStopTime = 0;
+    var loopCount = 0;
 
     function gameLoop()
     {
@@ -376,6 +417,8 @@ const Pong = () => {
       if (upPressed)
         global.game.localX = Math.max((global.game.localX - 1), lenghtBar/2);
 
+      if (loopCount++ % 2 == 0)
+        socket.current.emit('move', {localX: global.game.localX});
 
       if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
         global.game.velY = -global.game.velY;
@@ -404,9 +447,9 @@ const Pong = () => {
         global.game.bounceA = Math.PI;
         play();
 
-
+        socket.current.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
       }
-      else if (global.game.ballX >= goal)
+      /*else if (global.game.ballX >= goal)
       {
         global.game.velX = -global.game.velX - 0.075;
         global.game.opoX = global.game.ballY;
@@ -417,10 +460,10 @@ const Pong = () => {
 
 
         //global.game.scoreA += 1;
-      }
+      }*/
       else if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
       {
-        if (global.game.ballX < 0)
+        /*if (global.game.ballX < 0)
           global.game.scoreB += 1;
         else
           global.game.scoreA += 1;
@@ -432,9 +475,22 @@ const Pong = () => {
         global.game.velY = 0.4;
 
         global.game.localX = arenaWidth/2;
-        global.game.opoX = arenaWidth/2;
+        global.game.opoX = arenaWidth/2;*/
 
-        ballStopTime = new Date().getTime();
+        //ballStopTime = 9223372036854775807;
+
+        if (global.game.ballX <= -(goal + 1))
+        {
+            socket.current.emit('tookGoal');
+            global.game.scoreB++;
+            global.game.ballY = arenaWidth / 2;
+            global.game.ballX = -0.14;
+        }
+
+        global.game.velX = 0;
+        global.game.velY = 0;
+
+
         playGoal();
       }
 
@@ -456,6 +512,7 @@ const Pong = () => {
     }
   }, []);
 
+
   return (
     <div>
       <PongFrame></PongFrame>
@@ -474,13 +531,14 @@ const Pong = () => {
             New Game
           </h1>
 
-          <p>
+          {queueing ? <p>
+            Waiting for opponent.
+          </p> : <p>
             Mettre les options ici (puis info de match making)
-          </p>
+          </p>}
 
           <div className="newgameButton" onMouseUp={() => {
-            resetGame(new Date().getTime());
-            setStarted(true);
+            startQueue();
           }}>
             Start
           </div>
