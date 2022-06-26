@@ -16,7 +16,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, Component } from '
 import RoomInterface from '../interfaces/RoomInterface';
 import { Material } from 'three';
 import { Link } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 
 declare var global: {
   game: {
@@ -291,7 +291,7 @@ const Pong = () => {
   const [scores, setScores] = useState({scoreA: 0, scoreB: 0});
 
   const [started, setStarted] = useState(false);
-  const socket = useRef(io());
+  const socket = useRef<Socket | undefined>(undefined);
   const [queueing, setQueueing] = useState(false);
 
 
@@ -327,15 +327,15 @@ const Pong = () => {
   const startQueue = () =>
   {
     socket.current = io("http://localhost:3000/games");
-    socket.current.on("connect", () => {
+    socket.current?.on("connect", () => {
       console.log("Connected");
     });
-    socket.current.on("disconnect",() => {
+    socket.current?.on("disconnect",() => {
       setQueueing(false);
       setStarted(false);
       resetGame(9223372036854775807);
     });
-    socket.current.on("gameStarted", (ballX, ballY, velX, velY) => {
+    socket.current?.on("gameStarted", (ballX, ballY, velX, velY) => {
       resetGame(new Date().getTime());
       global.game.ballY = ballY;
       global.game.ballX = ballX;
@@ -343,7 +343,7 @@ const Pong = () => {
       global.game.velY = velY;
       setStarted(true);
     });
-    socket.current.on("ball", (ballX, ballY, velX, velY) => {
+    socket.current?.on("ball", (ballX, ballY, velX, velY) => {
       global.game.ballY = ballY;
       global.game.ballX = ballX;
       global.game.velX = velX;
@@ -351,10 +351,10 @@ const Pong = () => {
       if (ballX > 10)
         global.game.bounceB = Math.PI;
     });
-    socket.current.on("opoMove", (opoX) => {
+    socket.current?.on("opoMove", (opoX) => {
       global.game.opoX = opoX;
     });
-    socket.current.on("receivePoint", (opoX) => {
+    socket.current?.on("receivePoint", (opoX) => {
       global.game.scoreA++;
     });
     setQueueing(true);
@@ -418,7 +418,7 @@ const Pong = () => {
         global.game.localX = Math.max((global.game.localX - 1), lenghtBar/2);
 
       if (loopCount++ % 2 == 0)
-        socket.current.emit('move', {localX: global.game.localX});
+        socket.current?.emit('move', {localX: global.game.localX});
 
       if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
         global.game.velY = -global.game.velY;
@@ -447,7 +447,7 @@ const Pong = () => {
         global.game.bounceA = Math.PI;
         play();
 
-        socket.current.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
+        socket.current?.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
       }
       /*else if (global.game.ballX >= goal)
       {
@@ -481,7 +481,7 @@ const Pong = () => {
 
         if (global.game.ballX <= -(goal + 1))
         {
-            socket.current.emit('tookGoal');
+            socket.current?.emit('tookGoal');
             global.game.scoreB++;
             global.game.ballY = arenaWidth / 2;
             global.game.ballX = -0.14;
