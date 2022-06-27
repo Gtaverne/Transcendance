@@ -31,9 +31,9 @@ function Home() {
     };
 
 
-  if (user && user.avatar && !user.avatar.includes('microcdn')) {
-    toast.success('Welcome !\nYou can personnalize your avatar and pseudo in your profile page')
-  }
+  // if (user && user.avatar && !user.avatar.includes('microcdn')) {
+  //   toast.success('Welcome !\nYou can personnalize your avatar and pseudo in your profile page')
+  // }
 
     return (
         <div>
