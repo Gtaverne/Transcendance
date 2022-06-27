@@ -15,7 +15,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import React, { useState, useEffect, useLayoutEffect, useRef, Component } from 'react';
 import RoomInterface from '../interfaces/RoomInterface';
 import { Material } from 'three';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import Cookies from 'js-cookie';
 
@@ -43,7 +43,7 @@ type GameUser = {
   avatar: string;
 };
 
-const PongFrame = ({color}: {color: number}) => {
+const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
 
   const mount = useRef<HTMLDivElement>(null);
 
@@ -173,7 +173,7 @@ const PongFrame = ({color}: {color: number}) => {
       const geometry = new RoundedBoxGeometry( 100, 200, 50, 10, 2.7 );
       const materialCanvas = new THREE.MeshBasicMaterial( { color: 0x470243 } );
       let meshFrame = new THREE.Mesh( geometry, materialCanvas );
-      meshFrame.position.y = -100.2;
+      meshFrame.position.y = -100.3;
       meshFrame.position.x = 0.14;
       meshFrame.position.z = 25 - 3.7;
       scene.add( meshFrame )
@@ -181,7 +181,7 @@ const PongFrame = ({color}: {color: number}) => {
 
 
     const loader = new THREE.TextureLoader();
-    loader.load('arena.png' , function(texture)
+    loader.load(prefix + 'arena.png' , function(texture)
     {
       let geometry = new THREE.PlaneGeometry( 100, 50 );
       let materialCanvas = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
@@ -199,7 +199,7 @@ const PongFrame = ({color}: {color: number}) => {
 
     var shineObject: THREE.Mesh;
 
-    new THREE.TextureLoader().load('border.png' , function(texture)
+    new THREE.TextureLoader().load(prefix + 'border.png' , function(texture)
     {
       let geometry = new THREE.PlaneGeometry( 100, 50 );
       let materialCanvas = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
@@ -214,7 +214,7 @@ const PongFrame = ({color}: {color: number}) => {
       scene.add( shineObject );
     });
 
-    new THREE.TextureLoader().load('0.png' , function(texture)
+    new THREE.TextureLoader().load(prefix + '0.png' , function(texture)
     {
       scene.background = texture;
     });
@@ -299,11 +299,15 @@ const PongFrame = ({color}: {color: number}) => {
 
 const Pong = () => {
 
+  const params = useParams();
+  const isSpectating = params.id != undefined && params.id != null;
+
+
   const mount = useRef<HTMLDivElement>(null);
 
   const [scores, setScores] = useState({scoreA: 0, scoreB: 0});
 
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(isSpectating);
   const [gameover, setGameover] = useState(false);
 
   const socket = useRef<Socket | undefined>(undefined);
@@ -325,6 +329,8 @@ const Pong = () => {
   let goal = 44.7;
 
   let arenaWidth = 50 - border * 2;
+
+
 
   const resetGame = (startTime: number) => {
     global.game = {
@@ -396,6 +402,7 @@ const Pong = () => {
     socket.current?.on("receivePoint", (opoX) => {
       global.game.scoreA++;
     });
+    socket.current?.emit('joinQueue');
     setQueueing(true);
   }
 
@@ -450,57 +457,69 @@ const Pong = () => {
         return;
       }
 
-      if (downPressed)
-        global.game.localX = Math.min((global.game.localX + 1), arenaWidth - lenghtBar/2);
-      if (upPressed)
-        global.game.localX = Math.max((global.game.localX - 1), lenghtBar/2);
-
-      if (loopCount++ % 2 == 0)
-        socket.current?.emit('move', {localX: global.game.localX});
-
-      if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
-        global.game.velY = -global.game.velY;
-        global.game.didHit = 1;
-        play();
-      }
-
-      if (Math.abs(global.game.ballY - global.game.localX) <= (lenghtBar + 2) / 2 && global.game.ballX <= -goal)
+      if (isSpectating)
       {
-        global.game.velX = -global.game.velX + 0.1;
+        if (downPressed)
+          global.game.localX = Math.min((global.game.localX + 1), arenaWidth - lenghtBar/2);
+        if (upPressed)
+          global.game.localX = Math.max((global.game.localX - 1), lenghtBar/2);
 
-        let hit = global.game.ballY - global.game.localX;
-        let angle = Math.atan2(global.game.velY, global.game.velX);
-        let size = Math.max(Math.sqrt(global.game.velX * global.game.velX + global.game.velY * global.game.velY) / 1, 0.5);
+        if (loopCount++ % 2 == 0)
+          socket.current?.emit('move', {localX: global.game.localX});
 
-        if (hit > 2)
-          angle = Math.min(angle + 0.5, 0.7);
-        else if (hit < -2)
-          angle = Math.max(angle - 0.5, -0.7);
+        if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
+          global.game.velY = -global.game.velY;
+          global.game.didHit = 1;
+          play();
+        }
 
-        console.log(angle);
-
-        global.game.velX = Math.cos(angle) * size;
-        global.game.velY = Math.sin(angle) * size;
-
-        global.game.bounceA = Math.PI;
-        play();
-
-        socket.current?.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
-      }
-      else if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
-      {
-        if (global.game.ballX <= -(goal + 1))
+        if (Math.abs(global.game.ballY - global.game.localX) <= (lenghtBar + 2) / 2 && global.game.ballX <= -goal)
         {
+          global.game.velX = -global.game.velX + 0.1;
+
+          let hit = global.game.ballY - global.game.localX;
+          let angle = Math.atan2(global.game.velY, global.game.velX);
+          let size = Math.max(Math.sqrt(global.game.velX * global.game.velX + global.game.velY * global.game.velY) / 1, 0.5);
+
+          if (hit > 2)
+            angle = Math.min(angle + 0.5, 0.7);
+          else if (hit < -2)
+            angle = Math.max(angle - 0.5, -0.7);
+
+          console.log(angle);
+
+          global.game.velX = Math.cos(angle) * size;
+          global.game.velY = Math.sin(angle) * size;
+
+          global.game.bounceA = Math.PI;
+          play();
+
+          socket.current?.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
+        }
+        else if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
+        {
+          if (global.game.ballX <= -(goal + 1))
+          {
             socket.current?.emit('tookGoal');
             global.game.scoreB++;
             global.game.ballY = arenaWidth / 2;
             global.game.ballX = 0;
-        }
+          }
 
-        global.game.velX = 0;
-        global.game.velY = 0;
-        playGoal();
+          global.game.velX = 0;
+          global.game.velY = 0;
+          playGoal();
+        }
       }
+      else
+      {
+        if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
+        {
+          global.game.velX = 0;
+          global.game.velY = 0;
+        }
+      }
+
 
       if(new Date().getTime() - ballStopTime > 2000){
         global.game.ballX += global.game.velX;
@@ -521,7 +540,7 @@ const Pong = () => {
 
   return (
     <div style={{filter: `hue-rotate(${color}deg)`}}>
-      <PongFrame color={color}></PongFrame>
+      <PongFrame color={color} prefix={ isSpectating ? '../' : '' }></PongFrame>
 
       <div className="backButton">
         <Link to={"/"}>Exit</Link>

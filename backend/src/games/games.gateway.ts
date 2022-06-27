@@ -97,7 +97,7 @@ export class GamesGateway
           token,
           TOKEN_SECRET,
       );
-      if (idFromToken <= 0) return;
+      if (idFromToken <= 0) throw Error();
 
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
@@ -108,9 +108,26 @@ export class GamesGateway
       console.log(user);
     } catch (error) {
       console.log('Invalid token ' + error);
+      this.server.to(client.id).disconnectSockets(true);
       return;
     }
+  }
 
+  async handleDisconnect(client: Socket) {
+    console.log('Disconnected');
+
+    const game = this.getUserGame(client.id);
+    if (game) {
+      this.server.to(game.userA.id).disconnectSockets(true);
+      this.server.to(game.userB.id).disconnectSockets(true);
+    }
+
+    this.queue.delete(client.id);
+  }
+
+  @SubscribeMessage('joinQueue')
+  handleJoinQueue(client: Socket)
+  {
     this.queue.set(client.id, client);
 
     if (this.queue.size >= 2) {
@@ -143,18 +160,6 @@ export class GamesGateway
         .to(game.userB.id)
         .emit('gameStarted', 0, arenaWidth / 2, -bd.x, -bd.y, game.infoB.username, game.infoB.avatar, game.infoA.username, game.infoA.avatar);
     }
-  }
-
-  async handleDisconnect(client: Socket) {
-    console.log('Disconnected');
-
-    const game = this.getUserGame(client.id);
-    if (game) {
-      this.server.to(game.userA.id).disconnectSockets(true);
-      this.server.to(game.userB.id).disconnectSockets(true);
-    }
-
-    this.queue.delete(client.id);
   }
 
   @SubscribeMessage('hitBall')

@@ -69,6 +69,9 @@ function MainRooter()
           <Route path="/game" element={<PrivateRoute />}>
             <Route path="/game" element={<Pong />} />
           </Route>
+          <Route path="/game/:id" element={<PrivateRoute />}>
+            <Route path="/game/:id" element={<Pong />} />
+          </Route>
         </Routes>
     </div>);
 }
