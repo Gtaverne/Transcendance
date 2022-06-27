@@ -494,7 +494,7 @@ const Pong = () => {
             socket.current?.emit('tookGoal');
             global.game.scoreB++;
             global.game.ballY = arenaWidth / 2;
-            global.game.ballX = -0.14;
+            global.game.ballX = 0;
         }
 
         global.game.velX = 0;

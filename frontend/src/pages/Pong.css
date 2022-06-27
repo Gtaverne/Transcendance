@@ -103,7 +103,7 @@
 
 .newgameScreen p
 {
-    font-size: 23px;
+    font-size: 28px;
     font-family: PlayPretend, Helvetica Neue, Helvetica;
     opacity: 0.5;
     padding: 24px;
@@ -115,6 +115,9 @@
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
+    opacity: 0.5;
+    font-size: 20px;
+    border-radius: 7px;
 }
 
 .newgameButton
