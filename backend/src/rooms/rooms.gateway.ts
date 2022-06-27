@@ -21,134 +21,49 @@ import { MessagesEntity } from 'src/messages/messages.entity';
 export class RoomsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(
-    private readonly roomsService: RoomsService,
-    private readonly usersService: RoomsService,
-  ) {}
+//   constructor(
+//     private readonly roomsService: RoomsService,
+//     private readonly usersService: RoomsService,
+//   ) {}
 
   @WebSocketServer()
   server: Server;
 
-  private users = [];
+  private session = [];
   private logger: Logger = new Logger(RoomsGateway.name);
-  //   private count: number = 0;
-
-  private addUser = (socket: Socket, userId: number) => {
-    let userFound = false;
-    let index = 0;
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].userId === userId) {
-        userFound = true;
-        index = i;
-      }
-    }
-    if (userFound) {
-      this.users[index].socket.disconnect();
-      this.users.splice(index, 1);
-    }
-    this.users.push({ userId, socket });
-    // !this.users.some((u) => u.userId === userId) &&
-    //   this.users.push({ userId, socket });
-    console.log(
-      'Just updated userId:',
-      userId,
-      'Total users:',
-      this.users.length,
-      socket.id,
-    );
-    // console.log(this.users.length);
-  };
-
-  private removeUser = (socketId: string) => {
-    const a = this.users.length;
-    this.users = this.users.filter((user) => user.socketId === socketId);
-    console.log(111, a, this.users.length);
-  };
-
-  private getUser = (userId: string) => {
-    return this.users.find((user) => user.userId == userId);
-  };
 
   afterInit() {
     this.logger.log('Websocket Server Started, Listening on Port: 5050');
   }
 
-  async handleConnection(socket: Socket, id: number) {
-    // if (socket.handshake.auth.id) {
-    //   this.addUser(socket, socket.handshake.auth.id);
-    //   // console.log('what', socket.handshake.auth.id);
-    //   console.log('whatttt', socket.handshake.auth.id);
-    // }
-    // this.count += 1;
-    // console.log(`connected ${socket.id}`);
-    // this.logger.log(`Connected ${socket.id}`);
-    // socket.emit('message', 'Server sending message to the client :)');
-    // const a = this.users.length;
-    // this.users.push(socket);
-    // this.users.push("userid", socket.handshake.auth.id);
-    // console.log('Connected', a, this.users.length, socket.id);
-    // this.users.forEach(function (user) {user.emit()})
+  async handleConnection(socket: Socket) {
+    console.log('Socket Connection', socket.id, socket.handshake.query.id);
+    console.log('Other Socket', this.session);
+    // console.log(socket);
+    this.session.push([socket.id, socket.handshake.query.id]);
   }
 
   async handleDisconnect(socket: Socket) {
-    // this.count -= 1;
-    // console.log(`disconnected ${socket.id}`);
-
-    // this.removeUser(socket.id);
-    const a = this.users.length;
-    this.users = this.users.filter((u) => u.socket.id !== socket.id);
-
-    // this.server.emit('getUsers', this.users, 'online');
-    // this.logger.log(`Disconnected`, a, this.users.length, socket.id);
-    console.log(`Disconnected`, a, this.users.length, socket.id);
+    this.session = this.session.filter((u) => u[0] !== socket.id);
+    console.log('Disconnected', socket.id);
   }
 
   @SubscribeMessage('transmitMessage')
   handleTransmitMessage(socket: Socket, msg: MessagesEntity) {
     if (msg.message.length >= 300) return;
     console.log('New message detected:', msg.message);
-    for (let i = 0; i < this.users.length; i++) {
-      this.server.to(this.users[i].socket.id).emit('getTransmitMessage', msg);
-    }
-    // this.server.emit('getTransmitMessage', msg);
+    // this.server.broadcast.emit('getTransmitMessage', msg);
+    this.broadcast(socket.id, 'getTransmitMessage', msg);
   }
 
   @SubscribeMessage('newInfo')
   handleNewInfo(socket: Socket, msg: any) {
-    console.log('NewInfo detected:', msg.message);
-    for (let i = 0; i < this.users.length; i++) {
-      if (msg.owner !== this.users[i].userId)
-        this.server.to(this.users[i].socket.id).emit('getNewInfo', msg);
-    }
-    // this.server.emit('getTransmitMessage', msg);
+    this.broadcast(socket.id, 'getNewInfo', msg);
   }
 
-  @SubscribeMessage('addUser')
-  handleAddUser(socket: Socket, userId: number) {
-    let userCounter = this.users.length;
-    this.addUser(socket, userId);
-    if (userCounter !== this.users.length || true) {
-      //always true for testing
-      let usersList = [];
-      for (let i = 0; i < this.users.length; i++) {
-        usersList.push(this.users[i].userId);
-      }
-      usersList.push(-100);
-      //   console.log('NEW USER', usersList);
-      for (let i = 0; i < this.users.length; i++) {
-        this.server.to(this.users[i].socket.id).emit('getUsers', usersList);
-      }
-    }
-    // this.users.forEach((u) => u.emit('getUsers', String(this.users), "online")); //20:34
-
-    // this.server.emit('getUsers', this.users, 'online'); //!\ ligne qui fait planter
-  }
-
-  @SubscribeMessage('sendMessage')
-  handleSendMessage(senderId: string, receiverId: string, text: string) {
-    // this.addUser(userId, socket.id);
-    // this.users.forEach((u) => u.emit('getUsers', String(this.users), "online"));
-    // this.server.emit('getUsers', this.users, 'online');
-    const user = this.getUser(receiverId);
+  private broadcast(senderSocket: string, codeName: string, info: any) {
+    this.session.forEach((u) => {
+      if (u[0] !== senderSocket) this.server.to(u[0]).emit(codeName, info);
+    });
   }
 }

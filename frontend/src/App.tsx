@@ -74,7 +74,7 @@ function MainRooter()
 }
 
 function App() {
-  const socket = useRef(io());
+//   const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
 
 
