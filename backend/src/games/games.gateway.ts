@@ -21,6 +21,7 @@ type GameProps = {
   scoreB: number;
   infoA: UsersEntity;
   infoB: UsersEntity;
+  spectators: string[];
 };
 
 type BallDir = {
@@ -86,26 +87,28 @@ export class GamesGateway
     return match ? match[2] : '';
   };
 
+  private sendToSpectator = (game: GameProps, name: string, ...args: any[]) => {
+    game.spectators.forEach((client) => {
+      this.server.to(client).emit(name, ...args);
+    });
+  };
+
   async handleConnection(client: Socket) {
     const token: string = this.getCookieValueByName(
       client.handshake.headers.cookie,
       'jwt',
     );
-
     try {
       const idFromToken = <number>jwt.verify(
           token,
           TOKEN_SECRET,
       );
       if (idFromToken <= 0) throw Error();
-
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
       });
-
+      if (!user) throw Error();
       this.socketToPlayer.set(client.id, user);
-
-      console.log(user);
     } catch (error) {
       console.log('Invalid token ' + error);
       this.server.to(client.id).disconnectSockets(true);
@@ -124,6 +127,20 @@ export class GamesGateway
 
     this.queue.delete(client.id);
   }
+
+  @SubscribeMessage('spectate')
+  handleSpectate(client: Socket, { gameId }) {
+    const game = this.games.get(parseInt(gameId));
+    console.log("spectate! " + game + " " + gameId);
+    if (game && !game.spectators.includes(client.id))
+    {
+      game.spectators.push(client.id);
+      this.games.set(parseInt(gameId), game);
+      this.server.to(client.id).emit('gameStarted', 0, arenaWidth / 2, 0, 0, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar)
+      this.server.to(client.id).emit('setScore', game.scoreA, game.scoreB);
+    }
+  };
+
 
   @SubscribeMessage('joinQueue')
   handleJoinQueue(client: Socket)
@@ -144,21 +161,19 @@ export class GamesGateway
         scoreB: 0,
         infoA: this.socketToPlayer.get(playerA.id),
         infoB: this.socketToPlayer.get(playerB.id),
+        spectators: [],
       };
       this.queue.delete(game.userA.id);
       this.queue.delete(game.userB.id);
       this.games.set(id, game);
       this.socketGames.set(game.userA.id, id);
       this.socketGames.set(game.userB.id, id);
+      console.log("Started game: " + id);
 
       const bd = this.getRandomBallDir();
 
-      this.server
-        .to(game.userA.id)
-        .emit('gameStarted', 0, arenaWidth / 2, bd.x, bd.y, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
-      this.server
-        .to(game.userB.id)
-        .emit('gameStarted', 0, arenaWidth / 2, -bd.x, -bd.y, game.infoB.username, game.infoB.avatar, game.infoA.username, game.infoA.avatar);
+      this.server.to(game.userA.id).emit('gameStarted', 0, arenaWidth / 2, bd.x, bd.y, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
+      this.server.to(game.userB.id).emit('gameStarted', 0, arenaWidth / 2, -bd.x, -bd.y, game.infoB.username, game.infoB.avatar, game.infoA.username, game.infoA.avatar);
     }
   }
 
@@ -169,6 +184,13 @@ export class GamesGateway
     this.server
       .to(opponent.id)
       .emit('ball', -ballX, arenaWidth - ballY, -velX, -velY);
+    const game = this.getUserGame(client.id);
+
+    if (client.id == game.userA.id)
+      this.sendToSpectator(game, 'ball', ballX, ballY, velX, velY);
+    else
+      this.sendToSpectator(game, 'ball', -ballX, arenaWidth - ballY, -velX, -velY);
+
   }
 
   @SubscribeMessage('move')
@@ -176,6 +198,12 @@ export class GamesGateway
     const opponent = this.getOpponent(client.id);
     if (!opponent) return;
     this.server.to(opponent.id).emit('opoMove', arenaWidth - localX);
+    const game = this.getUserGame(client.id);
+
+    if (client.id == game.userA.id)
+      this.sendToSpectator(game, 'meMove', localX);
+    else
+      this.sendToSpectator(game, 'opoMove', arenaWidth - localX);
   }
 
   @SubscribeMessage('tookGoal')
@@ -189,10 +217,13 @@ export class GamesGateway
 
       this.server.to(opponent.id).emit('receivePoint');
       this.server.to(opponent.id).emit('ball', 0, arenaWidth / 2, 0, 0);
+      this.sendToSpectator(game, 'ball', 0, arenaWidth / 2, 0, 0);
+      this.sendToSpectator(game, 'setScore', game.scoreA, game.scoreB);
 
       setTimeout(() => {
-        if (game.scoreA >= 3 || game.scoreB >= 3)
+        if (game.scoreA >= 10 || game.scoreB >= 10)
         {
+          this.sendToSpectator(game, 'gameover');
           this.server.to(game.userA.id).emit('gameover');
           this.server.to(game.userB.id).emit('gameover');
           this.server.to(game.userA.id).disconnectSockets(true);
@@ -202,6 +233,7 @@ export class GamesGateway
         {
           const bd = this.getRandomBallDir();
 
+          this.sendToSpectator(game, 'ball', 0, arenaWidth / 2, bd.x, bd.y);
           this.server.to(game.userA.id).emit('ball', 0, arenaWidth / 2, bd.x, bd.y);
           this.server.to(game.userB.id).emit('ball', 0, arenaWidth / 2, -bd.x, -bd.y);
         }

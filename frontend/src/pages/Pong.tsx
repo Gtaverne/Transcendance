@@ -302,6 +302,7 @@ const Pong = () => {
   const params = useParams();
   const isSpectating = params.id != undefined && params.id != null;
 
+  console.log("params.id " + params.id);
 
   const mount = useRef<HTMLDivElement>(null);
 
@@ -395,6 +396,13 @@ const Pong = () => {
     socket.current?.on("opoMove", (opoX) => {
       global.game.opoX = opoX;
     });
+    socket.current?.on("meMove", (opoX) => {
+      global.game.localX = opoX;
+    });
+    socket.current?.on("setScore", (a, b) => {
+      global.game.scoreA = a;
+      global.game.scoreB = b;
+    });
     socket.current?.on("gameover", () => {
       setGameover(true);
       setStarted(false);
@@ -402,12 +410,23 @@ const Pong = () => {
     socket.current?.on("receivePoint", (opoX) => {
       global.game.scoreA++;
     });
-    socket.current?.emit('joinQueue');
+
+    console.log("params.ids " + params.id);
+
+    if (isSpectating)
+      socket.current?.emit('spectate', { gameId: params.id });
+    else
+      socket.current?.emit('joinQueue');
     setQueueing(true);
   }
 
 
   useLayoutEffect(() => {
+
+    if (isSpectating)
+    {
+      startQueue();
+    }
 
     console.log("CALLLL");
 
@@ -453,26 +472,28 @@ const Pong = () => {
         setScores({scoreA: global.game.scoreA, scoreB: global.game.scoreB});
       }
 
-      if(new Date().getTime() - global.game.startTime < 2400){
+      if(!isSpectating && new Date().getTime() - global.game.startTime < 2400){
         return;
       }
 
-      if (isSpectating)
-      {
+      if (!isSpectating) {
         if (downPressed)
-          global.game.localX = Math.min((global.game.localX + 1), arenaWidth - lenghtBar/2);
+          global.game.localX = Math.min((global.game.localX + 1), arenaWidth - lenghtBar / 2);
         if (upPressed)
-          global.game.localX = Math.max((global.game.localX - 1), lenghtBar/2);
+          global.game.localX = Math.max((global.game.localX - 1), lenghtBar / 2);
 
         if (loopCount++ % 2 == 0)
-          socket.current?.emit('move', {localX: global.game.localX});
+          socket.current?.emit('move', { localX: global.game.localX });
 
-        if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
-          global.game.velY = -global.game.velY;
-          global.game.didHit = 1;
-          play();
-        }
+      }
 
+      if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
+        global.game.velY = -global.game.velY;
+        global.game.didHit = 1;
+        play();
+      }
+
+      if (!isSpectating) {
         if (Math.abs(global.game.ballY - global.game.localX) <= (lenghtBar + 2) / 2 && global.game.ballX <= -goal)
         {
           global.game.velX = -global.game.velX + 0.1;
