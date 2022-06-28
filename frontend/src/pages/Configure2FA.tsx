@@ -6,6 +6,7 @@ import { edit, reset, logout } from '../features/auth/authSlice';
 import qrcode from 'qrcode';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
+import Overlay from '../components/Overlay';
 
 type Props = {};
 
@@ -97,35 +98,37 @@ function Configure2FA({}: Props) {
   };
 
   return (
-    <div className="userProfile">
-      <div>Configure2FA</div>
-      <button className="largeButton" onClick={onMFA}>
-        2FA Google
-      </button>
-      {QRCode !== '' ? (
-        <>
-          <div>Scan this code with google authenticator</div>
-          <img src={QRCode} alt="QR Code" />
-          <div>
-            <input
-              type="text"
-              id="username"
-              value={writtenCode}
-              onChange={onChange}
-              required
-              placeholder="Type 6 digits"
-            />
-          </div>
-          <div>
-            <button className="largeButton" onClick={onTestMFA}>
-              Send code
-            </button>
-          </div>
-        </>
-      ) : (
-        <></>
-      )}
-    </div>
+    <Overlay title={"Configure 2FA"}>
+      <div className="userProfile">
+        <div>Configure2FA</div>
+        <button className="largeButton" onClick={onMFA}>
+          2FA Google
+        </button>
+        {QRCode !== '' ? (
+          <>
+            <div>Scan this code with google authenticator</div>
+            <img src={QRCode} alt="QR Code" />
+            <div>
+              <input
+                type="text"
+                id="username"
+                value={writtenCode}
+                onChange={onChange}
+                required
+                placeholder="Type 6 digits"
+              />
+            </div>
+            <div>
+              <button className="largeButton" onClick={onTestMFA}>
+                Send code
+              </button>
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
+    </Overlay>
   );
 }
 

@@ -24,7 +24,7 @@ import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 
 var jwt = require('jsonwebtoken');
-const Token_Secret = process.env.JWT_Secret;
+const TOKEN_SECRET = process.env.JWT_Secret;
 const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
 
 //retourne le premier endpoint qui match la route
@@ -161,7 +161,7 @@ export class UsersController {
     @Param() params,
     @Req() request: Request,
   ): Promise<UsersEntity> {
-    const idFromToken = jwt.verify(request.cookies.jwt, Token_Secret);
+    const idFromToken = jwt.verify(request.cookies.jwt, TOKEN_SECRET);
     return this.usersServices.findOneForFront(params.id, +idFromToken);
   }
 
@@ -178,7 +178,11 @@ export class UsersController {
   }
 
   @Post('/blockuser/')
-  async blockUser(@Body() data: ChangeRoleDTO): Promise<boolean> {
+  async blockUser(
+    @Body() data: ChangeRoleDTO,
+    @Query('jwt') token: string,
+  ): Promise<boolean> {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     return this.usersServices.blockUser(data);
   }
 

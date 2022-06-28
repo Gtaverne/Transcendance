@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 var jwt = require('jsonwebtoken');
-const Token_Secret = process.env.JWT_Secret;
+const TOKEN_SECRET = process.env.JWT_Secret;
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -17,7 +17,7 @@ export class LoggerMiddleware implements NestMiddleware {
       return res.status(403).end();
     } else {
       try {
-        const idFromToken = jwt.verify(tkn, Token_Secret);
+        const idFromToken = jwt.verify(req.query.jwt, TOKEN_SECRET);
         if (idFromToken > 0) {
           next();
         } else {

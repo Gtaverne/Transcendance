@@ -13,6 +13,9 @@ import { MuteBanDTO } from './dto/mute-ban.dto';
 import { MuteEntity } from './mute.entity';
 import { BanEntity } from './ban.entity';
 
+var jwt = require('jsonwebtoken');
+const TOKEN_SECRET = process.env.JWT_Secret;
+
 @Injectable()
 export class RoomsService {
   constructor(
@@ -26,7 +29,8 @@ export class RoomsService {
     private usersService: UsersService,
   ) {}
 
-  async invite(data: ChangeRoleDTO) {
+  async invite(data: ChangeRoleDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     const user = await this.usersService.findOneWithName(data.role);
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
@@ -74,7 +78,11 @@ export class RoomsService {
     return list;
   }
 
-  async mute(data: MuteBanDTO) {
+  async mute(data: MuteBanDTO, token: string) {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) {
+      console.log('WRONG JWT', jwt.verify(token, TOKEN_SECRET), data.user.id);
+      return false;
+    }
     if (data.time < 0) {
       console.log("Can't mute a negative time");
       return false;
@@ -127,7 +135,8 @@ export class RoomsService {
     return true;
   }
 
-  async ban(data: MuteBanDTO) {
+  async ban(data: MuteBanDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     if (data.time < 0) {
       console.log("Can't ban a negative time");
       return false;
@@ -186,7 +195,8 @@ export class RoomsService {
     return true;
   }
 
-  async changePassword(data: ChangeRoleDTO) {
+  async changePassword(data: ChangeRoleDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return;
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
       relations: ['owner'],
@@ -246,7 +256,8 @@ export class RoomsService {
     return false;
   }
 
-  async changeAdmin(data: ChangeRoleDTO) {
+  async changeAdmin(data: ChangeRoleDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return;
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
       relations: ['owner', 'admins'],
@@ -273,7 +284,8 @@ export class RoomsService {
     return true;
   }
 
-  async changeOwner(data: ChangeRoleDTO) {
+  async changeOwner(data: ChangeRoleDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return;
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
       relations: ['owner'],
@@ -355,8 +367,8 @@ export class RoomsService {
     return newRoom;
   }
 
-  async join(join: JoinRoomDTO) {
-    // console.log(0, join);
+  async join(join: JoinRoomDTO, token: String) {
+    if (jwt.verify(token, TOKEN_SECRET) != join.owner) return;
     const user = await this.usersService.accessListUser(join.owner);
     const room = await this.roomsRepository.findOne(join.convId);
     const bannedFrom = await this.usersService.findBanned(join.owner);

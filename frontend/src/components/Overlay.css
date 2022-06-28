@@ -1,0 +1,71 @@
+.overlayModal
+{
+    width: 80vw;
+    height: 80vh;
+    margin: 10vh auto auto;
+    border-radius: 8px;
+    box-shadow: 0 7.5px 18.5px 0.5px rgba(0, 0, 0, 0.45);
+    animation-name: popup;
+    animation-duration: 0.7s;
+    animation-timing-function: cubic-bezier(.31,1.52,.56,.96);
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes popup {
+    0% {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+.navbar
+{
+    height: 70px;
+    background: rgb(45, 30, 47);
+    display: flex;
+    width: 100%;
+}
+
+.navbar *
+{
+}
+
+.navBack
+{
+    padding: 25px;
+    color: white;
+    background-color: rgba(255,255,255,0.05);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navBack:hover
+{
+    background-color: rgba(255,255,255,0.07);
+}
+
+.navTitle
+{
+    font-weight: bolder;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    margin: auto auto;
+    flex:1;
+    padding-right: 88px;
+}
+
+.overlayContainer {
+    display: inline-block;
+    background: white;
+    flex: 1 0;
+    width: 100%;
+    height: calc(100% - 70px);
+}

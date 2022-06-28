@@ -11,14 +11,16 @@ const API_URL = process.env.REACT_APP_URL_BACK;
 
 //Login user
 const login = async (code: string) => {
-  // console.log('We got in login authService, URL_BACK IS: ', API_URL);
+  console.log('We got in login authService, URL_BACK IS: ', API_URL);
   const response = await axios.get(API_URL + 'users/callback', {
     params: { code: code },
   });
 
+  console.log(response);
+
   if (response.data && response.data.user) {
-    // console.log('We received an answer:', response.data.user.username);
-    Cookies.set('jwt', response.data.jwt, { path: API_URL });
+    console.log('We received an answer:', response.data.user.username);
+    Cookies.set('jwt', response.data.jwt);
     if (response.data.user && response.data.user.doublefa > 0) {
       console.log('Double fa on the profile');
       localStorage.setItem('user', JSON.stringify(response.data.user));

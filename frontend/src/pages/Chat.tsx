@@ -9,9 +9,11 @@ import Message from '../components/Message';
 import MessageInterface from '../interfaces/MessageInterface';
 import RoomInterface from '../interfaces/RoomInterface';
 import './chat.css';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Overlay from '../components/Overlay';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
@@ -40,8 +42,8 @@ function Chat() {
     (state: RootStateOrAny) => state.auth,
   );
   const scrollRef = useRef<HTMLDivElement>(null);
-  const socket = useRef(io());
-  const [conversationType, setConversationType] = useState('directMessage');
+  const socket = useRef<Socket | undefined>(undefined);
+  const [conversationType, setConversationType] = useState('public');
   const [convName, setConvName] = useState<string>('');
   const [convPassword, setConvPassword] = useState('');
   const [convDm, setConvDm] = useState('');
@@ -67,34 +69,32 @@ function Chat() {
       });
     }
 
-    socket.current.on('connect_error', (e) => {
-      // revert to classic upgrade
-      //socket.io.opts.transports = ["polling", "websocket"];
-      console.log('ERROROR');
-    });
+    // socket.current?.on('connect_error', (e) => {
+    //   console.log('ERROROR');
+    // });
 
-    socket.current.on('getTransmitMessage', (data) => {
+    socket.current?.on('getTransmitMessage', (data) => {
       console.log(
         'Socket message detected',
         data.room.id,
-        currentChat?.id,
+        global.currentChat?.id,
         data,
       );
       setArrivalMessage(data);
-      if (currentChat && currentChat.id === data.room.id) {
+      if (global.currentChat && global.currentChat.id === data.room.id) {
         console.log('Message in the current room');
       }
     });
-    socket.current.on('getNewInfo', (data) => {
-      console.log('Socket getNewInfo detected', currentChat);
+    socket.current?.on('getNewInfo', (data) => {
+      console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     });
-    if (currentChat && currentChat?.admins?.length) {
-      setRoleList(currentChat);
+    if (global.currentChat && global.currentChat?.admins?.length) {
+      setRoleList(global.currentChat);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChat, user]);
+  }, [user]);
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -115,13 +115,13 @@ function Chat() {
     }
   }, [arrivalMessage, currentChat, messages]);
 
-  useEffect(() => {
-    socket.current.emit('addUser', user.id);
-    socket.current.on('getUsers', (u) => {
-      setOnlineUsers(u);
-    });
-    console.log('NES SOCKET ADD GET USERS');
-  }, [user]);
+  //   useEffect(() => {
+  //     //socket.current?.emit('addUser', user.id);
+  //     //socket.current?.on('getUsers', (u) => {
+  //       setOnlineUsers(u);
+  //     });
+  //     console.log('NES SOCKET ADD GET USERS');
+  //   }, [user]);
 
   if (!user) {
     console.log("Don't forget to login");
@@ -203,7 +203,7 @@ function Chat() {
 
     const res = await apiPoster('messages/', msg);
 
-    socket.current.emit('transmitMessage', res.data);
+    socket.current?.emit('transmitMessage', res.data);
     console.log('SOCKET SEND MESSAGE');
 
     setMessages([...messages, res.data]);
@@ -215,7 +215,7 @@ function Chat() {
   }, [messages]);
 
   const refreshOthers = async () => {
-    socket.current.emit('newInfo', {
+    socket.current?.emit('newInfo', {
       owner: user.id,
       channelId: 0,
       message: '-',
@@ -237,11 +237,11 @@ function Chat() {
 
     const res = await apiPoster('rooms/', room);
 
-    socket.current.emit('newInfo', {
-      owner: user.id,
-      channelId: 0,
-      message: conversationType === 'directMessage',
-    });
+    // socket.current?.emit('newInfo', {
+    //   owner: user.id,
+    //   channelId: 0,
+    //   message: conversationType === 'directMessage',
+    // });
 
     if (res.data) {
       console.log('Updating conv after join');
@@ -289,7 +289,7 @@ function Chat() {
     const res = await apiPoster('rooms/changeowner/', data);
 
     if (res) {
-      console.log('You are not owner anymore');
+      toast.success('Success');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -308,7 +308,7 @@ function Chat() {
     const res = await apiPoster('rooms/changeadmin/', data);
 
     if (res) {
-      console.log('Admin list updated');
+      toast.success('Success');
       refreshOthers();
       setTimeout(getConversations, 250);
       //   setRoleList(currentChat!);
@@ -343,7 +343,7 @@ function Chat() {
       role: 'leave',
     });
     if (res) {
-      console.log('successfully left the room');
+      toast.success('Room Left Successfully');
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
       global.currentChat = undefined;
@@ -394,7 +394,8 @@ function Chat() {
     });
     if (res) {
       setTimeout(getConversations, 250);
-      setChangePassword('Success');
+      refreshOthers();
+      toast.success('Password Updated');
     } else {
       setChangePassword('Fail');
     }
@@ -402,15 +403,17 @@ function Chat() {
 
   const handleMute = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await apiPoster('rooms/mute/', {
+    const data = {
       user,
       channelId: currentChat?.id,
       appointedId: currentUser?.id,
       role: 'mute',
       time: mute ? mute : 0,
-    });
+    };
+    const res = await apiPoster('rooms/mute/', data);
     if (res) {
-      console.log('successfully muted');
+      if (data.time > 0) toast.success('Successfully Muted');
+      else toast.success('Successfully Unmuted');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -426,7 +429,7 @@ function Chat() {
       time: ban ? ban : 0,
     });
     if (res) {
-      console.log('successfully band');
+      toast.success('Successfully Ban');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -441,7 +444,7 @@ function Chat() {
       role: usernameInvite ? usernameInvite : '',
     });
     if (res) {
-      console.log('successfully invited');
+      toast.success('Invitation Successfull');
       refreshOthers();
       setTimeout(getConversations, 250);
     }
@@ -452,7 +455,7 @@ function Chat() {
   };
 
   return (
-    <>
+    <Overlay title="Chat">
       <div className="messenger">
         <div className="chatMenu">
           <div className="chatMenuWrapper">
@@ -518,8 +521,8 @@ function Chat() {
                         setConversationType(e.target.value);
                       }}
                     >
-                      <option value="directMessage">Direct Message</option>
                       <option value="public">Public</option>
+                      <option value="directMessage">Direct Message</option>
                       <option value="private">Private</option>
                       <option value="passwordProtected">
                         Password Protected
@@ -775,7 +778,7 @@ function Chat() {
           </div>
         </div>
       </div>
-    </>
+    </Overlay>
   );
 }
 export default Chat;

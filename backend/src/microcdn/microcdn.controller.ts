@@ -22,27 +22,26 @@ import { MicrocdnService } from './microcdn.service';
 import * as fs from 'fs';
 import { Readable } from 'typeorm/platform/PlatformTools';
 var jwt = require('jsonwebtoken');
-const Token_Secret = process.env.JWT_Secret;
-const CDN_PATH = '/app/microcdn'
-
+const TOKEN_SECRET = process.env.JWT_Secret;
+const CDN_PATH = '/app/microcdn';
 
 @Controller('microcdn')
 export class MicrocdnController {
   constructor(private microcdnService: MicrocdnService) {}
 
-  @Get('/content/:reference') 
+  @Get('/content/:reference')
   async getContent(@Param() params, @Res() response: Response) {
-    console.log('CDN: Trying to get content ', params.reference)
+    console.log('CDN: Trying to get content ', params.reference);
     try {
       const path = this.microcdnService.getContentPath(params.reference);
       // console.log('Microcdn path: ', path)
       const data = fs.createReadStream(path);
       response.type('image/png');
       data.pipe(response);
-      return
+      return;
     } catch (error) {
       console.log('No content found');
-      return
+      return;
     }
   }
 
@@ -55,10 +54,10 @@ export class MicrocdnController {
       const data = fs.createReadStream(path);
       response.type('image/png');
       data.pipe(response);
-      return
+      return;
     } catch (error) {
       console.log('No avatar found');
-      return
+      return;
     }
   }
 
@@ -69,7 +68,7 @@ export class MicrocdnController {
     @Param() params: any,
     @Query('jwt') token: string,
   ) {
-    const idFromToken = jwt.verify(token, Token_Secret);
+    const idFromToken = jwt.verify(token, TOKEN_SECRET);
     console.log('Post received something from id: ', idFromToken);
     if (params.id === idFromToken) {
       try {

@@ -13,27 +13,28 @@
 }
 
 .messageTop {
-	display: flex;
+  display: flex;
 }
 
 .messageText {
-	padding: 10px;
-	border-radius: 20px;
-	background-color: #1877f2;
-	color: white;
-	max-width: 300px;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: #1877f2;
+  color: white;
+  max-width: 300px;
+  overflow: hidden;
 }
 
 .messageBottom {
-	font-size: 12px;
-	/* margin-top: 10px; */
+  font-size: 12px;
+  /* margin-top: 10px; */
 }
 
 .message.own {
-	align-items: flex-end;
+  align-items: flex-end;
 }
 
-.message.own .messageText{
-	background-color: lightgray;
-	color: black;
+.message.own .messageText {
+  background-color: lightgray;
+  color: black;
 }

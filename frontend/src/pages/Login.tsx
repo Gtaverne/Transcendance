@@ -5,6 +5,7 @@ import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
+import Overlay from '../components/Overlay';
 
 type Props = {};
 
@@ -97,23 +98,25 @@ function Login({}: Props) {
 
   if (mfaRequired) {
     return (
-      <div className="userProfile">
-        <div>
-          <input
-            type="text"
-            id="username"
-            value={writtenCode}
-            onChange={onChange}
-            required
-            placeholder="Type 6 digits"
-          />
+      <Overlay title={"2FA"}>
+        <div className="userProfile">
+          <div>
+            <input
+              type="text"
+              id="username"
+              value={writtenCode}
+              onChange={onChange}
+              required
+              placeholder="Type 6 digits"
+            />
+          </div>
+          <div>
+            <button className="largeButton" onClick={onCheckMFA}>
+              Send code
+            </button>
+          </div>
         </div>
-        <div>
-          <button className="largeButton" onClick={onCheckMFA}>
-            Send code
-          </button>
-        </div>
-      </div>
+      </Overlay>
     );
   }
 

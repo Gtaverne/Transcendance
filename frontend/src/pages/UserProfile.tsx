@@ -11,6 +11,9 @@ import AchievementMiniature from '../components/AchievementMiniature';
 import Spinner from '../components/Spinner';
 import { toast } from 'react-toastify';
 
+import '../components/Overlay.css';
+import Overlay from '../components/Overlay';
+
 const STORAGE_PATH =
   process.env.REACT_APP_STORAGE_PATH || 'http://localhost:5050/microcdn';
 if (STORAGE_PATH === '') {
@@ -283,153 +286,155 @@ const UserProfile = (props: Props) => {
   }
 
   return (
-    <div className="userPageWrapper">
-      <div className="userDescription">
-        {user && user.id && user.id === fetchedProfile?.id ? (
-          <div>
-            <h2>Your Profile</h2>
-            <button className="largeButton" color="#f194ff" onClick={onEdition}>
-              <FaSignOutAlt />
-              {editProfile ? ' Validate edition' : 'Edit'}
-            </button>
-          </div>
-        ) : (
-          <>
+    <Overlay title="User Profile">
+      <div className="userPageWrapper">
+        <div className="userDescription">
+          {user && user.id && user.id === fetchedProfile?.id ? (
             <div>
-              <h3>{fetchedProfile.username}'s profile</h3>
-              <button className="largeButton" onClick={onFollow}>
-                <FaUser />
-                {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
-              </button>
-            </div>
-            <div>
-              <button className="largeButton" onClick={onBlock}>
+              <h2>Your Profile</h2>
+              <button className="largeButton" color="#f194ff" onClick={onEdition}>
                 <FaSignOutAlt />
-                {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
+                {editProfile ? ' Validate edition' : 'Edit'}
               </button>
             </div>
-          </>
-        )}
-        {editProfile ? (
-          // Upload profile picture
-          <>
-            {preview ? (
-              <>
-                <img className="profilepage" src={preview} />
-              </>
-            ) : (
-              <>
-                <img className="profilepage" src={user.avatar} />
-              </>
-            )}
-
-            <div>Upload your avatar</div>
-            {/* <form onSubmit={onUpload}> */}
-            <input
-              type="file"
-              id="file"
-              accept="image/jpg"
-              onChange={onNewpp}
-            />
-          </>
-        ) : (
-          <>
-            <img className="profilepage" src={fetchedProfile.avatar} />
-          </>
-        )}
-        {/* Name */}
-        {editProfile ? (
-          // How do we make spaces?
-          <div>
-            Change pseudo:
-            <input
-              type="text"
-              id="username"
-              value={fetchedProfile.username}
-              onChange={onMutate}
-              required
-            />
-          </div>
-        ) : (
-          <div>
-            <p>Username: {fetchedProfile.username}</p>
-            <p>Level: {fetchedProfile.lvl}</p>
-          </div>
-        )}
-        <p>email: {fetchedProfile.email}</p>
-        {user && user.id && editProfile && user.id === fetchedProfile.id ? (
-          <p>
-            Double Factor Authentication:
+          ) : (
             <>
-              <button className="largeButton" onClick={onMfa}>
-                <FaLock />
-                {user.doublefa === 0 ? 'Activate 2fa' : 'Deactivate 2fa'}
-              </button>
+              <div>
+                <h3>{fetchedProfile.username}'s profile</h3>
+                <button className="largeButton" onClick={onFollow}>
+                  <FaUser />
+                  {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
+                </button>
+              </div>
+              <div>
+                <button className="largeButton" onClick={onBlock}>
+                  <FaSignOutAlt />
+                  {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
+                </button>
+              </div>
             </>
-          </p>
+          )}
+          {editProfile ? (
+            // Upload profile picture
+            <>
+              {preview ? (
+                <>
+                  <img className="profilepage" src={preview} />
+                </>
+              ) : (
+                <>
+                  <img className="profilepage" src={user.avatar} />
+                </>
+              )}
+
+              <div>Upload your avatar</div>
+              {/* <form onSubmit={onUpload}> */}
+              <input
+                type="file"
+                id="file"
+                accept="image/jpg"
+                onChange={onNewpp}
+              />
+            </>
+          ) : (
+            <>
+              <img className="profilepage" src={fetchedProfile.avatar} />
+            </>
+          )}
+          {/* Name */}
+          {editProfile ? (
+            // How do we make spaces?
+            <div>
+              Change pseudo:
+              <input
+                type="text"
+                id="username"
+                value={fetchedProfile.username}
+                onChange={onMutate}
+                required
+              />
+            </div>
+          ) : (
+            <div>
+              <p>Username: {fetchedProfile.username}</p>
+              <p>Level: {fetchedProfile.lvl}</p>
+            </div>
+          )}
+          <p>email: {fetchedProfile.email}</p>
+          {user && user.id && editProfile && user.id === fetchedProfile.id ? (
+            <p>
+              Double Factor Authentication:
+              <>
+                <button className="largeButton" onClick={onMfa}>
+                  <FaLock />
+                  {user.doublefa === 0 ? 'Activate 2fa' : 'Deactivate 2fa'}
+                </button>
+              </>
+            </p>
+          ) : (
+            <></>
+          )}
+        </div>
+
+        <div className="userDescription">
+          <h2>Trophys</h2>
+          {achievementsList.map((c: any) => (
+            <div key={c.id.toString()}>
+              <AchievementMiniature achievement={c}  />
+            </div>
+          ))}
+        </div>
+
+        <div className="userList">
+          <div className="userList">
+            <div>
+              <h3>Friends: {friendList.length} </h3>
+              {friendList.map((c: number) => (
+                <div key={c.toString()}>
+                  <UserMiniature targetid={c} friendable={1} blockable={1} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {user?.id === fetchedProfile?.id ? (
+          <>
+            <div className="userList">
+              <div>
+                <h3>People you follow: {stalkList.length} </h3>
+                {stalkList.map((c: number) => (
+                  <div key={c.toString()}>
+                    <UserMiniature targetid={c} friendable={1} blockable={1} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="userList">
+              <div>
+                <h3>Friend requests: {requestList.length} </h3>
+                {requestList.map((c: number) => (
+                  <div key={c.toString()}>
+                    <UserMiniature targetid={c} friendable={1} blockable={1} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="userList">
+              <div>
+                <h3>Blocked: {iBlockedList.length} </h3>
+                {iBlockedList.map((c: number) => (
+                  <div key={c.toString()}>
+                    <UserMiniature targetid={c} friendable={0} blockable={1} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         ) : (
           <></>
         )}
       </div>
-
-      <div className="userDescription">
-        <h2>Trophys</h2>
-        {achievementsList.map((c: any) => (
-              <div key={c.id.toString()}>
-                <AchievementMiniature achievement={c}  />
-              </div>
-            ))}
-      </div>
-
-      <div className="userList">
-        <div className="userList">
-          <div>
-            <h3>Friends: {friendList.length} </h3>
-            {friendList.map((c: number) => (
-              <div key={c.toString()}>
-                <UserMiniature targetid={c} friendable={1} blockable={1} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      {user?.id === fetchedProfile?.id ? (
-        <>
-          <div className="userList">
-            <div>
-              <h3>People you follow: {stalkList.length} </h3>
-              {stalkList.map((c: number) => (
-                <div key={c.toString()}>
-                  <UserMiniature targetid={c} friendable={1} blockable={1} />
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="userList">
-            <div>
-              <h3>Friend requests: {requestList.length} </h3>
-              {requestList.map((c: number) => (
-                <div key={c.toString()}>
-                  <UserMiniature targetid={c} friendable={1} blockable={1} />
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="userList">
-            <div>
-              <h3>Blocked: {iBlockedList.length} </h3>
-              {iBlockedList.map((c: number) => (
-                <div key={c.toString()}>
-                  <UserMiniature targetid={c} friendable={0} blockable={1} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      ) : (
-        <></>
-      )}
-    </div>
+    </Overlay>
   );
 };
 
