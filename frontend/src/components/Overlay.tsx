@@ -20,6 +20,9 @@ const Overlay = ({title, children, background}:OverlayProps) => {
         <div className="navTitle">
           {title}
         </div>
+        <div className="navBack" onMouseUp={() => navigate('/')}>
+          Exit
+        </div>
       </div>
       <div className="overlayContainer" style={{backgroundColor: background}}>
         {children}

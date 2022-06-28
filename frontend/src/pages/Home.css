@@ -225,7 +225,6 @@
     font-size: 26px;
     vertical-align: middle;
     float: right;
-    transition: all 0.2s ease;
     cursor: pointer;
     font-weight: bold;
     position: fixed;
@@ -233,7 +232,15 @@
     right: 0px;
 }
 
-.userView:hover
+
+.userButton
+{
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.userButton:hover
 {
     filter: brightness(0.95);
     transform: scale(1.05);
@@ -303,4 +310,23 @@
     100% {
         transform: translateX(-5%);
     }
+}
+
+.logout
+{
+    color: #ffffff82;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0px 1px 6px #00000078;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    padding: 10px;
+    margin-top: 49px;
+    margin-right: 10px;
+}
+
+.logout:hover
+{
+    transform: scale(1.1);
 }

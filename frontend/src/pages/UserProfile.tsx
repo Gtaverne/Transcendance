@@ -86,7 +86,7 @@ const UserProfile = (props: Props) => {
     }
 
     dispatch(reset);
-  }, [dispatch, params, login, user, edit, iFollowList, iBlockedList]);
+  }, [params.id]);
 
   useEffect(() => {
     if (!profilePic) {
@@ -135,7 +135,7 @@ const UserProfile = (props: Props) => {
     } else {
     }
     // console.log('achievementsList: ', achievementsList);
-  }, [params, fetchedProfile, login, user]);
+  }, [params.id]);
 
   var profile = user;
 
@@ -197,13 +197,12 @@ const UserProfile = (props: Props) => {
             edit({
               id: user.id,
               field: 'avatar',
-              value: STORAGE_PATH + `avatar/${user.id}`,
+              value: STORAGE_PATH + `avatar/${user.id}?cache=${Math.random()}`,
             }),
           );
           //Search if there is a more elegant way to remove a picture from cache -_-
-          if (STORAGE_PATH + `avatar/${user.id}` === user.avatar) {
-            window.location.reload();
-          }
+          window.location.reload();
+
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
