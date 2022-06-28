@@ -31,6 +31,12 @@ export class UserDTO {
   @IsNotEmpty()
   @IsInt()
   readonly lvl: number;
+  @IsNotEmpty()
+  @IsInt()
+  readonly currentGame: number;
+  @IsNotEmpty()
+  @IsBoolean()
+  readonly isOnline: boolean;
   @IsDate()
   @IsOptional()
   readonly createdAt: Date;
