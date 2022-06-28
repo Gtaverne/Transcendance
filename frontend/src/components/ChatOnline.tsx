@@ -4,7 +4,6 @@ import './chatOnline.css';
 
 type ChatOnlineProps = {
   onlineUsers: number[];
-  currentId: number;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserInterface | undefined>>;
   accessList: UserInterface[] | undefined;
   currentUser: UserInterface | undefined;
@@ -18,7 +17,6 @@ type ChatOnlineProps = {
 
 function ChatOnline({
   onlineUsers,
-  currentId,
   setCurrentUser,
   accessList,
   currentUser,
@@ -29,10 +27,6 @@ function ChatOnline({
   currentChatBan,
   iBlockList,
 }: ChatOnlineProps) {
-  //   useEffect(() => {
-  //     console.log(accessList);
-  //   }, [accessList]);
-
   return (
     <div className="chatOnline">
       {accessList?.map((a, key) => (

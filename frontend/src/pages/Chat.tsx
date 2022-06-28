@@ -17,7 +17,7 @@ import Overlay from '../components/Overlay';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
-function Chat() {
+function Chat({ socket }: any) {
   const [conversations, setConversations] = useState<RoomInterface[]>([]);
   const [conversationsCanJoin, setConversationsCanJoin] = useState<
     RoomInterface[]
@@ -42,7 +42,6 @@ function Chat() {
     (state: RootStateOrAny) => state.auth,
   );
   const scrollRef = useRef<HTMLDivElement>(null);
-  const socket = useRef<Socket | undefined>(undefined);
   const [conversationType, setConversationType] = useState('public');
   const [convName, setConvName] = useState<string>('');
   const [convPassword, setConvPassword] = useState('');
@@ -59,21 +58,13 @@ function Chat() {
 
   useEffect(() => {
     if (user) {
-      console.log('SEND CONN SOCKETT');
       socket.current = io('http://localhost:3000/chat', {
-        // withCredentials: true,
-        // path: 'http://localhost:3000/socket.io',
         query: { id: user.id },
         transports: ['websocket', 'polling'],
         forceNew: true,
       });
     }
-
-    // socket.current?.on('connect_error', (e) => {
-    //   console.log('ERROROR');
-    // });
-
-    socket.current?.on('getTransmitMessage', (data) => {
+    socket.current?.on('getTransmitMessage', (data: any) => {
       console.log(
         'Socket message detected',
         data.room.id,
@@ -85,7 +76,7 @@ function Chat() {
         console.log('Message in the current room');
       }
     });
-    socket.current?.on('getNewInfo', (data) => {
+    socket.current?.on('getNewInfo', (data: any) => {
       console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
@@ -115,13 +106,9 @@ function Chat() {
     }
   }, [arrivalMessage, currentChat, messages]);
 
-  //   useEffect(() => {
-  //     //socket.current?.emit('addUser', user.id);
-  //     //socket.current?.on('getUsers', (u) => {
-  //       setOnlineUsers(u);
-  //     });
-  //     console.log('NES SOCKET ADD GET USERS');
-  //   }, [user]);
+  useEffect(() => {
+    setRoleList(currentChat);
+  }, [currentChat]);
 
   if (!user) {
     console.log("Don't forget to login");
@@ -315,17 +302,17 @@ function Chat() {
     }
   };
 
-  const setRoleList = (c: RoomInterface) => {
-    if (!currentChat) return;
+  const setRoleList = (c: RoomInterface | undefined) => {
+    if (!currentChat || c == undefined) return;
     let now = new Date();
     let adminList: number[] = [];
     let muteList: number[] = [];
     let banList: number[] = [];
-    c.admins?.forEach((a) => adminList.push(a.id));
-    c.muteList?.forEach((a) => {
+    c?.admins?.forEach((a) => adminList.push(a.id));
+    c?.muteList?.forEach((a) => {
       if (now < new Date(a.timestamp)) muteList.push(a.mutedUser?.id!);
     });
-    c.banList?.forEach((a) => {
+    c?.banList?.forEach((a) => {
       if (now < new Date(a.timestamp)) banList.push(a.banedUser?.id!);
     });
     setCurrentChatAdmins(adminList);
@@ -471,7 +458,6 @@ function Chat() {
                     setCurrentChat(c);
                     global.currentChat = c;
                     setCurrentUser(undefined);
-                    setRoleList(c);
                     setChangePassword('');
                     setUsernameInvite('');
                     setMute(0);
@@ -630,7 +616,6 @@ function Chat() {
               )}
               <ChatOnline
                 onlineUsers={onlineUsers}
-                currentId={user.id}
                 setCurrentUser={setCurrentUser}
                 currentUser={currentUser}
                 accessList={currentChat?.accessList}
