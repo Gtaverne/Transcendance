@@ -7,6 +7,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UsersEntity } from '../users/users.entity';
+import { Repository } from 'typeorm';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const jwt = require('jsonwebtoken');
 
 type GameProps = {
   id: number;
@@ -14,13 +19,23 @@ type GameProps = {
   userB: Socket;
   scoreA: number;
   scoreB: number;
+  infoA: UsersEntity;
+  infoB: UsersEntity;
+  spectators: string[];
 };
+
+type BallDir = {
+  x: number;
+  y: number;
+}
 
 const lenghtBar = 7;
 const border = 3.2;
 const ballSize = 1;
 const goal = 44.7;
 const arenaWidth = 50 - border * 2;
+
+const TOKEN_SECRET = process.env.JWT_Secret;
 
 @WebSocketGateway({
   namespace: 'games',
@@ -29,95 +44,200 @@ const arenaWidth = 50 - border * 2;
 export class GamesGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  constructor(
+    @InjectRepository(UsersEntity)
+    private usersRepository: Repository<UsersEntity>,
+  ) {}
+
   @WebSocketServer()
   server: Server;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   afterInit() {}
 
+
+  private socketToPlayer = new Map<string, UsersEntity>();
+
   private queue = new Map<string, Socket>();
   private games = new Map<number, GameProps>();
   private socketGames = new Map<string, number>();
 
-  private getUserGame = (user: string) =>
-  {
+  private getUserGame = (user: string) => {
     const gameId = this.socketGames.get(user);
     return this.games.get(gameId);
-  }
+  };
 
-  private getOpponent = (user: string) =>
-  {
+  private getOpponent = (user: string) => {
     const currentGame = this.getUserGame(user);
-    const opponent = currentGame.userA.id === user ? currentGame.userB : currentGame.userA;
+    if (!currentGame) return null;
+    const opponent =
+      currentGame.userA.id === user ? currentGame.userB : currentGame.userA;
     return opponent;
+  };
+
+  private getRandomBallDir = (): BallDir => {
+    const y = 0.6 - Math.random() * 1.2;
+    const x = 0.5 * (Math.random() > 0.5 ? 1 : -1);
+    return { x: x, y: y };
   }
 
-  async handleConnection(client: Socket, query: string) {
-    console.log('Connected ' + client.id);
+  private getCookieValueByName = (cookies, cookieName) => {
+    if (!cookies) cookies = '';
+    const match = cookies.match(new RegExp('(^| )' + cookieName + '=([^;]+)'));
+    return match ? match[2] : '';
+  };
+
+  private sendToSpectator = (game: GameProps, name: string, ...args: any[]) => {
+    game.spectators.forEach((client) => {
+      this.server.to(client).emit(name, ...args);
+    });
+  };
+
+  async handleConnection(client: Socket) {
+    const token: string = this.getCookieValueByName(
+      client.handshake.headers.cookie,
+      'jwt',
+    );
+    try {
+      const idFromToken = <number>jwt.verify(
+          token,
+          TOKEN_SECRET,
+      );
+      if (idFromToken <= 0) throw Error();
+      const user = await this.usersRepository.findOne({
+        where: { id: idFromToken },
+      });
+      if (!user) throw Error();
+      this.socketToPlayer.set(client.id, user);
+    } catch (error) {
+      console.log('Invalid token ' + error);
+      this.server.to(client.id).disconnectSockets(true);
+      return;
+    }
+  }
+
+  async handleDisconnect(client: Socket) {
+    console.log('Disconnected');
+
+    const game = this.getUserGame(client.id);
+    if (game) {
+      this.server.to(game.userA.id).disconnectSockets(true);
+      this.server.to(game.userB.id).disconnectSockets(true);
+    }
+
+    this.queue.delete(client.id);
+  }
+
+  @SubscribeMessage('spectate')
+  handleSpectate(client: Socket, { gameId }) {
+    const game = this.games.get(parseInt(gameId));
+    console.log("spectate! " + game + " " + gameId);
+    if (game && !game.spectators.includes(client.id))
+    {
+      game.spectators.push(client.id);
+      this.games.set(parseInt(gameId), game);
+      this.server.to(client.id).emit('gameStarted', 0, arenaWidth / 2, 0, 0, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar)
+      this.server.to(client.id).emit('setScore', game.scoreA, game.scoreB);
+    }
+  };
+
+
+  @SubscribeMessage('joinQueue')
+  handleJoinQueue(client: Socket)
+  {
     this.queue.set(client.id, client);
 
-    if (this.queue.size >= 2)
-    {
+    if (this.queue.size >= 2) {
       console.log('Starting Match!');
       const entries = this.queue.entries();
       const id = Date.now();
+      const playerA = entries.next().value[1];
+      const playerB = entries.next().value[1];
       const game: GameProps = {
         id: id,
-        userA: entries.next().value[1],
-        userB: entries.next().value[1],
+        userA: playerA,
+        userB: playerB,
         scoreA: 0,
         scoreB: 0,
+        infoA: this.socketToPlayer.get(playerA.id),
+        infoB: this.socketToPlayer.get(playerB.id),
+        spectators: [],
       };
       this.queue.delete(game.userA.id);
       this.queue.delete(game.userB.id);
       this.games.set(id, game);
       this.socketGames.set(game.userA.id, id);
       this.socketGames.set(game.userB.id, id);
+      console.log("Started game: " + id);
 
-      this.server.to(game.userA.id).emit('gameStarted', 0, arenaWidth/2, 0.4, 0.4);
-      this.server.to(game.userB.id).emit('gameStarted', 0, arenaWidth/2, -0.4, -0.4);
+      const bd = this.getRandomBallDir();
+
+      this.server.to(game.userA.id).emit('gameStarted', 0, arenaWidth / 2, bd.x, bd.y, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
+      this.server.to(game.userB.id).emit('gameStarted', 0, arenaWidth / 2, -bd.x, -bd.y, game.infoB.username, game.infoB.avatar, game.infoA.username, game.infoA.avatar);
     }
-  }
-
-  async handleDisconnect(client: Socket) {
-    console.log('Disconnected');
-    this.queue.delete(client.id);
   }
 
   @SubscribeMessage('hitBall')
   handleHitBall(client: Socket, { ballX, ballY, velX, velY }) {
     const opponent = this.getOpponent(client.id);
-    this.server.to(opponent.id).emit('ball', -ballX, arenaWidth - ballY, -velX, -velY);
+    if (!opponent) return;
+    this.server
+      .to(opponent.id)
+      .emit('ball', -ballX, arenaWidth - ballY, -velX, -velY);
+    const game = this.getUserGame(client.id);
+
+    if (client.id == game.userA.id)
+      this.sendToSpectator(game, 'ball', ballX, ballY, velX, velY);
+    else
+      this.sendToSpectator(game, 'ball', -ballX, arenaWidth - ballY, -velX, -velY);
+
   }
 
   @SubscribeMessage('move')
   handleMove(client: Socket, { localX }) {
     const opponent = this.getOpponent(client.id);
+    if (!opponent) return;
     this.server.to(opponent.id).emit('opoMove', arenaWidth - localX);
+    const game = this.getUserGame(client.id);
+
+    if (client.id == game.userA.id)
+      this.sendToSpectator(game, 'meMove', localX);
+    else
+      this.sendToSpectator(game, 'opoMove', arenaWidth - localX);
   }
 
   @SubscribeMessage('tookGoal')
   handleTookGoal(client: Socket) {
     const game = this.getUserGame(client.id);
-    if (game)
-    {
-        const opponent = this.getOpponent(client.id);
+    if (game) {
+      const opponent = this.getOpponent(client.id);
 
-        if (client.id == game.userA.id)
-            game.scoreB++;
+      if (client.id == game.userA.id) game.scoreB++;
+      else game.scoreA++;
+
+      this.server.to(opponent.id).emit('receivePoint');
+      this.server.to(opponent.id).emit('ball', 0, arenaWidth / 2, 0, 0);
+      this.sendToSpectator(game, 'ball', 0, arenaWidth / 2, 0, 0);
+      this.sendToSpectator(game, 'setScore', game.scoreA, game.scoreB);
+
+      setTimeout(() => {
+        if (game.scoreA >= 10 || game.scoreB >= 10)
+        {
+          this.sendToSpectator(game, 'gameover');
+          this.server.to(game.userA.id).emit('gameover');
+          this.server.to(game.userB.id).emit('gameover');
+          this.server.to(game.userA.id).disconnectSockets(true);
+          this.server.to(game.userB.id).disconnectSockets(true);
+        }
         else
-            game.scoreA++;
+        {
+          const bd = this.getRandomBallDir();
 
-        this.server.to(opponent.id).emit('receivePoint');
-        this.server.to(opponent.id).emit('ball', 0, arenaWidth/2, 0, 0);
-
-        setTimeout(() => {
-            this.server.to(game.userA.id).emit('ball', 0, arenaWidth/2, 0.4, 0.4);
-            this.server.to(game.userB.id).emit('ball', 0, arenaWidth/2, -0.4, -0.4);
-        }, 2000);
-
+          this.sendToSpectator(game, 'ball', 0, arenaWidth / 2, bd.x, bd.y);
+          this.server.to(game.userA.id).emit('ball', 0, arenaWidth / 2, bd.x, bd.y);
+          this.server.to(game.userB.id).emit('ball', 0, arenaWidth / 2, -bd.x, -bd.y);
+        }
+      }, 2000);
     }
   }
-
-
 }

@@ -15,8 +15,9 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import React, { useState, useEffect, useLayoutEffect, useRef, Component } from 'react';
 import RoomInterface from '../interfaces/RoomInterface';
 import { Material } from 'three';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
+import Cookies from 'js-cookie';
 
 declare var global: {
   game: {
@@ -37,7 +38,12 @@ declare var global: {
   requestId: number;
 };
 
-const PongFrame = () => {
+type GameUser = {
+  username: string;
+  avatar: string;
+};
+
+const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
 
   const mount = useRef<HTMLDivElement>(null);
 
@@ -90,10 +96,14 @@ const PongFrame = () => {
 
     setupCamera();
 
-    camera.position.z = 60;
-    camera.position.y = 17;
-    camera.position.x = 0;
-    camera.rotation.x = -0.5;
+    const resetCamera = () => {
+      camera.position.z = 60;
+      camera.position.y = 17;
+      camera.position.x = 0;
+      camera.rotation.x = -0.5;
+    };
+
+    resetCamera();
 
     if (mount.current)
     {
@@ -163,20 +173,23 @@ const PongFrame = () => {
       const geometry = new RoundedBoxGeometry( 100, 200, 50, 10, 2.7 );
       const materialCanvas = new THREE.MeshBasicMaterial( { color: 0x470243 } );
       let meshFrame = new THREE.Mesh( geometry, materialCanvas );
-      meshFrame.position.y = -100.1;
+      meshFrame.position.y = -100.3;
+      meshFrame.position.x = 0.14;
       meshFrame.position.z = 25 - 3.7;
       scene.add( meshFrame )
     }
 
 
     const loader = new THREE.TextureLoader();
-    loader.load('arena.png' , function(texture)
+    loader.load(prefix + 'arena.png' , function(texture)
     {
       let geometry = new THREE.PlaneGeometry( 100, 50 );
       let materialCanvas = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
       let meshFrame = new THREE.Mesh( geometry, materialCanvas );
       meshFrame.position.z = (25.0) - border;
+      meshFrame.position.x = 0.14;
       meshFrame.rotation.x = -Math.PI / 2;
+
 
       scene.add( meshFrame );
 
@@ -186,7 +199,7 @@ const PongFrame = () => {
 
     var shineObject: THREE.Mesh;
 
-    new THREE.TextureLoader().load('border.png' , function(texture)
+    new THREE.TextureLoader().load(prefix + 'border.png' , function(texture)
     {
       let geometry = new THREE.PlaneGeometry( 100, 50 );
       let materialCanvas = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
@@ -201,7 +214,7 @@ const PongFrame = () => {
       scene.add( shineObject );
     });
 
-    new THREE.TextureLoader().load('0.png' , function(texture)
+    new THREE.TextureLoader().load(prefix + '0.png' , function(texture)
     {
       scene.background = texture;
     });
@@ -249,6 +262,10 @@ const PongFrame = () => {
         global.game.bounceB = Math.max(0, global.game.bounceB - 0.14);
 
       }
+      else
+      {
+        resetCamera();
+      }
 
 
       if (shineObject && global.game.didHit > 0)
@@ -272,27 +289,35 @@ const PongFrame = () => {
       window.cancelAnimationFrame(global.requestId);
     }
   }, []);
-
   return (
     <div className="back">
       <div ref={mount} className="game"/>
       <div className="backgroundFrame" style={{opacity: isLoaded ? "0" : "1"}}></div>
     </div>
-
   )
-
-
 }
 
 const Pong = () => {
+
+  const params = useParams();
+  const isSpectating = params.id != undefined && params.id != null;
+
+  console.log("params.id " + params.id);
 
   const mount = useRef<HTMLDivElement>(null);
 
   const [scores, setScores] = useState({scoreA: 0, scoreB: 0});
 
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(isSpectating);
+  const [gameover, setGameover] = useState(false);
+
   const socket = useRef<Socket | undefined>(undefined);
   const [queueing, setQueueing] = useState(false);
+
+  const [gameUserA, setGameUserA] = useState({username: '', avatar: ''});
+  const [gameUserB, setGameUserB] = useState({username: '', avatar: ''});
+
+  const [color, setColor] = useState(0);
 
 
   var [play] = useSound(bouncesound, { volume: 0.4});
@@ -306,11 +331,13 @@ const Pong = () => {
 
   let arenaWidth = 50 - border * 2;
 
+
+
   const resetGame = (startTime: number) => {
     global.game = {
       localX: arenaWidth/2,
       opoX: arenaWidth/2,
-      ballX: -0.14,
+      ballX: 0,
       ballY: arenaWidth / 2,
       velX: -0.4,
       velY: -0.5,
@@ -326,6 +353,9 @@ const Pong = () => {
 
   const startQueue = () =>
   {
+    if (socket.current)
+      socket.current?.disconnect();
+
     socket.current = io("http://localhost:3000/games");
     socket.current?.on("connect", () => {
       console.log("Connected");
@@ -333,15 +363,22 @@ const Pong = () => {
     socket.current?.on("disconnect",() => {
       setQueueing(false);
       setStarted(false);
-      resetGame(9223372036854775807);
+      setGameover(true);
+      global.game.velX = 0;
+      global.game.velY = 0;
+      setScores({scoreA: 0, scoreB: 0});
     });
-    socket.current?.on("gameStarted", (ballX, ballY, velX, velY) => {
+    socket.current?.on("gameStarted", (ballX, ballY, velX, velY, aUsername, aImg, bUsername, bImg) => {
       resetGame(new Date().getTime());
       global.game.ballY = ballY;
       global.game.ballX = ballX;
       global.game.velX = velX;
       global.game.velY = velY;
+      setGameUserA({username: aUsername, avatar: aImg});
+      setGameUserB({username: bUsername, avatar: bImg});
       setStarted(true);
+      setGameover(false);
+      setScores({scoreA: 0, scoreB: 0});
     });
     socket.current?.on("ball", (ballX, ballY, velX, velY) => {
       global.game.ballY = ballY;
@@ -350,18 +387,46 @@ const Pong = () => {
       global.game.velY = velY;
       if (ballX > 10)
         global.game.bounceB = Math.PI;
+      else
+      {
+        global.game.localX = arenaWidth/2;
+        global.game.opoX = arenaWidth/2;
+      }
     });
     socket.current?.on("opoMove", (opoX) => {
       global.game.opoX = opoX;
     });
+    socket.current?.on("meMove", (opoX) => {
+      global.game.localX = opoX;
+    });
+    socket.current?.on("setScore", (a, b) => {
+      global.game.scoreA = a;
+      global.game.scoreB = b;
+    });
+    socket.current?.on("gameover", () => {
+      setGameover(true);
+      setStarted(false);
+    });
     socket.current?.on("receivePoint", (opoX) => {
       global.game.scoreA++;
     });
+
+    console.log("params.ids " + params.id);
+
+    if (isSpectating)
+      socket.current?.emit('spectate', { gameId: params.id });
+    else
+      socket.current?.emit('joinQueue');
     setQueueing(true);
   }
 
 
   useLayoutEffect(() => {
+
+    if (isSpectating)
+    {
+      startQueue();
+    }
 
     console.log("CALLLL");
 
@@ -407,18 +472,20 @@ const Pong = () => {
         setScores({scoreA: global.game.scoreA, scoreB: global.game.scoreB});
       }
 
-      if(new Date().getTime() - global.game.startTime < 2400){
+      if(!isSpectating && new Date().getTime() - global.game.startTime < 2400){
         return;
       }
 
-      if (downPressed)
-        global.game.localX = Math.min((global.game.localX + 1), arenaWidth - lenghtBar/2);
+      if (!isSpectating) {
+        if (downPressed)
+          global.game.localX = Math.min((global.game.localX + 1), arenaWidth - lenghtBar / 2);
+        if (upPressed)
+          global.game.localX = Math.max((global.game.localX - 1), lenghtBar / 2);
 
-      if (upPressed)
-        global.game.localX = Math.max((global.game.localX - 1), lenghtBar/2);
+        if (loopCount++ % 2 == 0)
+          socket.current?.emit('move', { localX: global.game.localX });
 
-      if (loopCount++ % 2 == 0)
-        socket.current?.emit('move', {localX: global.game.localX});
+      }
 
       if (global.game.ballY + global.game.velY > arenaWidth || global.game.ballY + global.game.velY < 0) {
         global.game.velY = -global.game.velY;
@@ -426,81 +493,59 @@ const Pong = () => {
         play();
       }
 
-      if (Math.abs(global.game.ballY - global.game.localX) <= (lenghtBar + 2) / 2 && global.game.ballX <= -goal)
-      {
-        global.game.velX = -global.game.velX + 0.075;
-
-        let hit = global.game.ballY - global.game.localX;
-        let angle = Math.atan2(global.game.velY, global.game.velX);
-        let size = Math.max(Math.sqrt(global.game.velX * global.game.velX + global.game.velY * global.game.velY) / 1, 0.5);
-
-        if (hit > 2)
-          angle = Math.min(angle + 0.5, 0.6);
-        else if (hit < -2)
-          angle = Math.max(angle - 0.5, -0.6);
-
-        console.log(angle);
-
-        global.game.velX = Math.cos(angle) * size;
-        global.game.velY = Math.sin(angle) * size;
-
-        global.game.bounceA = Math.PI;
-        play();
-
-        socket.current?.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
-      }
-      /*else if (global.game.ballX >= goal)
-      {
-        global.game.velX = -global.game.velX - 0.075;
-        global.game.opoX = global.game.ballY;
-
-        global.game.bounceB = Math.PI;
-        play();
-
-
-
-        //global.game.scoreA += 1;
-      }*/
-      else if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
-      {
-        /*if (global.game.ballX < 0)
-          global.game.scoreB += 1;
-        else
-          global.game.scoreA += 1;
-
-
-        global.game.ballY = arenaWidth / 2;
-        global.game.ballX = -0.14;
-        global.game.velX = 0.4;
-        global.game.velY = 0.4;
-
-        global.game.localX = arenaWidth/2;
-        global.game.opoX = arenaWidth/2;*/
-
-        //ballStopTime = 9223372036854775807;
-
-        if (global.game.ballX <= -(goal + 1))
+      if (!isSpectating) {
+        if (Math.abs(global.game.ballY - global.game.localX) <= (lenghtBar + 2) / 2 && global.game.ballX <= -goal)
         {
+          global.game.velX = -global.game.velX + 0.1;
+
+          let hit = global.game.ballY - global.game.localX;
+          let angle = Math.atan2(global.game.velY, global.game.velX);
+          let size = Math.max(Math.sqrt(global.game.velX * global.game.velX + global.game.velY * global.game.velY) / 1, 0.5);
+
+          if (hit > 2)
+            angle = Math.min(angle + 0.5, 0.7);
+          else if (hit < -2)
+            angle = Math.max(angle - 0.5, -0.7);
+
+          console.log(angle);
+
+          global.game.velX = Math.cos(angle) * size;
+          global.game.velY = Math.sin(angle) * size;
+
+          global.game.bounceA = Math.PI;
+          play();
+
+          socket.current?.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
+        }
+        else if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
+        {
+          if (global.game.ballX <= -(goal + 1))
+          {
             socket.current?.emit('tookGoal');
             global.game.scoreB++;
             global.game.ballY = arenaWidth / 2;
-            global.game.ballX = -0.14;
+            global.game.ballX = 0;
+          }
+
+          global.game.velX = 0;
+          global.game.velY = 0;
+          playGoal();
         }
-
-        global.game.velX = 0;
-        global.game.velY = 0;
-
-
-        playGoal();
       }
-
+      else
+      {
+        if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
+        {
+          global.game.velX = 0;
+          global.game.velY = 0;
+        }
+      }
 
 
       if(new Date().getTime() - ballStopTime > 2000){
         global.game.ballX += global.game.velX;
         global.game.ballY += global.game.velY;
       }
-
     }
 
     const loop = setInterval(gameLoop, 30);
@@ -509,21 +554,30 @@ const Pong = () => {
       clearInterval(loop);
       document.removeEventListener("keydown", keyDownHandler);
       document.removeEventListener("keyup", keyUpHandler);
+      socket.current?.disconnect();
     }
   }, []);
 
 
   return (
-    <div>
-      <PongFrame></PongFrame>
+    <div style={{filter: `hue-rotate(${color}deg)`}}>
+      <PongFrame color={color} prefix={ isSpectating ? '../' : '' }></PongFrame>
 
       <div className="backButton">
         <Link to={"/"}>Exit</Link>
       </div>
       <div className="score">
+        {started ? <div className={"user userA"}>
+          <div className={"username"}>{gameUserA.username}</div>
+          <div className={"profilePic"} style={{backgroundImage: `url(${gameUserA.avatar})`, filter: `hue-rotate(-${color}deg)`}}></div>
+        </div> : <></>}
         {scores.scoreA} - {scores.scoreB}
+        {started ? <div className={"user userB"}>
+          <div className={"profilePic"} style={{backgroundImage: `url(${gameUserB.avatar})`, filter: `hue-rotate(-${color}deg)`}}></div>
+          <div className={"username"}>{gameUserB.username}</div>
+        </div> : <></>}
       </div>
-      {!started ?
+      {!started && !gameover ?
 
       <div className="newgameContainer">
         <div className="newgameScreen">
@@ -533,9 +587,24 @@ const Pong = () => {
 
           {queueing ? <p>
             Waiting for opponent.
-          </p> : <p>
-            Mettre les options ici (puis info de match making)
-          </p>}
+          </p> : <>
+            <fieldset>
+              <legend>Select a theme:</legend>
+              <div>
+                <input type="radio" id="purple" name="drone" value="huey" checked={color == 0} onChange={() => setColor(0)}/>
+                  <label htmlFor="purple">PURPLE</label>
+              </div>
+              <div>
+                <input type="radio" id="blue" name="drone" value="dewey" checked={color == 290} onChange={() => setColor(290)}/>
+                  <label htmlFor="blue">BLUE</label>
+              </div>
+              <div>
+                <input type="radio" id="blue" name="drone" value="louie" checked={color == 66} onChange={() => setColor(66)}/>
+                  <label htmlFor="blue">RED</label>
+              </div>
+            </fieldset>
+
+          </>}
 
           <div className="newgameButton" onMouseUp={() => {
             startQueue();
@@ -546,6 +615,25 @@ const Pong = () => {
       </div>
 
       : <></>}
+      {gameover ?
+
+        <div className="newgameContainer">
+          <div className="newgameScreen">
+            <h1>
+              GAME OVER
+            </h1>
+
+            <p>{gameUserA.username}: {scores.scoreA} <br/> {gameUserB.username}: {scores.scoreB}</p>
+
+            <div className="newgameButton" onMouseUp={() => {
+              setGameover(false);
+            }}>
+              OK
+            </div>
+          </div>
+        </div>
+
+        : <></>}
     </div>
   )
 
