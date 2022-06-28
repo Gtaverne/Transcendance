@@ -55,12 +55,14 @@ export class GamesGateway
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   afterInit() {}
 
-
   private socketToPlayer = new Map<string, UsersEntity>();
 
   private queue = new Map<string, Socket>();
   private games = new Map<number, GameProps>();
   private socketGames = new Map<string, number>();
+
+  private listen = new Map<string, Socket>();
+
 
   private getUserGame = (user: string) => {
     const gameId = this.socketGames.get(user);
@@ -79,7 +81,7 @@ export class GamesGateway
     const y = 0.6 - Math.random() * 1.2;
     const x = 0.5 * (Math.random() > 0.5 ? 1 : -1);
     return { x: x, y: y };
-  }
+  };
 
   private getCookieValueByName = (cookies, cookieName) => {
     if (!cookies) cookies = '';
@@ -123,9 +125,16 @@ export class GamesGateway
     if (game) {
       this.server.to(game.userA.id).disconnectSockets(true);
       this.server.to(game.userB.id).disconnectSockets(true);
+      this.games.delete(game.id);
+      this.sendToSpectator(game, 'gameover');
+      this.listen.forEach((value, key) => {
+        this.server.to(key).emit('gameRemove', game.id);
+      });
+
     }
 
     this.queue.delete(client.id);
+    this.listen.delete(client.id);
   }
 
   @SubscribeMessage('spectate')
@@ -139,8 +148,15 @@ export class GamesGateway
       this.server.to(client.id).emit('gameStarted', 0, arenaWidth / 2, 0, 0, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar)
       this.server.to(client.id).emit('setScore', game.scoreA, game.scoreB);
     }
-  };
+  }
 
+  @SubscribeMessage('listen')
+  handleListen(client: Socket) {
+    this.listen.set(client.id, client);
+    this.games.forEach((game) => {
+      this.server.to(client.id).emit('gameInfo', game.id, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
+    });
+  }
 
   @SubscribeMessage('joinQueue')
   handleJoinQueue(client: Socket)
@@ -166,6 +182,9 @@ export class GamesGateway
       this.queue.delete(game.userA.id);
       this.queue.delete(game.userB.id);
       this.games.set(id, game);
+      this.listen.forEach((value, key) => {
+        this.server.to(key).emit('gameInfo', id, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
+      });
       this.socketGames.set(game.userA.id, id);
       this.socketGames.set(game.userB.id, id);
       console.log("Started game: " + id);
@@ -228,6 +247,10 @@ export class GamesGateway
           this.server.to(game.userB.id).emit('gameover');
           this.server.to(game.userA.id).disconnectSockets(true);
           this.server.to(game.userB.id).disconnectSockets(true);
+          this.games.delete(game.id);
+          this.listen.forEach((value, key) => {
+            this.server.to(key).emit('gameRemove', game.id);
+          });
         }
         else
         {

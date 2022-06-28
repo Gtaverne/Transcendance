@@ -19,6 +19,8 @@ import { io } from 'socket.io-client';
 import { RootStateOrAny, useSelector } from 'react-redux';
 
 import './pages/Home.css';
+import CurrentGames from './pages/CurrentGames';
+import Leaderboard from './pages/Leaderboard';
 
 
 function MainRooter()
@@ -65,6 +67,12 @@ function MainRooter()
           </Route>
           <Route path="/chat" element={<PrivateRoute />}>
             <Route path="/chat" element={<Chat />} />
+          </Route>
+          <Route path="/current" element={<PrivateRoute />}>
+            <Route path="/current" element={<CurrentGames />} />
+          </Route>
+          <Route path="/leaderboard" element={<PrivateRoute />}>
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Route>
           <Route path="/game" element={<PrivateRoute />}>
             <Route path="/game" element={<Pong />} />

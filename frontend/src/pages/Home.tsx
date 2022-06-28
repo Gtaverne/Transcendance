@@ -64,12 +64,16 @@ function Home() {
                             <ChatIcon/>
                         </GlassButton>
                     </Link>
-                    <GlassButton title="LEADERBOARD">
-                        <LeaderboardIcon/>
-                    </GlassButton>
-                    <GlassButton title="CURRENT GAMES">
-                        <LeaderboardIcon/>
-                    </GlassButton>
+                    <Link to="/leaderboard">
+                        <GlassButton title="LEADERBOARD">
+                            <LeaderboardIcon/>
+                        </GlassButton>
+                    </Link>
+                    <Link to="/current">
+                        <GlassButton title="CURRENT GAMES">
+                            <LeaderboardIcon/>
+                        </GlassButton>
+                    </Link>
                 </div>
             </div>
         </div>
