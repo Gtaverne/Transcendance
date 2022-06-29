@@ -278,11 +278,11 @@ const UserProfile = (props: Props) => {
   }
 
   return (
-    <Overlay title="User Profile" style={{ overflowY: 'scroll' }}>
+    <Overlay title="User Profile" style={{ overflowY: 'overlay' }}>
       <div className="userPageWrapper">
         <div className="userDescription">
           {user && user.id && user.id === fetchedProfile?.id ? (
-            <div>
+            <div className="profileHeader">
               <h2>Your Profile</h2>
               <button
                 className="largeButton"
@@ -314,13 +314,13 @@ const UserProfile = (props: Props) => {
             // Upload profile picture
             <>
               {preview ? (
-                <>
+                <div className="imgContainer">
                   <img className="profilepage" src={preview} />
-                </>
+                </div>
               ) : (
-                <>
+                <div className="imgContainer">
                   <img className="profilepage" src={user.avatar} />
-                </>
+                </div>
               )}
 
               <div>Upload your avatar</div>
@@ -333,9 +333,9 @@ const UserProfile = (props: Props) => {
               />
             </>
           ) : (
-            <>
+            <div className="imgContainer">
               <img className="profilepage" src={fetchedProfile.avatar} />
-            </>
+            </div>
           )}
           {/* Name */}
           {editProfile ? (
@@ -352,11 +352,11 @@ const UserProfile = (props: Props) => {
             </div>
           ) : (
             <div>
-              <p>Username: {fetchedProfile.username}</p>
-              <p>Level: {fetchedProfile.lvl}</p>
+              <p className="coolP"><b>Username</b>: {fetchedProfile.username}</p>
+              <p className="coolP"><b>Level</b>: {fetchedProfile.lvl}</p>
             </div>
           )}
-          <p>email: {fetchedProfile.email}</p>
+          <p className="coolP"><b>Email</b>: {fetchedProfile.email}</p>
           {user && user.id && editProfile && user.id === fetchedProfile.id ? (
             <p>
               Double Factor Authentication:
