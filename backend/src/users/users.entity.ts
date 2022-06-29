@@ -28,6 +28,10 @@ export class UsersEntity extends BaseEntity {
   secret: string;
   @Column({ type: 'integer', default: 0, nullable: false })
   lvl: number;
+  @Column({ type: 'integer', default: 0, nullable: false })
+  currentGame: number;
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isOnline: boolean;
 
   //Penser à ajouter un default type
   @ManyToMany(() => UsersEntity, (user) => user.followingMeList)

@@ -19,7 +19,7 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-image: url("./pages/assets/paralax/0.png");
+  background-image: url('./pages/assets/paralax/0.png');
   background-position: top;
   background-size: cover;
   height: 100px;
@@ -56,7 +56,7 @@ code {
 .profilepic {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 20%;
   vertical-align: middle;
   position: relative;
   right: 5px;
@@ -143,13 +143,11 @@ code {
   /* background-color: yellow; */
   margin-block-start: 0;
   margin-block-end: 0;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 400px 1fr;
-
-  position: fixed;
   text-decoration: none;
 }
 
@@ -190,4 +188,20 @@ code {
 
 .miniUserLink {
   grid-column: span 1;
+}
+
+.puceverte {
+  position: relative;
+}
+
+.puceverte::before {
+  content: ' ';
+  width: 10px;
+  height: 10px;
+  background-color: rgb(0, 255, 0);
+  border-radius: 30%;
+  position: absolute;
+  z-index: 99;
+  margin-left: 28px;
+  margin-top: 34px;
 }

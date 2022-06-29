@@ -1,14 +1,30 @@
 
 .messenger {
   display: flex;
-  background: white;
+  backdrop-filter: blur(20px);
+  background: #2a192cb8;
   width: 100%;
   height: 100%;
+
+  animation-name: doblur;
+  animation-duration: 1.2s;
+}
+
+@keyframes doblur {
+  0% {
+    background: #2a192c;
+  }
+  50% {
+    background: #2a192c;
+  }
+  100% {
+    background: #2a192cb8;
+  }
 }
 
 .chatMenu {
   flex: 3.5;
-  padding: 14px;
+  color: white;
 }
 
 .chatMenuInput {
@@ -20,6 +36,7 @@
 
 .chatBox {
   flex: 5;
+  background: #8b8b8b1f;
 }
 
 .chatBoxWrapper {
@@ -31,7 +48,7 @@
 
 .chatBoxTop {
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: overlay;
   padding-right: 10px;
 }
 
@@ -40,13 +57,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #feb3ff14;
 }
 
 .chatMessageInput {
   width: 80%;
-  height: 90px;
+  height: 30px;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 10px;
+  border: none;
+  margin: 20px;
+  color: white;
+  background: #00000063;
+}
+
+.chatSubmitButton
+{
+  margin-right: 20px;
 }
 
 .chatSubmitButton,
@@ -56,12 +83,13 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #1877f2;
+  background-color: #0000004a;
   color: white;
 }
 
 .chatOnline {
   flex: 3;
+  color: white;
 }
 
 .chatMenuWrapper {
@@ -73,11 +101,11 @@
 }
 
 .noConversationText {
-  position: absolute;
-  top: 10%;
+  margin-top: 20%;
   font-size: 25px;
-  color: rgb(224, 220, 220);
+  color: rgba(255, 255, 255, 0.3);
   cursor: default;
+  text-align: center;
 }
 .chatMenuWrapper {
   justify-content: space-between;
@@ -85,19 +113,16 @@
   flex-direction: column;
 }
 
-.chatMenuTop {
-  /* position: relative;
-  flex: 3.5; */
-  /* background-color: red; */
+.chatMenuTop h3 {
+  margin: 25px;
 }
 
 .chatMenuBottom {
-  border-top: 1px solid gray;
-  height: 330px;
-  /* margin-top: 10px; */
-  /* background-color: blue; */
-  /* display: flex;
-  flex-direction: colums; */
+  background: #0000001a;
+}
+
+.chatMenuBottom h3{
+  margin: 25px;
 }
 
 .conversationType {
@@ -106,7 +131,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #1877f2;
+  background-color: #0000002e;
   color: white;
 }
 
@@ -133,17 +158,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 25px;
 }
 
 .chatMenuTop {
-  overflow-y: scroll;
+  overflow-y: overlay;
   height: 100%;
 }
 
 .chatMenuMiddle {
-  overflow-y: scroll;
-  border-top: 1px solid gray;
+  overflow-y: overlay;
   height: 100%;
+}
+
+.chatMenuMiddle h3{
+  margin: 25px;
 }
 
 .chatOnlineWrapper {
@@ -155,8 +184,13 @@
 }
 
 .chatOnlineTopWrapper {
-  padding: 10px;
   height: 100%;
+}
+
+.chatOnlineTopWrapper h3
+{
+  margin: 25px;
+  margin-bottom: 18px;
 }
 
 .buttonOnlineTopWrapper {
@@ -165,19 +199,18 @@
 }
 
 .chatOnlineBottom {
-  border-top: 1px solid gray;
-  padding-left: 10px;
   align-items: center;
   justify-content: center;
   display: flex;
   flex-direction: column;
+  padding: 20px;
+  background: #0000001a;
 }
 
 .chatOnlineBottom input {
   width: 71px;
   height: 26.5px;
   border-radius: 5px;
-  border: 1px solid gray;
   margin-bottom: 5px;
   margin-right: 5px;
   text-align: center;
@@ -221,7 +254,7 @@
 }
 
 .noUserText {
-  font-size: 25px;
+  font-size: 18px;
   color: rgb(224, 220, 220);
   cursor: default;
   text-align: center;

@@ -19,7 +19,7 @@ type Props = {
   friendable?: number; //0: hide, 1: display
 };
 
-function UserMiniature({targetid, blockable = 0, friendable = 0 }: Props) {
+function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
   const [fetchedProfile, setFetchedProfile] = useState<UserInterface>();
   const dispatch = useDispatch();
 
@@ -32,7 +32,7 @@ function UserMiniature({targetid, blockable = 0, friendable = 0 }: Props) {
       const fetchuser = await apiGetter('users/profile/' + targetid);
       if (fetchuser.data) {
         setFetchedProfile({ ...fetchuser.data });
-        console.log('We fetched a profile: ');
+        // console.log('We fetched a profile: ');
       }
     };
     fetchUser();
@@ -90,42 +90,57 @@ function UserMiniature({targetid, blockable = 0, friendable = 0 }: Props) {
 
   if (fetchedProfile && fetchedProfile.username && fetchedProfile.id)
     return (
-      <div className='miniUser'>
-        <div className="miniUserLink">
-
-        <Link
-          to={'/userprofile/' + targetid}
-          style={{ textDecoration: 'none' }}
+      <div className="miniUser">
+        <div className={fetchedProfile.isOnline ? "miniUserLink puceverte" : "miniUserLink"}>
+          <Link
+            to={'/userprofile/' + targetid}
+            style={{ textDecoration: 'none' }}
           >
-          <img className="profilepic" src={fetchedProfile.avatar} alt="" />
-          {fetchedProfile.username} | {fetchedProfile.id}
-        </Link>
-          </div>
-        {blockable === 1 && targetid !== user.id && !iBlockedList.includes(targetid) ? (
+            <img className="profilepic" src={fetchedProfile.avatar} alt="" />
+            {fetchedProfile.username}
+          </Link>
+        </div>
+        {fetchedProfile.currentGame !== 0 ? <>inagame</> : <></>}
+        {blockable === 1 &&
+        targetid !== user.id &&
+        !iBlockedList.includes(targetid) ? (
           <button className="actionButton" onClick={onBlock}>
             <FaLock />
           </button>
         ) : (
           <></>
         )}
-        {blockable === 1 && targetid !== user.id && iBlockedList.includes(targetid) ? (
-          <button className="actionButton" onClick={onBlock} style={{ backgroundColor: 'lightgreen' }}>
+        {blockable === 1 &&
+        targetid !== user.id &&
+        iBlockedList.includes(targetid) ? (
+          <button
+            className="actionButton"
+            onClick={onBlock}
+            style={{ backgroundColor: 'lightgreen' }}
+          >
             <FaUnlock />
           </button>
         ) : (
           <></>
         )}
-        
 
-        {friendable === 1 && targetid !== user.id && !iFollowList.includes(targetid) ? (
+        {friendable === 1 &&
+        targetid !== user.id &&
+        !iFollowList.includes(targetid) ? (
           <button className="actionButton" onClick={onFollow}>
             <FaHeart />
           </button>
         ) : (
           <></>
         )}
-        {friendable === 1 && targetid !== user.id && iFollowList.includes(targetid) ? (
-          <button className="actionButton" onClick={onFollow} style={{ backgroundColor: 'black' }}>
+        {friendable === 1 &&
+        targetid !== user.id &&
+        iFollowList.includes(targetid) ? (
+          <button
+            className="actionButton"
+            onClick={onFollow}
+            style={{ backgroundColor: 'black' }}
+          >
             <FaHeartBroken />
           </button>
         ) : (

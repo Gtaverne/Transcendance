@@ -32,15 +32,9 @@ const UserProfile = (props: Props) => {
   const [achievementsList, setAchievementsList] = useState([]);
   const params = useParams();
 
-  const {
-    user,
-    iFollowList,
-    iBlockedList,
-    isError,
-    isLoading,
-    isSuccess,
-    message,
-  } = useSelector((state: RootStateOrAny) => state.auth);
+  const { user, iFollowList, iBlockedList } = useSelector(
+    (state: RootStateOrAny) => state.auth,
+  );
 
   const [friendList, setFriendList] = useState<Array<number>>([]);
   const [requestList, setRequestList] = useState<Array<number>>([]);
@@ -78,7 +72,7 @@ const UserProfile = (props: Props) => {
         } catch (error) {
           console.log('Could not load user');
           //Popup:
-          toast.error('The user you looked for does not exist')
+          toast.error('The user you looked for does not exist');
           navigate('/userprofile/' + user.id);
         }
       };
@@ -86,7 +80,7 @@ const UserProfile = (props: Props) => {
     }
 
     dispatch(reset);
-  }, [params.id]);
+  }, [params.id, iBlockedList, iFollowList]);
 
   useEffect(() => {
     if (!profilePic) {
@@ -101,7 +95,6 @@ const UserProfile = (props: Props) => {
     const friend: number[] = fetchedFollowers.filter((number) =>
       fetchedFollowing.includes(number),
     );
-    console.log('Friendlist: ', friend);
 
     const stalk: number[] = fetchedFollowing.filter(
       (value: number) => !friend.includes(value),
@@ -115,10 +108,11 @@ const UserProfile = (props: Props) => {
       (value: number) => !iBlockedList.includes(value),
     );
 
+    console.log('Editing friendlists and followers');
     setFriendList(friend);
     setStalkList(stalk);
     setRequestList(req);
-  }, [user, fetchedProfile, fetchedFollowers, fetchedFollowing, iBlockedList]);
+  }, [user, fetchedProfile, fetchedFollowers, fetchedFollowing, iBlockedList, iFollowList]);
 
   useEffect(() => {
     console.log('We get in fetchAchievements');
@@ -134,7 +128,7 @@ const UserProfile = (props: Props) => {
       fetchAchievements();
     } else {
     }
-    // console.log('achievementsList: ', achievementsList);
+    console.log('achievementsList: ', achievementsList);
   }, [params.id]);
 
   var profile = user;
@@ -202,7 +196,6 @@ const UserProfile = (props: Props) => {
           );
           //Search if there is a more elegant way to remove a picture from cache -_-
           window.location.reload();
-
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
@@ -285,13 +278,17 @@ const UserProfile = (props: Props) => {
   }
 
   return (
-    <Overlay title="User Profile">
+    <Overlay title="User Profile" style={{ overflowY: 'scroll' }}>
       <div className="userPageWrapper">
         <div className="userDescription">
           {user && user.id && user.id === fetchedProfile?.id ? (
             <div>
               <h2>Your Profile</h2>
-              <button className="largeButton" color="#f194ff" onClick={onEdition}>
+              <button
+                className="largeButton"
+                color="#f194ff"
+                onClick={onEdition}
+              >
                 <FaSignOutAlt />
                 {editProfile ? ' Validate edition' : 'Edit'}
               </button>
@@ -379,7 +376,7 @@ const UserProfile = (props: Props) => {
           <h2>Trophys</h2>
           {achievementsList.map((c: any) => (
             <div key={c.id.toString()}>
-              <AchievementMiniature achievement={c}  />
+              <AchievementMiniature achievement={c} />
             </div>
           ))}
         </div>

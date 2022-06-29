@@ -3,11 +3,12 @@
   align-items: center;
   font-weight: 500;
   cursor: pointer;
-  margin: 8px;
+  padding: 10px;
+  padding-left: 25px;
 }
 
 .chatOnlineFriendSelected {
-  background-color: #F5F5F5;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .chatOnlineImgContainer {

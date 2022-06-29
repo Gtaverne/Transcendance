@@ -37,6 +37,8 @@ const arenaWidth = 50 - border * 2;
 
 const TOKEN_SECRET = process.env.JWT_Secret;
 
+var lastIntSocket = 1000;
+
 @WebSocketGateway({
   namespace: 'games',
   cors: true,
@@ -130,8 +132,10 @@ export class GamesGateway
       this.listen.forEach((value, key) => {
         this.server.to(key).emit('gameRemove', game.id);
       });
-
     }
+
+    const user = this.socketToPlayer.get(client.id);
+    if (user) await this.usersRepository.update(user.id!, { currentGame: 0 });
 
     this.queue.delete(client.id);
     this.listen.delete(client.id);
@@ -158,6 +162,7 @@ export class GamesGateway
     });
   }
 
+
   @SubscribeMessage('joinQueue')
   handleJoinQueue(client: Socket)
   {
@@ -166,7 +171,7 @@ export class GamesGateway
     if (this.queue.size >= 2) {
       console.log('Starting Match!');
       const entries = this.queue.entries();
-      const id = Date.now();
+      const id = lastIntSocket++;
       const playerA = entries.next().value[1];
       const playerB = entries.next().value[1];
       const game: GameProps = {
@@ -187,7 +192,9 @@ export class GamesGateway
       });
       this.socketGames.set(game.userA.id, id);
       this.socketGames.set(game.userB.id, id);
-      console.log("Started game: " + id);
+
+      const user = this.socketToPlayer.get(client.id);
+      if (user) this.usersRepository.update(user.id!, { currentGame: id });
 
       const bd = this.getRandomBallDir();
 
@@ -247,6 +254,17 @@ export class GamesGateway
           this.server.to(game.userB.id).emit('gameover');
           this.server.to(game.userA.id).disconnectSockets(true);
           this.server.to(game.userB.id).disconnectSockets(true);
+
+          const userA = this.socketToPlayer.get(game.userA.id);
+          const userB = this.socketToPlayer.get(game.userB.id);
+          if (userA) this.usersRepository.update(userA.id!, { currentGame: 0 });
+          if (userB) this.usersRepository.update(userB.id!, { currentGame: 0 });
+/*
+          if (game.scoreA >= 10)
+            this.usersRepository.update(userA.id!, { lvl: userA.lvl + 1 });
+          else if (game.scoreB >= 10)
+            this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });*/
+
           this.games.delete(game.id);
           this.listen.forEach((value, key) => {
             this.server.to(key).emit('gameRemove', game.id);

@@ -455,7 +455,7 @@ function Chat({ socket }: any) {
   };
 
   return (
-    <Overlay title="Chat">
+    <Overlay title="Chat" style={{background: "transparent"}}>
       <div className="messenger">
         <div className="chatMenu">
           <div className="chatMenuWrapper">
