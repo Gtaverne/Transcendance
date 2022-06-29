@@ -148,10 +148,10 @@ export class UsersController {
     }
   }
 
-  @Get('/allusers')
-  async accessAllUsers(@Param() params): Promise<UsersEntity[]> {
+  @Get('/leaderboard')
+  async accessLeaderboard(@Param() params): Promise<UsersEntity[]> {
     // return this.usersServices.findAll();
-    return this.usersServices.accessAllUsers();
+    return this.usersServices.accessLeaderboard();
   }
 
   //les param sont ceux du chemin de la requete
@@ -199,13 +199,13 @@ export class UsersController {
   //   return this.usersServices.create(user);
   // }
 
-  @Put('/:id')
-  update(@Param() params, @Body() user: UserDTO): Promise<UsersEntity> {
-    return this.usersServices.updateUser(params.id, user);
-  }
+  //   @Put('/:id')
+  //   update(@Param() params, @Body() user: UserDTO): Promise<UsersEntity> {
+  //     return this.usersServices.updateUser(params.id, user);
+  //   }
 
-  @Delete('/:id')
-  async delete(@Param() params): Promise<any> {
-    return this.usersServices.delete(params.id);
-  }
+  //   @Delete('/:id')
+  //   async delete(@Param() params): Promise<any> {
+  //     return this.usersServices.delete(params.id);
+  //   }
 }

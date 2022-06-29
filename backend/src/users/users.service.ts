@@ -50,6 +50,7 @@ export class UsersService {
     const Dudule = {
       email: 'dudule@dudule.fr',
       login: 'dudule',
+      lvl: 41,
       image_url:
         'https://i.kym-cdn.com/entries/icons/original/000/001/030/DButt.jpg',
     };
@@ -59,6 +60,7 @@ export class UsersService {
     const Diane = {
       email: 'ddecourt@student.42.fr',
       login: 'ddecourt',
+      lvl: 42,
       image_url:
         'https://media-exp1.licdn.com/dms/image/C4E22AQFnNQdXvgJMfA/feedshare-shrink_800/0/1646749757724?e=2147483647&v=beta&t=XhcJvjso7gO-wOYtcABGUR0jcLLnWLgpQ9o0WHFRvZM',
     };
@@ -258,12 +260,11 @@ export class UsersService {
     return user;
   }
 
-  async accessAllUsers(): Promise<UsersEntity[]> {
+  async accessLeaderboard(): Promise<UsersEntity[]> {
     const temp = await this.usersRepository
       .createQueryBuilder('users')
-      .leftJoinAndSelect('users.accessToList', 'accessToList')
-      .leftJoinAndSelect('users.messagesList', 'messagesList')
-      .leftJoinAndSelect('accessToList.accessList', 'accessList')
+	  .orderBy('lvl', 'DESC')
+	  .select(['users.id', 'users.username', 'users.lvl', 'users.avatar'])
       .getMany();
     return temp;
   }

@@ -56,7 +56,7 @@ code {
 .profilepic {
   width: 40px;
   height: 40px;
-  border-radius: 20%;
+  border-radius: 15%;
   vertical-align: middle;
   position: relative;
   right: 5px;
@@ -178,7 +178,7 @@ code {
   width: 30px;
   height: 30px;
   border: none;
-  border-radius: 50%;
+  border-radius: 15%;
   cursor: pointer;
   background-color: #999999;
   color: white;
@@ -186,9 +186,9 @@ code {
 }
 
 .miniUser {
-  width: 100%;
+  width: 240px;
   display: grid;
-  grid-template-columns: 1fr 35px 35px;
+  grid-template-columns: 1fr 32px 32px;
 }
 
 .miniUserLink {
@@ -233,4 +233,21 @@ code {
   margin-bottom: 5px;
 
   border-radius: 7px;
+}
+.leaderboardMiniature {
+  display: grid;
+  grid-template-columns: 1fr 60px 40px 150px 1fr;
+}
+
+.leaderboardMiniature:hover
+{
+  background: rgba(0, 0, 0, 0.107);
+}
+
+.leaderboardMiniature > div {
+  margin: 10px;
+  font-size: large;
+  margin-left: 10px;
+  line-height: 36px;
+  vertical-align: middle;
 }

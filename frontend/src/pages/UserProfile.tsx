@@ -1,10 +1,9 @@
 import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
-import { login, edit, reset } from '../features/auth/authSlice';
+import { edit, reset } from '../features/auth/authSlice';
 import Cookies from 'js-cookie';
-import UserInterface from '../interfaces/UserInterface';
 import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
 import AchievementMiniature from '../components/AchievementMiniature';
@@ -46,12 +45,8 @@ const UserProfile = (props: Props) => {
   const [fetchedFollowing, setFetchedFollowing] = useState(iFollowList);
 
   useEffect(() => {
-    console.log('We get in useeffect');
-
     if (noloop === 0) {
       noloop = 1;
-      console.log('We try to fetch ', params.id);
-
       const fetchUser = async () => {
         try {
           const user = await apiGetter('users/profile/' + params.id);
@@ -67,7 +62,6 @@ const UserProfile = (props: Props) => {
             setFetchedProfile({ ...user.data });
             setFetchedFollowers(userFollower);
             setFetchedFollowing(userFollowing);
-            console.log('We fetched a profile: ');
           }
         } catch (error) {
           console.log('Could not load user');
@@ -107,15 +101,20 @@ const UserProfile = (props: Props) => {
     const req: number[] = pend.filter(
       (value: number) => !iBlockedList.includes(value),
     );
-
-    console.log('Editing friendlists and followers');
     setFriendList(friend);
     setStalkList(stalk);
     setRequestList(req);
-  }, [user, fetchedProfile, fetchedFollowers, fetchedFollowing, iBlockedList, iFollowList]);
+  }, [
+    user,
+    fetchedProfile,
+    fetchedFollowers,
+    fetchedFollowing,
+    iBlockedList,
+    iFollowList,
+  ]);
 
   useEffect(() => {
-    console.log('We get in fetchAchievements');
+    // console.log('We get in fetchAchievements');
     const fetchAchievements = async () => {
       try {
         const ach = await apiGetter(`achievements/update/${params.id}`);
@@ -128,10 +127,8 @@ const UserProfile = (props: Props) => {
       fetchAchievements();
     } else {
     }
-    console.log('achievementsList: ', achievementsList);
+    // console.log('achievementsList: ', achievementsList);
   }, [params.id]);
-
-  var profile = user;
 
   const onMutate = (e: any) => {
     setFetchedProfile((prevState: any) => ({
@@ -161,13 +158,17 @@ const UserProfile = (props: Props) => {
     console.log('In onEdition');
 
     if (editProfile === true && user.id === fetchedProfile.id) {
-      dispatch(
-        edit({
-          id: user.id,
-          field: 'username',
-          value: fetchedProfile.username,
-        }),
-      );
+      if (fetchedProfile.username.length > 15) {
+        toast.error('Please choose a shorter username');
+      } else {
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'username',
+            value: fetchedProfile.username,
+          }),
+        );
+      }
       if (preview !== '' && Cookies.get('jwt')) {
         // upload avatar in back
         console.log('Ready to upload: ', profilePic ? profilePic : '');
@@ -315,11 +316,11 @@ const UserProfile = (props: Props) => {
             <>
               {preview ? (
                 <div className="imgContainer">
-                  <img className="profilepage" src={preview} />
+                  <img className="profilepage" src={preview} alt=""/>
                 </div>
               ) : (
                 <div className="imgContainer">
-                  <img className="profilepage" src={user.avatar} />
+                  <img className="profilepage" src={user.avatar} alt=""/>
                 </div>
               )}
 
@@ -334,7 +335,7 @@ const UserProfile = (props: Props) => {
             </>
           ) : (
             <div className="imgContainer">
-              <img className="profilepage" src={fetchedProfile.avatar} />
+              <img className="profilepage" src={fetchedProfile.avatar} alt=""/>
             </div>
           )}
           {/* Name */}
