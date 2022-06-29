@@ -10,10 +10,17 @@
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
+  box-shadow: rgba(0, 0, 0, 0.18) -1px 5px 5px;
+  position: absolute;
+
+  left: 12px;
+  top: 19px;
+
 }
 
 .messageTop {
   display: flex;
+  position: relative;
 }
 
 .messageText {
@@ -23,11 +30,20 @@
   color: white;
   max-width: 300px;
   overflow: hidden;
+  margin-top: 0px;
+  margin-bottom: 0px;
+
+  margin-left: 28px;
+  padding-right: 14px;
+  padding-left: 15px;
 }
 
 .messageBottom {
-  font-size: 12px;
+  font-size: 11px;
   /* margin-top: 10px; */
+  color: rgba(255, 255, 255, 0.3);
+  margin-left: 45px;
+  margin-top: 5px;
 }
 
 .message.own {
@@ -38,3 +54,31 @@
   background-color: lightgray;
   color: black;
 }
+
+.own .messageTop
+{
+}
+
+
+
+.own .messageTop .messageImg
+{
+  left: auto;
+  right: 0px;
+}
+
+.own .messageTop .messageText
+{
+  margin-left: auto;
+  margin-right: 28px;
+  padding-right: 15px;
+  padding-left: 14px;
+
+}
+
+.own .messageBottom
+{
+  margin-right: 45px;
+  margin-left: 0px;
+}
+
