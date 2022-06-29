@@ -6,7 +6,7 @@ import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
 import { login, edit, reset } from '../features/auth/authSlice';
 import {
   FaSignOutAlt,
-  FaUser,
+  FaEye,
   FaLock,
   FaUnlock,
   FaHeart,
@@ -91,7 +91,11 @@ function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
   if (fetchedProfile && fetchedProfile.username && fetchedProfile.id)
     return (
       <div className="miniUser">
-        <div className={fetchedProfile.isOnline ? "miniUserLink puceverte" : "miniUserLink"}>
+        <div
+          className={
+            fetchedProfile.isOnline ? 'miniUserLink puceverte' : 'miniUserLink'
+          }
+        >
           <Link
             to={'/userprofile/' + targetid}
             style={{ textDecoration: 'none' }}
@@ -100,10 +104,26 @@ function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
             {fetchedProfile.username}
           </Link>
         </div>
-        {fetchedProfile.currentGame !== 0 ? <>inagame</> : <></>}
+        {fetchedProfile.currentGame !== 0 ? (
+          <Link
+            to={'/game/' + fetchedProfile.currentGame}
+            style={{ textDecoration: 'none' }}
+          >
+            <button
+              className="actionButton"
+              style={{ backgroundColor: 'blue' }}
+              title="Watch the game"
+            >
+              <FaEye />
+            </button>
+          </Link>
+        ) : (
+          <></>
+        )}
         {blockable === 1 &&
         targetid !== user.id &&
-        !iBlockedList.includes(targetid) ? (
+        !iBlockedList.includes(targetid) &&
+        fetchedProfile.currentGame === 0 ? (
           <button className="actionButton" onClick={onBlock}>
             <FaLock />
           </button>
@@ -112,11 +132,12 @@ function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
         )}
         {blockable === 1 &&
         targetid !== user.id &&
-        iBlockedList.includes(targetid) ? (
+        iBlockedList.includes(targetid) &&
+        fetchedProfile.currentGame === 0 ? (
           <button
             className="actionButton"
-            onClick={onBlock}
             style={{ backgroundColor: 'lightgreen' }}
+            onClick={onBlock}
           >
             <FaUnlock />
           </button>

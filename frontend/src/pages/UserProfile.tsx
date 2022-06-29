@@ -112,7 +112,14 @@ const UserProfile = (props: Props) => {
     setFriendList(friend);
     setStalkList(stalk);
     setRequestList(req);
-  }, [user, fetchedProfile, fetchedFollowers, fetchedFollowing, iBlockedList, iFollowList]);
+  }, [
+    user,
+    fetchedProfile,
+    fetchedFollowers,
+    fetchedFollowing,
+    iBlockedList,
+    iFollowList,
+  ]);
 
   useEffect(() => {
     console.log('We get in fetchAchievements');
@@ -161,13 +168,17 @@ const UserProfile = (props: Props) => {
     console.log('In onEdition');
 
     if (editProfile === true && user.id === fetchedProfile.id) {
-      dispatch(
-        edit({
-          id: user.id,
-          field: 'username',
-          value: fetchedProfile.username,
-        }),
-      );
+      if (fetchedProfile.username.length > 10) {
+        toast.error("Please choose a shorter username")
+      } else {
+        dispatch(
+          edit({
+            id: user.id,
+            field: 'username',
+            value: fetchedProfile.username,
+          }),
+        );
+      }
       if (preview !== '' && Cookies.get('jwt')) {
         // upload avatar in back
         console.log('Ready to upload: ', profilePic ? profilePic : '');
