@@ -208,13 +208,18 @@ code {
 
 .leaderboardMiniature {
   display: grid;
-  grid-template-columns: 1fr 40px 50px 100px 1fr;
+  grid-template-columns: 1fr 60px 40px 150px 1fr;
+}
+
+.leaderboardMiniature:hover
+{
+  background: rgba(0, 0, 0, 0.107);
 }
 
 .leaderboardMiniature > div {
   margin: 10px;
-  align-text: left;
+  font-size: large;
   margin-left: 10px;
-  text-align: center;
+  line-height: 36px;
   vertical-align: middle;
 }
