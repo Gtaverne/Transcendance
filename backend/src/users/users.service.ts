@@ -258,12 +258,11 @@ export class UsersService {
     return user;
   }
 
-  async accessAllUsers(): Promise<UsersEntity[]> {
+  async accessLeaderboard(): Promise<UsersEntity[]> {
     const temp = await this.usersRepository
       .createQueryBuilder('users')
-      .leftJoinAndSelect('users.accessToList', 'accessToList')
-      .leftJoinAndSelect('users.messagesList', 'messagesList')
-      .leftJoinAndSelect('accessToList.accessList', 'accessList')
+	  .orderBy('lvl', 'DESC')
+	  .select(['users.id', 'users.username', 'users.lvl', 'users.avatar'])
       .getMany();
     return temp;
   }

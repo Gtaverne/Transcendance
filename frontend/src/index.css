@@ -205,3 +205,16 @@ code {
   margin-left: 28px;
   margin-top: 34px;
 }
+
+.leaderboardMiniature {
+  display: grid;
+  grid-template-columns: 1fr 40px 50px 100px 1fr;
+}
+
+.leaderboardMiniature > div {
+  margin: 10px;
+  align-text: left;
+  margin-left: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
