@@ -4,11 +4,12 @@
   align-items: center;
   padding: 10px;
   cursor: pointer;
-  margin-top: 10px;
+  padding-left: 20px;
 }
 
 .conversationIn {
-  background-color: rgb(245, 245, 245);
+  background-color: rgb(0 0 0 / 10%);
+  transition: all 0.2s ease;
 }
 
 .conversationJoin {
@@ -20,7 +21,7 @@
 }
 
 .conversation:hover {
-  background-color: rgb(245, 245, 245);
+  background-color: rgb(0 0 0 / 20%);
 }
 
 .conversationImg {
