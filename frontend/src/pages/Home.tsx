@@ -79,7 +79,7 @@ function Home() {
                         </GlassButton>
                     </Link>
                     <Link to="/chat">
-                        <GlassButton title="ONLINE CHAT">
+                        <GlassButton title="PONGZI CHAT">
                             <ChatIcon/>
                         </GlassButton>
                     </Link>
@@ -88,11 +88,11 @@ function Home() {
                             <LeaderboardIcon/>
                         </GlassButton>
                     </Link>
-                    <Link to="/current">
+                    {/*<Link to="/current">
                         <GlassButton title="CURRENT GAMES">
                             <LeaderboardIcon/>
                         </GlassButton>
-                    </Link>
+                    </Link>*/}
                 </div>
             </div>
         </div>

@@ -62,14 +62,19 @@ code {
   right: 5px;
 }
 
+.imgContainer
+{
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
 .profilepage {
   width: 100px;
   height: 100px;
-  border-radius: 15%;
+  border-radius: 14px;
   vertical-align: middle;
-  position: relative;
-  margin-left: 1rem;
-  right: 5px;
+  box-shadow: #00000026 0px 7px 17px 2px;
 }
 
 .logButton {
@@ -143,12 +148,11 @@ code {
   /* background-color: yellow; */
   margin-block-start: 0;
   margin-block-end: 0;
-  height: 100%;
-  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 400px 1fr;
   text-decoration: none;
+  padding: 20px;
 }
 
 .userList {
@@ -161,7 +165,8 @@ code {
 }
 
 .userDescription {
-  margin-left: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
   text-align: left;
   /* background-color: blue; */
   grid-column: span 1;
@@ -206,15 +211,43 @@ code {
   margin-top: 34px;
 }
 
+.profileHeader h2
+{
+  display: inline-block;
+}
+
+.profileHeader button
+{
+  width: 100px;
+  float: right;
+  display: inline-block;
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.77);
+}
+
+.coolP
+{
+  background: #0000000a;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  border-radius: 7px;
+}
 .leaderboardMiniature {
   display: grid;
-  grid-template-columns: 1fr 40px 50px 100px 1fr;
+  grid-template-columns: 1fr 60px 40px 150px 1fr;
+}
+
+.leaderboardMiniature:hover
+{
+  background: rgba(0, 0, 0, 0.107);
 }
 
 .leaderboardMiniature > div {
   margin: 10px;
-  align-text: left;
+  font-size: large;
   margin-left: 10px;
-  text-align: center;
+  line-height: 36px;
   vertical-align: middle;
 }

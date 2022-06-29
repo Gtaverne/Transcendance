@@ -106,7 +106,6 @@ export const authSlice = createSlice({
         state.user = null;
       })
       .addCase(edit.fulfilled, (state, action) => {
-        console.log('Redux Edit fulfilled');
         state.user = action.payload.user;
         state.iBlockedList = action.payload.iBlockedList;
         state.iFollowList = action.payload.iFollowList;

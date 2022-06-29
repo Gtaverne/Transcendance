@@ -192,6 +192,13 @@
     }
 }
 
+@media (max-height: 700px) {
+    .bottom
+    {
+        transform: translate(50%, 50%) scale(0.75) translate(-50%, -50%) ;
+    }
+}
+
 .glassLogo
 {
     display: inline-block;

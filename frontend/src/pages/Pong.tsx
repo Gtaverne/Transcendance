@@ -349,6 +349,18 @@ const Pong = () => {
     };
   }
 
+  const stopQueue = () =>
+  {
+    if (socket.current)
+    {
+      socket.current?.off("disconnect");
+      socket.current?.disconnect();
+      setQueueing(false);
+      setStarted(false);
+      setGameover(false);
+    }
+  }
+
   const startQueue = () =>
   {
     if (socket.current)
@@ -604,11 +616,16 @@ const Pong = () => {
 
           </>}
 
+          {!queueing ?
           <div className="newgameButton" onMouseUp={() => {
             startQueue();
           }}>
             Start
-          </div>
+          </div> : <div className="newgameButton" onMouseUp={() => {
+              stopQueue();
+            }}>
+              Cancel
+            </div>}
         </div>
       </div>
 

@@ -22,14 +22,10 @@ function Leaderboard() {
 
   return (
     <Overlay title={'Leaderboard'}>
-      {users?.map((c: any) => (
-        <>
-          {/* <div key={c.id.toString()}>
-            {c.username}
-            {c.lvl}
-          </div> */}
+      {users?.map((c: any, i) => (
+        <div key={i} >
           <UserLeaderboard user={c} />
-        </>
+        </div>
       ))}
     </Overlay>
   );

@@ -90,7 +90,6 @@ const edit = async (id: number, field: string, value: any) => {
   }
 
   if (response.data && response.data.user) {
-    console.log('Data from the back: ' + response.data);
     localStorage.setItem('user', JSON.stringify(response.data.user));
     localStorage.setItem(
       'iFollowList',
