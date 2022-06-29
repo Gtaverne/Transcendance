@@ -263,7 +263,10 @@ export class GamesGateway
           if (game.scoreA >= 10)
             this.usersRepository.update(userA.id!, { lvl: userA.lvl + 1 });
           else if (game.scoreB >= 10)
-            this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });*/
+            this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });
+            TODO: UPDATE LA MATCH HISTORY DES DEUX JOUEURS
+            
+            */
 
           this.games.delete(game.id);
           this.listen.forEach((value, key) => {

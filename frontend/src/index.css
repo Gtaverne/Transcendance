@@ -245,6 +245,7 @@ code {
 }
 
 .leaderboardMiniature > div {
+  background: transparent;
   margin: 10px;
   font-size: large;
   margin-left: 10px;

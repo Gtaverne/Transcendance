@@ -24,7 +24,7 @@ function Leaderboard() {
     <Overlay title={'Leaderboard'}>
       {users?.map((c: any, i) => (
         <div key={i} >
-          <UserLeaderboard user={c} />
+          <UserLeaderboard player={c} />
         </div>
       ))}
     </Overlay>

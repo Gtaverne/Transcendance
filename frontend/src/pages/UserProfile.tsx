@@ -374,7 +374,7 @@ const UserProfile = (props: Props) => {
         </div>
 
         <div className="userDescription">
-          <h2>Trophys</h2>
+          <h2>Trophies</h2>
           {achievementsList.map((c: any) => (
             <div key={c.id.toString()}>
               <AchievementMiniature achievement={c} />
