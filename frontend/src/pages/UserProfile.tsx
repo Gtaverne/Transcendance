@@ -35,11 +35,7 @@ const UserProfile = (props: Props) => {
   const {
     user,
     iFollowList,
-    iBlockedList,
-    isError,
-    isLoading,
-    isSuccess,
-    message,
+    iBlockedList
   } = useSelector((state: RootStateOrAny) => state.auth);
 
   const [friendList, setFriendList] = useState<Array<number>>([]);

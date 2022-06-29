@@ -32,7 +32,7 @@ function UserMiniature({targetid, blockable = 0, friendable = 0 }: Props) {
       const fetchuser = await apiGetter('users/profile/' + targetid);
       if (fetchuser.data) {
         setFetchedProfile({ ...fetchuser.data });
-        console.log('We fetched a profile: ');
+        // console.log('We fetched a profile: ');
       }
     };
     fetchUser();
@@ -97,8 +97,10 @@ function UserMiniature({targetid, blockable = 0, friendable = 0 }: Props) {
           to={'/userprofile/' + targetid}
           style={{ textDecoration: 'none' }}
           >
-          <img className="profilepic" src={fetchedProfile.avatar} alt="" />
-          {fetchedProfile.username} | {fetchedProfile.id}
+          <img className="profilepic" src={fetchedProfile.avatar} alt="" /><div className='puceverte'></div>
+          
+          {fetchedProfile.username} 
+           |
         </Link>
           </div>
         {blockable === 1 && targetid !== user.id && !iBlockedList.includes(targetid) ? (

@@ -19,7 +19,7 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-image: url("./pages/assets/paralax/0.png");
+  background-image: url('./pages/assets/paralax/0.png');
   background-position: top;
   background-size: cover;
   height: 100px;
@@ -56,7 +56,7 @@ code {
 .profilepic {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 20%;
   vertical-align: middle;
   position: relative;
   right: 5px;
@@ -190,4 +190,20 @@ code {
 
 .miniUserLink {
   grid-column: span 1;
+}
+
+.puceverte {
+  position: relative;
+}
+
+.puceverte::after {
+  content: ' ';
+  width: 10px;
+  height: 10px;
+  background-color: green;
+  border-radius: 30%;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 99;
 }

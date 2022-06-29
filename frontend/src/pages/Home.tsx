@@ -62,7 +62,7 @@ function Home() {
                         <div className="logout" onMouseUp={onLogout}>
                             Logout
                         </div>
-                        <Link to={'/userprofile/' + (user ? '1' : user.id)} className="userButton">
+                        <Link to={'/userprofile/' + (user ? user.id : '999')} className="userButton">
                             <div>
                                 {user && user.username}
                                 <div className="userImage" style={{backgroundImage: `url(${user.avatar})`}}></div>
