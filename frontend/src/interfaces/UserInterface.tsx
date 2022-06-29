@@ -11,6 +11,8 @@ interface UserInterface extends BaseInterface {
   email: string;
   doublefa: number; //C'est important
   lvl: number;
+  isOnline: boolean;
+  currentGame: number;
 
   iFollowList?: UserInterface[];
   followingMeList?: UserInterface[];

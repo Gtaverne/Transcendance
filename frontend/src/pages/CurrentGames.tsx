@@ -38,7 +38,7 @@ function CurrentGames() {
   }, []);
 
   return (
-    <Overlay title={"Current Games"} background={"#554658"}>
+    <Overlay title={"Current Games"} style={{backgroundColor: "#554658"}}>
       {Array.from(gameMap, ([key, value]) => value).map((value) => {
         return value;
       })}

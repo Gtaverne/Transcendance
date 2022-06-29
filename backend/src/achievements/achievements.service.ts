@@ -38,28 +38,28 @@ export class AchievementsService {
     //1 - a test on level
     var newAch = await this.achievementsRepository.create();
     newAch.achievementName = 'Level 1';
-    newAch.achievemenDescription = 'You reached level 1';
+    newAch.achievementDescription = 'You reached level 1';
     newAch.achievementLogo = CDN_PATH + '/achievementdefault';
     newAch = await this.achievementsRepository.save(newAch);
 
     //2 - a test on high level
     newAch = await this.achievementsRepository.create();
     newAch.achievementName = 'Level 10';
-    newAch.achievemenDescription = 'You reached level 10';
+    newAch.achievementDescription = 'You reached level 10';
     newAch.achievementLogo = CDN_PATH + '/achievementdefault';
     newAch = await this.achievementsRepository.save(newAch);
 
     //3 - a test on number of followed people
     newAch = await this.achievementsRepository.create();
     newAch.achievementName = '1 Following';
-    newAch.achievemenDescription = 'You follow one person, are you a stalker?';
+    newAch.achievementDescription = 'You follow one person, are you a stalker?';
     newAch.achievementLogo = CDN_PATH + '/achievementdefault';
     newAch = await this.achievementsRepository.save(newAch);
 
     //4 - Test on messages sent
     newAch = await this.achievementsRepository.create();
     newAch.achievementName = '10 messages';
-    newAch.achievemenDescription = 'You sent 10 messages';
+    newAch.achievementDescription = 'You sent 10 messages';
     newAch.achievementLogo = CDN_PATH + '/achievementdefault';
     newAch = await this.achievementsRepository.save(newAch);
   }

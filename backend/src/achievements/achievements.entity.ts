@@ -7,7 +7,7 @@ export class AchievementsEntity extends BaseEntity {
   @Column({ type: 'text', default: '' })
   achievementName: string;
   @Column({ type: 'text', default: '' })
-  achievemenDescription: string;
+  achievementDescription: string;
   @Column({ type: 'text', default: '' })
   achievementLogo: string;
   @ManyToMany(() => UsersEntity, (user) => user.achievementsList)
