@@ -196,18 +196,18 @@ function Chat({ socket }: any) {
     setNewMessage('');
   };
 
-  const inviteToPlay  = async (e: React.FormEvent) => {
+  const inviteToPlay = async (e: React.FormEvent) => {
     e.preventDefault();
     const msg = {
       owner: user.id,
       channelId: currentChat?.id,
-      message: "Join a Game:",
+      message: 'Join a Game:',
     };
 
     const res = await apiPoster('messages/', msg);
 
     socket.current?.emit('transmitMessage', res.data);
-	setMessages([...messages, res.data]);
+    setMessages([...messages, res.data]);
   };
 
   useEffect(() => {
@@ -455,12 +455,12 @@ function Chat({ socket }: any) {
   };
 
   return (
-    <Overlay title="Chat" style={{background: "transparent"}}>
+    <Overlay title="Chat" style={{ background: 'transparent' }}>
       <div className="messenger">
         <div className="chatMenu">
           <div className="chatMenuWrapper">
             <div className="chatMenuTop">
-              <h3>My Conversations {currentChat?.id}</h3>
+              <h3>My Conversations</h3>
               {/* <input
                 placeholder="Search For Friends"
                 className="chatMenuInput"
@@ -617,13 +617,13 @@ function Chat({ socket }: any) {
             <div className="chatOnlineTopWrapper">
               {currentChat ? (
                 <div className="buttonOnlineTopWrapper">
-                  <button
+                  {/* <button
                     className="chatOnlineBottomButton"
                     onClick={getConversations}
                   >
                     Refresh Roles
-                  </button>
-				  <button
+                  </button> */}
+                  <button
                     className="chatOnlineBottomButton"
                     onClick={inviteToPlay}
                   >
@@ -648,7 +648,7 @@ function Chat({ socket }: any) {
             </div>
             {currentChat ? (
               <div className="chatOnlineBottom">
-                <h3>User Informations | id{currentChat?.id}</h3>
+                <h3>User Informations</h3>
                 {/* <p>
                   {currentChatAdmins.length} admins: {currentChatAdmins}
                 </p>

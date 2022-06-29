@@ -430,15 +430,22 @@ export class RoomsService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all tuto`;
-  }
-
   async findRoomUsers(roomId: number) {
     const users = await this.roomsRepository.findOne({
       where: { id: roomId },
       relations: ['accessList'],
     });
     return users.accessList;
+  }
+
+  async findRoomUsersId(roomId: number): Promise<number[]> {
+    const users = await this.roomsRepository.findOne({
+      where: { id: roomId },
+      relations: ['accessList'],
+    });
+    const list: number[] = [];
+    for (let i = 0; i < users.accessList.length; i++)
+      list.push(users.accessList[i].id);
+    return list;
   }
 }

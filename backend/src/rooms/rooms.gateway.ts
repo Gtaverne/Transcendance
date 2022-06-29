@@ -1,6 +1,5 @@
-import { Logger, Param } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -8,13 +7,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { CreateRoomDTO } from './dto/create-room.dto';
-import { RoomsService } from './rooms.service';
 import { Server, Socket } from 'socket.io';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from '../users/users.entity';
 import { Repository } from 'typeorm';
+import { RoomsService } from './rooms.service';
 
 const jwt = require('jsonwebtoken');
 
@@ -31,6 +29,7 @@ export class RoomsGateway
   constructor(
     @InjectRepository(UsersEntity)
     private usersRepository: Repository<UsersEntity>,
+    private roomsService: RoomsService,
   ) {}
 
   @WebSocketServer()
@@ -87,21 +86,29 @@ export class RoomsGateway
   }
 
   @SubscribeMessage('transmitMessage')
-  handleTransmitMessage(socket: Socket, msg: MessagesEntity) {
+  async handleTransmitMessage(socket: Socket, msg: MessagesEntity) {
     if (msg.message.length >= 300) return;
     console.log('New message detected:', msg.message);
-    // this.server.broadcast.emit('getTransmitMessage', msg);
-    this.broadcast(socket.id, 'getTransmitMessage', msg);
+    const list = await this.roomsService.findRoomUsersId(msg.room.id);
+    this.broadcast(socket.id, 'getTransmitMessage', msg, true, list);
   }
 
   @SubscribeMessage('newInfo')
   handleNewInfo(socket: Socket, msg: any) {
-    this.broadcast(socket.id, 'getNewInfo', msg);
+    this.broadcast(socket.id, 'getNewInfo', msg, false, undefined);
   }
 
-  private broadcast(senderSocket: string, codeName: string, info: any) {
+  private broadcast(
+    senderSocket: string,
+    codeName: string,
+    info: any,
+    security: boolean,
+    list: number[] | undefined,
+  ) {
     this.session.forEach((u) => {
-      if (u[0] !== senderSocket) this.server.to(u[0]).emit(codeName, info);
+      if (u[0] !== senderSocket)
+        if (!security || list.includes(+u[1]))
+          this.server.to(u[0]).emit(codeName, info);
     });
   }
 }
