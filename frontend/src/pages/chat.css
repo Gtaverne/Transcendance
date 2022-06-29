@@ -184,15 +184,14 @@
 }
 
 .chatOnlineBottomButton {
-  width: 160px;
+  width: 100px;
   height: 30px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   background-color: #1877f2;
   color: white;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin: 5px;
 }
 
 .contentBox button {

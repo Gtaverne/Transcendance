@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 import MessageInterface from '../interfaces/MessageInterface';
 import './message.css';
 const imageURL =
@@ -12,12 +13,18 @@ type MessageProps = {
 };
 
 function Message({ own, message, imageURL, iBlockList }: MessageProps) {
-  if (iBlockList.includes(message.owner?.id!)) return (<></>);
+  if (iBlockList.includes(message.owner?.id!)) return <></>;
   return (
     <div className={own ? 'message own' : 'message'}>
       <div className="messageTop">
         <img className="messageImg" src={imageURL} alt="" />
-        <p className="messageText">{message.message}</p>
+        <p className="messageText">
+          {message.message === 'Join a Game:' ? (
+            <Link to="/game">Join a Game</Link>
+          ) : (
+            message.message
+          )}
+        </p>
       </div>
       <div className="messageBottom">{moment(message.createdAt).fromNow()}</div>
     </div>

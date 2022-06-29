@@ -57,13 +57,13 @@ function Chat({ socket }: any) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user) {
-      socket.current = io('http://localhost:3000/chat', {
-        query: { id: user.id },
-        transports: ['websocket', 'polling'],
-        forceNew: true,
-      });
-    }
+    // if (user) {
+    //   socket.current = io('http://localhost:3000/chat', {
+    //     query: { id: user.id },
+    //     transports: ['websocket', 'polling'],
+    //     forceNew: true,
+    //   });
+    // }
     socket.current?.on('getTransmitMessage', (data: any) => {
       console.log(
         'Socket message detected',
@@ -191,10 +191,23 @@ function Chat({ socket }: any) {
     const res = await apiPoster('messages/', msg);
 
     socket.current?.emit('transmitMessage', res.data);
-    console.log('SOCKET SEND MESSAGE');
 
     setMessages([...messages, res.data]);
     setNewMessage('');
+  };
+
+  const inviteToPlay  = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const msg = {
+      owner: user.id,
+      channelId: currentChat?.id,
+      message: "Join a Game:",
+    };
+
+    const res = await apiPoster('messages/', msg);
+
+    socket.current?.emit('transmitMessage', res.data);
+	setMessages([...messages, res.data]);
   };
 
   useEffect(() => {
@@ -609,6 +622,12 @@ function Chat({ socket }: any) {
                     onClick={getConversations}
                   >
                     Refresh Roles
+                  </button>
+				  <button
+                    className="chatOnlineBottomButton"
+                    onClick={inviteToPlay}
+                  >
+                    Invite To Play
                   </button>
                 </div>
               ) : (
