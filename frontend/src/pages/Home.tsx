@@ -16,6 +16,7 @@ import StartIcon from '../components/Icons/StartIcon';
 import LeaderboardIcon from '../components/Icons/LeaderboardIcon';
 import ChatIcon from '../components/Icons/ChatIcon';
 import LogoIcon from '../components/Icons/LogoIcon';
+import { logout, reset } from '../features/auth/authSlice';
 
 function Home() {
     const [percX, setPercX] = useState(0);
@@ -34,6 +35,15 @@ function Home() {
         setPercY(percY);
     };
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const onLogout = () => {
+        dispatch(logout());
+        dispatch(reset());
+        navigate('/');
+        window.location.reload();
+    };
 
   // if (user && user.avatar && !user.avatar.includes('microcdn')) {
   //   toast.success('Welcome !\nYou can personnalize your avatar and pseudo in your profile page')
@@ -48,12 +58,17 @@ function Home() {
                     <div className="bigLogo">
                         <LogoIcon/>
                     </div>
-                    <Link to={'/userprofile/' + user.id}>
-                        <div className="userView">
-                            {user && user.username}
-                            <div className="userImage" style={{backgroundImage: `url(${user.avatar})`}}></div>
+                    <div className="userView">
+                        <div className="logout" onMouseUp={onLogout}>
+                            Logout
                         </div>
-                    </Link>
+                        <Link to={'/userprofile/' + (user ? '1' : user.id)} className="userButton">
+                            <div>
+                                {user && user.username}
+                                <div className="userImage" style={{backgroundImage: `url(${user.avatar})`}}></div>
+                            </div>
+                        </Link>
+                    </div>
                 </div>
 
 
@@ -68,12 +83,16 @@ function Home() {
                             <ChatIcon/>
                         </GlassButton>
                     </Link>
-                    <GlassButton title="LEADERBOARD">
-                        <LeaderboardIcon/>
-                    </GlassButton>
-                    <GlassButton title="CURRENT GAMES">
-                        <LeaderboardIcon/>
-                    </GlassButton>
+                    <Link to="/leaderboard">
+                        <GlassButton title="LEADERBOARD">
+                            <LeaderboardIcon/>
+                        </GlassButton>
+                    </Link>
+                    <Link to="/current">
+                        <GlassButton title="CURRENT GAMES">
+                            <LeaderboardIcon/>
+                        </GlassButton>
+                    </Link>
                 </div>
             </div>
         </div>

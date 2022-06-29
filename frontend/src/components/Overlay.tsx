@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 type OverlayProps = {
   title: string;
   children: any;
+  background?: string | undefined;
 };
 
-const Overlay = ({title, children}:OverlayProps) => {
+const Overlay = ({title, children, background}:OverlayProps) => {
   const navigate = useNavigate();
 
   return (
@@ -19,8 +20,11 @@ const Overlay = ({title, children}:OverlayProps) => {
         <div className="navTitle">
           {title}
         </div>
+        <div className="navBack" onMouseUp={() => navigate('/')}>
+          Exit
+        </div>
       </div>
-      <div className="overlayContainer">
+      <div className="overlayContainer" style={{backgroundColor: background}}>
         {children}
       </div>
     </div>

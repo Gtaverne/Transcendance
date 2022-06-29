@@ -302,8 +302,6 @@ const Pong = () => {
   const params = useParams();
   const isSpectating = params.id != undefined && params.id != null;
 
-  console.log("params.id " + params.id);
-
   const mount = useRef<HTMLDivElement>(null);
 
   const [scores, setScores] = useState({scoreA: 0, scoreB: 0});
@@ -387,6 +385,8 @@ const Pong = () => {
       global.game.velY = velY;
       if (ballX > 10)
         global.game.bounceB = Math.PI;
+      else if (ballX < -10)
+        global.game.bounceA = Math.PI;
       else
       {
         global.game.localX = arenaWidth/2;
@@ -410,8 +410,6 @@ const Pong = () => {
     socket.current?.on("receivePoint", (opoX) => {
       global.game.scoreA++;
     });
-
-    console.log("params.ids " + params.id);
 
     if (isSpectating)
       socket.current?.emit('spectate', { gameId: params.id });
@@ -625,11 +623,11 @@ const Pong = () => {
 
             <p>{gameUserA.username}: {scores.scoreA} <br/> {gameUserB.username}: {scores.scoreB}</p>
 
-            <div className="newgameButton" onMouseUp={() => {
+            {isSpectating ? <></> : <div className="newgameButton" onMouseUp={() => {
               setGameover(false);
             }}>
               OK
-            </div>
+            </div>}
           </div>
         </div>
 

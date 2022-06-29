@@ -12,7 +12,7 @@ import { RoomsService } from 'src/rooms/rooms.service';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 import { UserDTO } from './dto/user.dto';
 import { EditorDTO } from './dto/editor.dto';
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 import * as speakeasy from 'speakeasy';
 
 dotenv.config({ path: './.env' });
@@ -33,7 +33,16 @@ export class UsersService {
     private usersRepository: Repository<UsersEntity>,
     @Inject(forwardRef(() => RoomsService))
     private roomsService: RoomsService,
-  ) {}
+  ) {
+    usersRepository
+      .createQueryBuilder()
+      .update(UsersEntity)
+      .set({ isOnline: false, currentGame: 0 })
+      .execute()
+      .then((r) => {
+        console.log('Set all users offline');
+      });
+  }
 
   //For testing, we seed the db with dummy users
   async seed() {
@@ -82,7 +91,7 @@ export class UsersService {
       where: { id: id },
       relations: ['iFollowList'],
     });
-    let iFollowList: number[] = [];
+    const iFollowList: number[] = [];
     for (let i = 0; i < user.iFollowList.length; i++)
       iFollowList.push(user.iFollowList[i].id);
     return iFollowList;
@@ -93,7 +102,7 @@ export class UsersService {
       where: { id: id },
       relations: ['followingMeList'],
     });
-    let followingMeList: number[] = [];
+    const followingMeList: number[] = [];
     for (let i = 0; i < user.followingMeList.length; i++)
       followingMeList.push(user.followingMeList[i].id);
     return followingMeList;
@@ -104,7 +113,7 @@ export class UsersService {
       where: { id: id },
       relations: ['iFollowList'],
     });
-    let iFollowList: number[] = [];
+    const iFollowList: number[] = [];
     for (let i = 0; i < user.iFollowList.length; i++)
       iFollowList.push(user.iFollowList[i].id);
     return iFollowList;
@@ -115,7 +124,7 @@ export class UsersService {
       where: { id: id },
       relations: ['iBlockedList'],
     });
-    let iBlockedList: number[] = [];
+    const iBlockedList: number[] = [];
     for (let i = 0; i < user.iBlockedList.length; i++)
       iBlockedList.push(user.iBlockedList[i].id);
     return iBlockedList;
@@ -129,8 +138,8 @@ export class UsersService {
       .leftJoinAndSelect('bannedInARoom.baned', 'baned')
       .where('users.id = :id', { id })
       .getOne();
-    let bannedInARoom: number[] = [];
-    let now = new Date();
+    const bannedInARoom: number[] = [];
+    const now = new Date();
     for (let i = 0; i < user.bannedInARoom.length; i++)
       if (now < new Date(user.bannedInARoom[i].timestamp))
         bannedInARoom.push(user.bannedInARoom[i].baned.id);
@@ -175,19 +184,19 @@ export class UsersService {
     if (!whoIsAsking || whoIsAsking === 0) {
       const user = await this.usersRepository.findOne({
         where: { id: id },
-        select: ['id', 'username', 'avatar'],
+        select: ['id', 'username', 'avatar', 'isOnline', 'currentGame'],
       });
       return user;
     } else if (whoIsAsking === id) {
       const user = await this.usersRepository.findOne({
         where: { id: id },
-        select: ['id', 'username', 'lvl', 'avatar', 'email', 'doublefa'],
+        select: ['id', 'username', 'lvl', 'avatar', 'email', 'doublefa', 'isOnline', 'currentGame'],
       });
       return user;
     } else {
       const user = await this.usersRepository.findOne({
         where: { id: id },
-        select: ['id', 'username', 'lvl', 'avatar', 'email'],
+        select: ['id', 'username', 'lvl', 'avatar', 'email', 'isOnline', 'currentGame'],
       });
       return user;
     }
@@ -273,7 +282,7 @@ export class UsersService {
 
       console.log('user ID fetched:', user.id);
 
-      var res = speakeasy.generateSecret({
+      const res = speakeasy.generateSecret({
         name: App_Name,
       });
       //Update user with secret.base32
@@ -289,7 +298,7 @@ export class UsersService {
     }
   }
 
-  async verificationMFA(token: string, code: string): Promise<Boolean> {
+  async verificationMFA(token: string, code: string): Promise<boolean> {
     try {
       console.log('code: ', code, 'token: ', token);
       const idFromToken = jwt.verify(token, TOKEN_SECRET);
@@ -319,8 +328,8 @@ export class UsersService {
   // 3- Recuperation des donnees de la personne sur la base de ce code
   // 4- Login de l'user et EVENTUELLEMENT creation de son compte user
   async login(code: string): Promise<any> {
-    var token = '';
-    var answer = {
+    let token = '';
+    const answer = {
       user: new UsersEntity(),
       iBlockedList: [],
       iFollowList: [],
@@ -362,10 +371,10 @@ export class UsersService {
           relations: ['iFollowList', 'iBlockedList'],
         });
 
-        let iFollowList: number[] = [];
+        const iFollowList: number[] = [];
         for (let i = 0; i < forLists.iFollowList.length; i++)
           iFollowList.push(forLists.iFollowList[i].id);
-        let iBlockedList: number[] = [];
+        const iBlockedList: number[] = [];
         for (let i = 0; i < forLists.iBlockedList.length; i++)
           iBlockedList.push(forLists.iBlockedList[i].id);
 
@@ -383,7 +392,7 @@ export class UsersService {
           }),
         );
 
-        var doublefaUser = new UsersEntity();
+        const doublefaUser = new UsersEntity();
         doublefaUser.id = answer.user.id;
         doublefaUser.doublefa = answer.user.doublefa;
         answer.user = doublefaUser;
@@ -396,7 +405,7 @@ export class UsersService {
 
   async login2fa(token: string, code: string): Promise<any> {
     // console.log('Token: ', token, ' code: ', code);
-    var answer = {
+    const answer = {
       user: new UsersEntity(),
       iBlockedList: [],
       iFollowList: [],
@@ -429,10 +438,10 @@ export class UsersService {
             select: ['id', 'username', 'avatar', 'email', 'doublefa', 'lvl'],
             relations: ['iFollowList', 'iBlockedList'],
           });
-          let iFollowList: number[] = [];
+          const iFollowList: number[] = [];
           for (let i = 0; i < user.iFollowList.length; i++)
             iFollowList.push(user.iFollowList[i].id);
-          let iBlockedList: number[] = [];
+          const iBlockedList: number[] = [];
           for (let i = 0; i < user.iBlockedList.length; i++)
             iBlockedList.push(user.iBlockedList[i].id);
 
@@ -467,14 +476,14 @@ export class UsersService {
 
   //Gets the user data from API 42
   async getUserDataFrom42(token: string): Promise<any> {
-    var config: AxiosRequestConfig = {
+    const config: AxiosRequestConfig = {
       method: 'get',
       url: 'https://api.intra.42.fr/v2/me',
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
-    var resp = {};
+    let resp = {};
 
     await axios(config)
       .then(function (response) {
@@ -493,13 +502,13 @@ export class UsersService {
       where: { email: loggedProfile.email },
     });
 
-    var dude = new UsersEntity();
+    let dude = new UsersEntity();
 
     if (res.length === 0) {
       console.log('Creating profile');
-      var i = 0;
+      let i = 0;
       try {
-        var lgn = loggedProfile.login;
+        let lgn = loggedProfile.login;
         let unik = await this.usersRepository.find({
           where: { username: lgn },
         });
@@ -627,10 +636,10 @@ export class UsersService {
       select: ['id', 'username', 'lvl', 'avatar', 'doublefa', 'email'],
       relations: ['iFollowList', 'iBlockedList'],
     });
-    let iFollowList: number[] = [];
+    const iFollowList: number[] = [];
     for (let i = 0; i < user.iFollowList.length; i++)
       iFollowList.push(user.iFollowList[i].id);
-    let iBlockedList: number[] = [];
+    const iBlockedList: number[] = [];
     for (let i = 0; i < user.iBlockedList.length; i++)
       iBlockedList.push(user.iBlockedList[i].id);
 

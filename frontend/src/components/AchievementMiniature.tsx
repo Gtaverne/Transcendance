@@ -6,7 +6,6 @@ type Props = {
 };
 
 function AchievementMiniature({ achievement }: Props) {
-  console.log(achievement.achievementLogo);
   return (
     <div className="miniAchievement">
       <img className="profilepic" src={achievement.achievementLogo} alt="" />
