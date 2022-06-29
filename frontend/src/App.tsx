@@ -26,6 +26,7 @@ import { io, Socket } from 'socket.io-client';
 import './pages/Home.css';
 import CurrentGames from './pages/CurrentGames';
 import Leaderboard from './pages/Leaderboard';
+import CreateProfile from './pages/CreateProfile';
 
 function MainRooter() {
   const socket = useRef<Socket | undefined>(undefined);
@@ -101,6 +102,7 @@ function MainRooter() {
           <Route path="/" element={<Home />} />
         </Route>
         <Route path="/landing" element={<Landing />} />
+        <Route path="/create" element={<CreateProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/userprofile/:id" element={<PrivateRoute />}>
           <Route path="/userprofile/:id" element={<UserProfile />} />

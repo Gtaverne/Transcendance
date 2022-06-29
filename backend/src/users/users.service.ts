@@ -42,6 +42,7 @@ export class UsersService {
       .then((r) => {
         console.log('Set all users offline');
       });
+
   }
 
   //For testing, we seed the db with dummy users
@@ -192,13 +193,30 @@ export class UsersService {
     } else if (whoIsAsking === id) {
       const user = await this.usersRepository.findOne({
         where: { id: id },
-        select: ['id', 'username', 'lvl', 'avatar', 'email', 'doublefa', 'isOnline', 'currentGame'],
+        select: [
+          'id',
+          'username',
+          'lvl',
+          'avatar',
+          'email',
+          'doublefa',
+          'isOnline',
+          'currentGame',
+        ],
       });
       return user;
     } else {
       const user = await this.usersRepository.findOne({
         where: { id: id },
-        select: ['id', 'username', 'lvl', 'avatar', 'email', 'isOnline', 'currentGame'],
+        select: [
+          'id',
+          'username',
+          'lvl',
+          'avatar',
+          'email',
+          'isOnline',
+          'currentGame',
+        ],
       });
       return user;
     }
@@ -263,8 +281,8 @@ export class UsersService {
   async accessLeaderboard(): Promise<UsersEntity[]> {
     const temp = await this.usersRepository
       .createQueryBuilder('users')
-	  .orderBy('lvl', 'DESC')
-	  .select(['users.id', 'users.username', 'users.lvl', 'users.avatar', 'users.isOnline'])
+      .orderBy('lvl', 'DESC')
+      .select(['users.id', 'users.username', 'users.lvl', 'users.avatar', 'users.isOnline'])
       .getMany();
     return temp;
   }
@@ -335,6 +353,7 @@ export class UsersService {
       iBlockedList: [],
       iFollowList: [],
       jwt: '',
+      didCreate: false,
     };
 
     const data = qs.stringify({
@@ -357,7 +376,9 @@ export class UsersService {
     token = (await axios(config)).data.access_token;
 
     if (token) {
-      answer.user = await this.getUserDataFrom42(token);
+      answer.user = await this.getUserDataFrom42(token, () => {
+        answer.didCreate = true;
+      });
       // console.log('answer.user: ', answer.user);
 
       if (!answer.user.doublefa || answer.user.doublefa === 0) {
@@ -476,7 +497,10 @@ export class UsersService {
   }
 
   //Gets the user data from API 42
-  async getUserDataFrom42(token: string): Promise<any> {
+  async getUserDataFrom42(
+    token: string,
+    createAction?: () => void | undefined,
+  ): Promise<any> {
     const config: AxiosRequestConfig = {
       method: 'get',
       url: 'https://api.intra.42.fr/v2/me',
@@ -493,11 +517,14 @@ export class UsersService {
       .catch(function (error) {
         console.log('Could not fetch profile from 42');
       });
-    const res = await this.userFromDB(resp);
+    const res = await this.userFromDB(resp, createAction);
     return res;
   }
 
-  async userFromDB(loggedProfile: any): Promise<UsersEntity> {
+  async userFromDB(
+    loggedProfile: any,
+    createAction?: () => void | undefined,
+  ): Promise<UsersEntity> {
     //Here we check if the user already exists
     const res = await this.usersRepository.find({
       where: { email: loggedProfile.email },
@@ -528,6 +555,7 @@ export class UsersService {
       dude.doublefa = 0;
       const forId = await this.create(dude);
       dude.id = forId.id;
+      if (createAction) createAction();
       // console.log('Creation is over: ', dude)
     } else {
       // User already exists

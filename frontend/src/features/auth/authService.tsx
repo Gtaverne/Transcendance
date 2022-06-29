@@ -31,6 +31,7 @@ const login = async (code: string) => {
       };
     } else {
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('didCreate', JSON.stringify(response.data.didCreate));
       localStorage.setItem(
         'iFollowList',
         JSON.stringify(response.data.iFollowList),
@@ -113,6 +114,7 @@ const logout = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('iFollowList');
   localStorage.removeItem('iBlockedList');
+  localStorage.removeItem('didCreate');
 };
 
 const authService = {

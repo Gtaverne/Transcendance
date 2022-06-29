@@ -195,6 +195,11 @@ code {
   grid-column: span 1;
 }
 
+.miniUserLink a
+{
+  padding-top: 20px;
+}
+
 .puceverte {
   position: relative;
 }
@@ -251,4 +256,24 @@ code {
   margin-left: 10px;
   line-height: 36px;
   vertical-align: middle;
+}
+
+.createButton
+{
+  background: white;
+  border: none;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: bold;
+  color: #543454;
+  border-radius: 14px;
+  width: 200px;
+  margin: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.createButton:hover
+{
+  transform: scale(1.07);
 }
