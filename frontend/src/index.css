@@ -329,6 +329,7 @@ code {
   animation-name: toptop;
   animation-timing-function: cubic-bezier(.34,1.63,.35,.99);
   width: 90px;
+  font-weight: normal;
 }
 
 @keyframes toptop {
@@ -349,6 +350,7 @@ code {
   animation-timing-function: ease;
   animation-name: movein;
   animation-duration: 0.5s;
+  font-weight: normal;
 }
 
 @keyframes movein {
