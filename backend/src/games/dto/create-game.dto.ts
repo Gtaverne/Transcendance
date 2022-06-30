@@ -14,9 +14,6 @@ export class GameDTO {
   @IsInt()
   readonly id: number;
   @IsNotEmpty()
-  @IsString()
-  readonly status: string;
-  @IsNotEmpty()
   readonly user1: UsersEntity;
   @IsNotEmpty()
   readonly user2: UsersEntity;

@@ -27,17 +27,16 @@ type GameProps = {
 type BallDir = {
   x: number;
   y: number;
-}
+};
 
-const lenghtBar = 7;
-const border = 3.2;
-const ballSize = 1;
-const goal = 44.7;
-const arenaWidth = 50 - border * 2;
+const ARENA_BORDER = 3.2;
+const ARENA_WIDTH = 50 - ARENA_BORDER * 2;
 
 const TOKEN_SECRET = process.env.JWT_Secret;
 
-var lastIntSocket = 1000;
+let lastIntSocket = 1000;
+
+const WIN_SCORE = 10;
 
 @WebSocketGateway({
   namespace: 'games',
@@ -64,7 +63,6 @@ export class GamesGateway
   private socketGames = new Map<string, number>();
 
   private listen = new Map<string, Socket>();
-
 
   private getUserGame = (user: string) => {
     const gameId = this.socketGames.get(user);
@@ -103,10 +101,7 @@ export class GamesGateway
       'jwt',
     );
     try {
-      const idFromToken = <number>jwt.verify(
-          token,
-          TOKEN_SECRET,
-      );
+      const idFromToken = <number>jwt.verify(token, TOKEN_SECRET);
       if (idFromToken <= 0) throw Error();
       const user = await this.usersRepository.findOne({
         where: { id: idFromToken },
@@ -144,13 +139,14 @@ export class GamesGateway
   @SubscribeMessage('spectate')
   handleSpectate(client: Socket, { gameId }) {
     const game = this.games.get(parseInt(gameId));
-    console.log("spectate! " + game + " " + gameId);
-    if (game && !game.spectators.includes(client.id))
-    {
+    console.log('spectate! ' + game + ' ' + gameId);
+    if (game && !game.spectators.includes(client.id)) {
       game.spectators.push(client.id);
       this.games.set(parseInt(gameId), game);
-      this.server.to(client.id).emit('gameStarted', 0, arenaWidth / 2, 0, 0, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar)
+      /* eslint-disable */
+      this.server.to(client.id).emit('gameStarted', 0, ARENA_WIDTH / 2, 0, 0, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar)
       this.server.to(client.id).emit('setScore', game.scoreA, game.scoreB);
+      /* eslint-enable */
     }
   }
 
@@ -158,14 +154,14 @@ export class GamesGateway
   handleListen(client: Socket) {
     this.listen.set(client.id, client);
     this.games.forEach((game) => {
+      /* eslint-disable */
       this.server.to(client.id).emit('gameInfo', game.id, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
+      /* eslint-enable */
     });
   }
 
-
   @SubscribeMessage('joinQueue')
-  handleJoinQueue(client: Socket)
-  {
+  handleJoinQueue(client: Socket) {
     this.queue.set(client.id, client);
 
     if (this.queue.size >= 2) {
@@ -188,6 +184,7 @@ export class GamesGateway
       this.queue.delete(game.userB.id);
       this.games.set(id, game);
       this.listen.forEach((value, key) => {
+        /* eslint-disable */
         this.server.to(key).emit('gameInfo', id, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
       });
       this.socketGames.set(game.userA.id, id);
@@ -198,8 +195,8 @@ export class GamesGateway
 
       const bd = this.getRandomBallDir();
 
-      this.server.to(game.userA.id).emit('gameStarted', 0, arenaWidth / 2, bd.x, bd.y, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
-      this.server.to(game.userB.id).emit('gameStarted', 0, arenaWidth / 2, -bd.x, -bd.y, game.infoB.username, game.infoB.avatar, game.infoA.username, game.infoA.avatar);
+      this.server.to(game.userA.id).emit('gameStarted', 0, ARENA_WIDTH / 2, bd.x, bd.y, game.infoA.username, game.infoA.avatar, game.infoB.username, game.infoB.avatar);
+      this.server.to(game.userB.id).emit('gameStarted', 0, ARENA_WIDTH / 2, -bd.x, -bd.y, game.infoB.username, game.infoB.avatar, game.infoA.username, game.infoA.avatar);
     }
   }
 
@@ -209,27 +206,29 @@ export class GamesGateway
     if (!opponent) return;
     this.server
       .to(opponent.id)
-      .emit('ball', -ballX, arenaWidth - ballY, -velX, -velY);
+      .emit('ball', -ballX, ARENA_WIDTH - ballY, -velX, -velY);
     const game = this.getUserGame(client.id);
-
+    /* eslint-disable */
     if (client.id == game.userA.id)
       this.sendToSpectator(game, 'ball', ballX, ballY, velX, velY);
     else
-      this.sendToSpectator(game, 'ball', -ballX, arenaWidth - ballY, -velX, -velY);
-
+      this.sendToSpectator(game, 'ball', -ballX, ARENA_WIDTH - ballY, -velX, -velY);
+    /* eslint-enable */
   }
 
   @SubscribeMessage('move')
   handleMove(client: Socket, { localX }) {
     const opponent = this.getOpponent(client.id);
     if (!opponent) return;
-    this.server.to(opponent.id).emit('opoMove', arenaWidth - localX);
+    this.server.to(opponent.id).emit('opoMove', ARENA_WIDTH - localX);
     const game = this.getUserGame(client.id);
 
+    /* eslint-disable */
     if (client.id == game.userA.id)
       this.sendToSpectator(game, 'meMove', localX);
     else
-      this.sendToSpectator(game, 'opoMove', arenaWidth - localX);
+      this.sendToSpectator(game, 'opoMove', ARENA_WIDTH - localX);
+    /* eslint-enable */
   }
 
   @SubscribeMessage('tookGoal')
@@ -242,13 +241,12 @@ export class GamesGateway
       else game.scoreA++;
 
       this.server.to(opponent.id).emit('receivePoint');
-      this.server.to(opponent.id).emit('ball', 0, arenaWidth / 2, 0, 0);
-      this.sendToSpectator(game, 'ball', 0, arenaWidth / 2, 0, 0);
+      this.server.to(opponent.id).emit('ball', 0, ARENA_WIDTH / 2, 0, 0);
+      this.sendToSpectator(game, 'ball', 0, ARENA_WIDTH / 2, 0, 0);
       this.sendToSpectator(game, 'setScore', game.scoreA, game.scoreB);
 
       setTimeout(() => {
-        if (game.scoreA >= 10 || game.scoreB >= 10)
-        {
+        if (game.scoreA >= WIN_SCORE || game.scoreB >= WIN_SCORE) {
           this.sendToSpectator(game, 'gameover');
           this.server.to(game.userA.id).emit('gameover');
           this.server.to(game.userB.id).emit('gameover');
@@ -259,10 +257,10 @@ export class GamesGateway
           const userB = this.socketToPlayer.get(game.userB.id);
           if (userA) this.usersRepository.update(userA.id!, { currentGame: 0 });
           if (userB) this.usersRepository.update(userB.id!, { currentGame: 0 });
-/*
-          if (game.scoreA >= 10)
+          /*
+          if (game.scoreA >= WIN_SCORE)
             this.usersRepository.update(userA.id!, { lvl: userA.lvl + 1 });
-          else if (game.scoreB >= 10)
+          else if (game.scoreB >= WIN_SCORE)
             this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });
             TODO: UPDATE LA MATCH HISTORY DES DEUX JOUEURS
             
@@ -272,14 +270,14 @@ export class GamesGateway
           this.listen.forEach((value, key) => {
             this.server.to(key).emit('gameRemove', game.id);
           });
-        }
-        else
-        {
+        } else {
           const bd = this.getRandomBallDir();
 
-          this.sendToSpectator(game, 'ball', 0, arenaWidth / 2, bd.x, bd.y);
-          this.server.to(game.userA.id).emit('ball', 0, arenaWidth / 2, bd.x, bd.y);
-          this.server.to(game.userB.id).emit('ball', 0, arenaWidth / 2, -bd.x, -bd.y);
+          this.sendToSpectator(game, 'ball', 0, ARENA_WIDTH / 2, bd.x, bd.y);
+          /* eslint-disable */
+          this.server.to(game.userA.id).emit('ball', 0, ARENA_WIDTH / 2, bd.x, bd.y);
+          this.server.to(game.userB.id).emit('ball', 0, ARENA_WIDTH / 2, -bd.x, -bd.y);
+          /* eslint-enable */
         }
       }, 2000);
     }

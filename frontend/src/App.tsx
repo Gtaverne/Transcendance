@@ -13,11 +13,8 @@ import Pong from './pages/Pong';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
 import Configure2FA from './pages/Configure2FA';
-// import Verify2FA from './pages/verify2FA';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
-// import { useEffect } from 'react';
-import moment from 'moment';
 import PrivateRoute from './components/PrivateRoute';
 import React, { useEffect, useRef, useState } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
@@ -58,45 +55,14 @@ function MainRooter() {
     }
   }, [user]);
 
-  //        {location.pathname !== "/" && location.pathname !== "/game" ? <Header /> : <></>}
-
   return (
     <div onMouseMove={({ clientX, clientY }) => onMouseMove(clientX, clientY)}>
       <div className="backgroundLayers">
-        <div
-          className="layerZero"
-          style={{
-            transform: `scale(1.15)  translateX(${percX * 5}%) translateY(${
-              percY * 5
-            }%)`,
-          }}
-        ></div>
-        <div
-          className="layerOne"
-          style={{
-            transform: `scale(1.1)  translateX(${percX * 2.5}%) translateY(${
-              percY * 2.5
-            }%)`,
-          }}
-        ></div>
-        <div
-          className="layerTwo"
-          style={{
-            transform: `scale(1.05)  translateX(${percX * 1.25}%) translateY(${
-              percY * 1.25
-            }%)`,
-          }}
-        ></div>
-        <div
-          className="layerThree"
-          style={{
-            transform: `scale(1.025)  translateX(${
-              percX * 0.625
-            }%) translateY(${percY * 0.625}%)`,
-          }}
-        ></div>
+        <div className="layerZero" style={{transform: `scale(1.15) translateX(${percX*5}%) translateY(${percY*5}%)`}}></div>
+        <div className="layerOne" style={{transform: `scale(1.1) translateX(${percX*2.5}%) translateY(${percY*2.5}%)`}}></div>
+        <div className="layerTwo" style={{transform: `scale(1.05) translateX(${percX*1.25}%) translateY(${percY*1.25}%)`}}></div>
+        <div className="layerThree" style={{transform: `scale(1.025) translateX(${percX*0.625}%) translateY(${percY*0.625}%)`}}></div>
       </div>
-
       <Routes>
         <Route path="/" element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />
@@ -131,15 +97,7 @@ function MainRooter() {
 }
 
 function App() {
-  //   const socket = useRef(io());
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     socket.current = io('ws://localhost:3000/');
-  //     socket.current.emit('addUser', user.id);
-  //   }
-  // }, [user]);
 
   return (
     <>

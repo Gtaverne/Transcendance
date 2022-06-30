@@ -88,11 +88,11 @@ function Home() {
                             <LeaderboardIcon/>
                         </GlassButton>
                     </Link>
-                    {/*<Link to="/current">
+                    <Link to="/current">
                         <GlassButton title="CURRENT GAMES">
                             <LeaderboardIcon/>
                         </GlassButton>
-                    </Link>*/}
+                    </Link>
                 </div>
             </div>
         </div>
