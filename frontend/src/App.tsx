@@ -24,6 +24,7 @@ import './pages/Home.css';
 import CurrentGames from './pages/CurrentGames';
 import Leaderboard from './pages/Leaderboard';
 import CreateProfile from './pages/CreateProfile';
+import MatchHistory from './pages/MatchHistory';
 
 function MainRooter() {
   const socket = useRef<Socket | undefined>(undefined);
@@ -72,6 +73,9 @@ function MainRooter() {
         <Route path="/login" element={<Login />} />
         <Route path="/userprofile/:id" element={<PrivateRoute />}>
           <Route path="/userprofile/:id" element={<UserProfile />} />
+        </Route>
+		<Route path="/matchhistory/:id" element={<PrivateRoute />}>
+          <Route path="/matchhistory/:id" element={<MatchHistory />} />
         </Route>
         <Route path="/configure2fa/:id" element={<PrivateRoute />}>
           <Route path="/configure2fa/:id" element={<Configure2FA />} />
