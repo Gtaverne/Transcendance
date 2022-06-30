@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { RootStateOrAny, useSelector, useDispatch} from 'react-redux';
 import Cookies from 'js-cookie';
-import { login, edit, reset } from '../features/auth/authSlice';
+import { login, edit, reset, logout } from '../features/auth/authSlice';
 import UserInterface from '../interfaces/UserInterface';
 
 
@@ -27,7 +27,8 @@ export const useAuthStatus = () => {
     } else {
       console.log('Forbidden route, no user found');
       localStorage.removeItem('user');
-      dispatch(edit({user: {}, iFollowList: [], iBlockedList: []}));
+      dispatch(logout())
+      // dispatch(edit({user: {}, iFollowList: [], iBlockedList: []}));
       setLoggedIn(false);
     }
     setCheckingStatus(false);

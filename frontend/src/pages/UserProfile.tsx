@@ -159,8 +159,9 @@ const UserProfile = (props: Props) => {
     console.log('In onEdition');
 
     if (editProfile === true && user.id === fetchedProfile.id) {
-      if (fetchedProfile.username.length > 15 || isUserNameValid(fetchedProfile.username) ) {
+      if (fetchedProfile.username.length > 15 || !isUserNameValid(fetchedProfile.username) ) {
         toast.error('Please choose a shorter username, without weird characters');
+        
       } else {
         dispatch(
           edit({
