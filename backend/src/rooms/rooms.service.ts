@@ -310,6 +310,7 @@ export class RoomsService {
     const newRoom = await this.roomsRepository.create();
     const user1 = await this.usersService.findOne(createRoom.owner);
     console.log(user1);
+    if (createRoom.channelName.length > 30) return;
 
     if (createRoom.category === 'directMessage') {
       const user2 = await this.usersService.findOneWithName(

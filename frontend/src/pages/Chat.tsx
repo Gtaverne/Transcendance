@@ -220,6 +220,11 @@ function Chat({ socket }: any) {
   const handleSubmitConv = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (convName.length > 30) {
+      toast.error('Conversation name is limited to 30 characters');
+      return;
+    }
+
     const room = {
       owner: user.id,
       isDm: conversationType === 'directMessage',
@@ -238,7 +243,7 @@ function Chat({ socket }: any) {
     // });
 
     if (res.data) {
-      console.log('Updating conv after join');
+      toast.success('Conversation Created');
       refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
