@@ -115,7 +115,7 @@ function Chat({ socket }: any) {
           const res = await apiGetter('messages/' + currentChat?.id);
           setMessages(res.data);
         } catch (err) {
-          console.log("e", err);
+          console.log('e', err);
         }
       }
     };

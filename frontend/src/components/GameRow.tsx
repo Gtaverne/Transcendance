@@ -1,0 +1,37 @@
+import { RootStateOrAny, useSelector } from 'react-redux';
+import './GameRow.css';
+
+type UserInfoProps = {
+  score: number;
+  level: number;
+  id: number;
+  username: string;
+  avatar: string;
+};
+
+type GameCleanInfo = {
+  userA: UserInfoProps;
+  userB: UserInfoProps;
+};
+
+function GameRow({ game }: { game: GameCleanInfo }) {
+  const { user } = useSelector((state: RootStateOrAny) => state.auth);
+  return (
+    <>
+      <div className="historyUser">
+        <div className="historyRow">
+          <img className="historyPic" src={game.userA.avatar} alt="" />
+        </div>
+        <div className="historyName">{game.userA.username}</div>
+        <div className="historyLevelProfile">{game.userA.score}</div>
+        <div className="historyName">VS</div>
+        <div className="historyLevelProfile">{game.userB.score}</div>
+        <div className="historyName">{game.userB.username}</div>
+        <div className="historyRow">
+          <img className="historyPic" src={game.userB.avatar} alt="" />
+        </div>
+      </div>
+    </>
+  );
+}
+export default GameRow;

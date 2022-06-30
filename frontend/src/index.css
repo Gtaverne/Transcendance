@@ -60,8 +60,7 @@ code {
   vertical-align: middle;
 }
 
-.imgContainer
-{
+.imgContainer {
   text-align: center;
   padding-top: 10px;
   padding-bottom: 20px;
@@ -93,6 +92,8 @@ code {
   cursor: pointer;
   background-color: #1877f2;
   color: white;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .landingPage {
@@ -172,7 +173,6 @@ code {
 }
 
 .actionButton {
-
   width: 30px;
   height: 30px;
   border: none;
@@ -194,18 +194,15 @@ code {
   transition: all 0.2s ease;
 }
 
-.miniUser:hover
-{
+.miniUser:hover {
   background: rgba(0, 0, 0, 0.07);
 }
 
-.actionButton:hover
-{
+.actionButton:hover {
   opacity: 0.7;
 }
 
-.userList > div
-{
+.userList > div {
   width: 100%;
 }
 
@@ -213,8 +210,7 @@ code {
   flex: 1;
 }
 
-.miniUserLink a
-{
+.miniUserLink a {
   display: block;
 }
 
@@ -235,13 +231,11 @@ code {
   box-shadow: #1693068f 0 0 11px 3px;
 }
 
-.profileHeader h2
-{
+.profileHeader h2 {
   display: inline-block;
 }
 
-.profileHeader button
-{
+.profileHeader button {
   width: 100px;
   float: right;
   display: inline-block;
@@ -249,8 +243,7 @@ code {
   background: rgba(0, 0, 0, 0.77);
 }
 
-.coolP
-{
+.coolP {
   background: #0000000a;
   padding: 10px;
   margin-top: 5px;
@@ -262,8 +255,7 @@ code {
   display: inline-flex;
 }
 
-.leaderboardMiniature:hover
-{
+.leaderboardMiniature:hover {
   background: rgba(0, 0, 0, 0.107);
 }
 
@@ -277,15 +269,11 @@ code {
   background: rgba(0, 0, 0, 0.09);
 }
 
-.leaderboardMiniature
-
-.leaderboardMiniature .div:nth-child(2n)
-{
+.leaderboardMiniature .leaderboardMiniature .div:nth-child(2n) {
   background: white;
 }
 
-.createButton
-{
+.createButton {
   background: white;
   border: none;
   padding: 16px;
@@ -299,35 +287,31 @@ code {
   cursor: pointer;
 }
 
-.createButton:hover
-{
+.createButton:hover {
   transform: scale(1.07);
 }
 
 @font-face {
   font-family: PlayPretend;
-  src: url("./pages/assets/PlayPretend.otf") format("opentype");
+  src: url('./pages/assets/PlayPretend.otf') format('opentype');
 }
 
-.topScorer
-{
+.topScorer {
   font-family: PlayPretend;
   color: white;
   margin: 35px;
 }
 
-.toptop
-{
+.toptop {
   display: inline-block;
 }
 
-.toptop h1
-{
+.toptop h1 {
   font-size: 70px;
   margin: 0;
   animation-duration: 1s;
   animation-name: toptop;
-  animation-timing-function: cubic-bezier(.34,1.63,.35,.99);
+  animation-timing-function: cubic-bezier(0.34, 1.63, 0.35, 0.99);
   width: 90px;
 }
 
@@ -342,8 +326,7 @@ code {
   }
 }
 
-.toptop h2
-{
+.toptop h2 {
   font-size: 30px;
   margin: 0;
   animation-timing-function: ease;
@@ -362,8 +345,7 @@ code {
   }
 }
 
-.topImg
-{
+.topImg {
   width: 120px;
   height: 120px;
   background: white;
@@ -373,41 +355,35 @@ code {
   margin-right: 30px;
 }
 
-.blocking
-{
+.blocking {
   text-align: center;
   padding: 14px;
 }
 
-.picctn
-{
+.picctn {
   display: inline-block;
   margin-right: 14px;
 }
 
-.miniUsername
-{
+.miniUsername {
   display: inline-block;
   vertical-align: top;
   margin-top: 10px;
   color: #101010;
 }
 
-.matchInfo
-{
+.matchInfo {
   padding: 20px;
   background: rgba(0, 0, 0, 0.15);
   text-align: center;
   transition: all 0.2s ease;
 }
 
-.matchInfo:hover
-{
+.matchInfo:hover {
   background: rgba(0, 0, 0, 0.2);
 }
 
-.matchInfo > *
-{
+.matchInfo > * {
   display: inline-block;
   vertical-align: top;
   color: white;
@@ -415,8 +391,7 @@ code {
   font-family: PlayPretend;
 }
 
-.matchInfo img
-{
+.matchInfo img {
   width: 50px;
   height: 50px;
   border-radius: 10px;
@@ -424,16 +399,18 @@ code {
   box-shadow: #00000040 1px 5px 14px;
 }
 
-.vsText
-{
+.vsText {
   font-size: 25px;
   margin-top: 3px;
   margin-left: 14px;
 }
 
-.vsText > div
-{
+.vsText > div {
   display: inline-block;
   opacity: 0.5;
   font-size: 1.4em;
+}
+
+.greyButton {
+  background-color: rgba(0, 0, 0, 0.77);
 }
