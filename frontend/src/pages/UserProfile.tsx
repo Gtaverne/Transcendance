@@ -9,6 +9,7 @@ import UserMiniature from '../components/UserMiniature';
 import AchievementMiniature from '../components/AchievementMiniature';
 import Spinner from '../components/Spinner';
 import { toast } from 'react-toastify';
+import UserInterface from '../interfaces/UserInterface';
 
 import '../components/Overlay.css';
 import Overlay from '../components/Overlay';
@@ -39,8 +40,8 @@ const UserProfile = (props: Props) => {
   const [requestList, setRequestList] = useState<Array<number>>([]);
   const [stalkList, setStalkList] = useState<Array<number>>([]);
 
-  var profile = user;
-  const [fetchedProfile, setFetchedProfile] = useState(profile);
+  var profile: UserInterface = user;
+  const [fetchedProfile, setFetchedProfile] = useState<UserInterface>(profile);
   const [fetchedFollowers, setFetchedFollowers] = useState([]);
   const [fetchedFollowing, setFetchedFollowing] = useState(iFollowList);
 
@@ -158,8 +159,8 @@ const UserProfile = (props: Props) => {
     console.log('In onEdition');
 
     if (editProfile === true && user.id === fetchedProfile.id) {
-      if (fetchedProfile.username.length > 15) {
-        toast.error('Please choose a shorter username');
+      if (fetchedProfile.username.length > 15 || isUserNameValid(fetchedProfile.username) ) {
+        toast.error('Please choose a shorter username, without weird characters');
       } else {
         dispatch(
           edit({
@@ -246,6 +247,20 @@ const UserProfile = (props: Props) => {
     }
   };
 
+  const isUserNameValid = (username: string) => {
+    /* 
+      Usernames can only have: 
+      - Lowercase Letters (a-z) 
+      - Uppercase Letters (A-Z) 
+      - Numbers (0-9)
+      - Dots (.)
+      - Underscores (_)
+    */
+    const res = /^[A-Za-z0-9_\.]+$/.exec(username);
+    const valid = !!res;
+    return valid;
+  }
+
   const onFollow = async () => {
     if (user) {
       if (iFollowList.includes(fetchedProfile.id)) {
@@ -282,6 +297,14 @@ const UserProfile = (props: Props) => {
     navigate('/landing');
     return <Spinner />;
   }
+
+
+  if (+params.id! !== fetchedProfile.id) {
+    return (<Overlay title="Loading" style={{ overflowY: 'overlay' }}>
+
+    </Overlay>)
+  }
+
 
   return (
     <Overlay title="User Profile" style={{ overflowY: 'overlay' }}>
