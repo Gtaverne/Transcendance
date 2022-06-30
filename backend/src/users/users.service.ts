@@ -282,7 +282,13 @@ export class UsersService {
     const temp = await this.usersRepository
       .createQueryBuilder('users')
       .orderBy('lvl', 'DESC')
-      .select(['users.id', 'users.username', 'users.lvl', 'users.avatar', 'users.isOnline'])
+      .select([
+        'users.id',
+        'users.username',
+        'users.lvl',
+        'users.avatar',
+        'users.isOnline',
+      ])
       .getMany();
     return temp;
   }
@@ -551,6 +557,7 @@ export class UsersService {
       } catch (error) {}
       dude.username = loggedProfile.login + (i > 0 ? i - 1 : '');
       dude.avatar = loggedProfile.image_url;
+      dude.lvl = loggedProfile.lvl ? loggedProfile.lvl : 0;
       dude.email = loggedProfile.email;
       dude.doublefa = 0;
       const forId = await this.create(dude);
@@ -581,7 +588,9 @@ export class UsersService {
     if (
       data.field === 'username' &&
       typeof data.value === 'string' &&
-      data.value !== '' && data.value.length <= 15
+      data.value !== '' &&
+      data.value.length <= 15 &&
+      this.isUserNameValid(data.value)
     ) {
       //check pas de doublons d'id
       let i = 0;
@@ -680,6 +689,20 @@ export class UsersService {
     };
 
     return res;
+  }
+
+  isUserNameValid(username: string) {
+    /* 
+      Usernames can only have: 
+      - Lowercase Letters (a-z) 
+      - Uppercase Letters (A-Z) 
+      - Numbers (0-9)
+      - Dots (.)
+      - Underscores (_)
+    */
+    const res = /^[A-Za-z0-9_\.]+$/.exec(username);
+    const valid = !!res;
+    return valid;
   }
 
   async blockerManager(userid: number, target: number, goal: string) {
