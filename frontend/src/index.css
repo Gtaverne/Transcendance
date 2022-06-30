@@ -58,8 +58,6 @@ code {
   height: 40px;
   border-radius: 15%;
   vertical-align: middle;
-  position: relative;
-  right: 5px;
 }
 
 .imgContainer
@@ -156,7 +154,8 @@ code {
 }
 
 .userList {
-  margin-left: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
   text-align: left;
   /* background-color: red; */
   display: flex;
@@ -173,7 +172,6 @@ code {
 }
 
 .actionButton {
-  margin-left: 10px;
 
   width: 30px;
   height: 30px;
@@ -182,17 +180,37 @@ code {
   cursor: pointer;
   background-color: #999999;
   color: white;
-  grid-column: span 1;
+  margin: 2px;
+  margin-top: 4px;
+  transition: all 0.2s ease;
 }
 
 .miniUser {
-  width: 240px;
-  display: grid;
-  grid-template-columns: 1fr 32px 32px;
+  display: flex;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  margin-top: 5px;
+  transition: all 0.2s ease;
+}
+
+.miniUser:hover
+{
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.actionButton:hover
+{
+  opacity: 0.7;
+}
+
+.userList > div
+{
+  width: 100%;
 }
 
 .miniUserLink {
-  grid-column: span 1;
+  flex: 1;
 }
 
 .miniUserLink a
@@ -212,8 +230,9 @@ code {
   border-radius: 30%;
   position: absolute;
   z-index: 99;
-  margin-left: 28px;
-  margin-top: 34px;
+  right: -3px;
+  bottom: -2px;
+  box-shadow: #1693068f 0 0 11px 3px;
 }
 
 .profileHeader h2
@@ -240,8 +259,7 @@ code {
   border-radius: 7px;
 }
 .leaderboardMiniature {
-  display: grid;
-  grid-template-columns: 1fr 60px 40px 150px 1fr;
+  display: inline-flex;
 }
 
 .leaderboardMiniature:hover
@@ -250,11 +268,20 @@ code {
 }
 
 .leaderboardMiniature > div {
-  margin: 10px;
+  padding: 10px;
   font-size: large;
-  margin-left: 10px;
   line-height: 36px;
   vertical-align: middle;
+  color: white;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.09);
+}
+
+.leaderboardMiniature
+
+.leaderboardMiniature .div:nth-child(2n)
+{
+  background: white;
 }
 
 .createButton
@@ -275,4 +302,85 @@ code {
 .createButton:hover
 {
   transform: scale(1.07);
+}
+
+@font-face {
+  font-family: PlayPretend;
+  src: url("./pages/assets/PlayPretend.otf") format("opentype");
+}
+
+.topScorer
+{
+  font-family: PlayPretend;
+  color: white;
+  margin: 35px;
+}
+
+.toptop
+{
+  display: inline-block;
+}
+
+.toptop h1
+{
+  font-size: 70px;
+  margin: 0;
+  animation-duration: 1s;
+  animation-name: toptop;
+  animation-timing-function: cubic-bezier(.34,1.63,.35,.99);
+  width: 90px;
+}
+
+@keyframes toptop {
+  0% {
+    transform: scale(2) rotateZ(40deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.toptop h2
+{
+  font-size: 30px;
+  margin: 0;
+  animation-timing-function: ease;
+  animation-name: movein;
+  animation-duration: 0.5s;
+}
+
+@keyframes movein {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
+
+.topImg
+{
+  width: 120px;
+  height: 120px;
+  background: white;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: 50%;
+  margin-right: 30px;
+}
+
+.blocking
+{
+  text-align: center;
+  padding: 14px;
+}
+
+.picctn
+{
+  display: inline-block;
+  margin-right: 10px;
 }

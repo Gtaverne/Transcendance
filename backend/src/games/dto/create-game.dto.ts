@@ -14,9 +14,6 @@ export class GameDTO {
   @IsInt()
   readonly id: number;
   @IsNotEmpty()
-  @IsString()
-  readonly status: string;
-  @IsNotEmpty()
   readonly user1: UsersEntity;
   @IsNotEmpty()
   readonly user2: UsersEntity;
@@ -26,6 +23,12 @@ export class GameDTO {
   @IsOptional()
   @IsInt()
   readonly score2: number;
+  @IsOptional()
+  @IsInt()
+  readonly levelA: number;
+  @IsOptional()
+  @IsInt()
+  readonly levelB: number;
   @IsDate()
   @IsOptional()
   readonly createdAt: Date;

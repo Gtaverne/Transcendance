@@ -44,11 +44,6 @@
 
 }
 
-@font-face {
-    font-family: PlayPretend;
-    src: url("./assets/PlayPretend.otf") format("opentype");
-}
-
 .glassButton
 {
 

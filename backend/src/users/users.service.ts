@@ -282,7 +282,7 @@ export class UsersService {
     const temp = await this.usersRepository
       .createQueryBuilder('users')
       .orderBy('lvl', 'DESC')
-      .select(['users.id', 'users.username', 'users.lvl', 'users.avatar'])
+      .select(['users.id', 'users.username', 'users.lvl', 'users.avatar', 'users.isOnline'])
       .getMany();
     return temp;
   }
@@ -581,7 +581,7 @@ export class UsersService {
     if (
       data.field === 'username' &&
       typeof data.value === 'string' &&
-      data.value !== ''
+      data.value !== '' && data.value.length <= 15
     ) {
       //check pas de doublons d'id
       let i = 0;

@@ -1,18 +1,26 @@
+import { RootStateOrAny, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Color } from 'three';
 import UserInterface from '../interfaces/UserInterface';
+import './UserLeaderboard.css';
 
-function UserLeaderboard({ user }: { user: UserInterface }) {
+function UserLeaderboard({ player }: { player: UserInterface }) {
+  const { user } = useSelector((state: RootStateOrAny) => state.auth);
   return (
-    <Link to={'/userprofile/' + user.id} style={{ textDecoration: 'none'}}>
-      <div className="leaderboardMiniature">
-		  <div></div>
-        <div className='levelProfile'>{user.lvl}</div>
-        <div>
-          <img className="profilepic" src={user.avatar} alt="" />
+    <Link to={'/userprofile/' + player.id} style={{textDecoration: 'none' }}>
+      <div className="leaderboardUser">
+        <div className="levelProfile ">{player.lvl}</div>
+        <div className="leaderboardRow">
+          <div
+            className={
+              player.isOnline || player.id === user.id ? 'puceverte ' : ''
+            }
+            title={player.isOnline ? 'Player is online' : 'Player is offline'}
+          >
+            <img className="leaderboardPic " src={player.avatar} alt="" />
+          </div>
         </div>
-        <div>{user.username}</div>
-		<div></div>
+        <div className="leaderboardName">{player.username}</div>
       </div>
     </Link>
   );
