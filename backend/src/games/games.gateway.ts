@@ -193,8 +193,10 @@ export class GamesGateway
       this.socketGames.set(game.userA.id, id);
       this.socketGames.set(game.userB.id, id);
 
-      const user = this.socketToPlayer.get(client.id);
-      if (user) this.usersRepository.update(user.id!, { currentGame: id });
+      const userA = this.socketToPlayer.get(game.userA.id);
+      const userB = this.socketToPlayer.get(game.userB.id);
+      if (userA) this.usersRepository.update(userA.id!, { currentGame: id });
+      if (userB) this.usersRepository.update(userB.id!, { currentGame: id });
 
       const bd = this.getRandomBallDir();
 
@@ -277,7 +279,7 @@ export class GamesGateway
 
             const newGame = this.gamesRepository.create(gameEntity);
             this.gamesRepository.save(newGame).then(() => {
-              console.log("Saved!");
+              console.log('Saved!');
             });
           }
 
