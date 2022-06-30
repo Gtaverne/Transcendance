@@ -128,17 +128,17 @@ export class UsersController {
     return user;
   }
 
-  @Get('aCleanPlusTard')
-  findAllTEST(
-    @Req()
-    request: Request,
-    @Res()
-    response: Response,
-    @Query() query,
-  ): any {
-    console.log(request);
-    return response.json({ msg: 'Find All in users' });
-  }
+//   @Get('aCleanPlusTard')
+//   findAllTEST(
+//     @Req()
+//     request: Request,
+//     @Res()
+//     response: Response,
+//     @Query() query,
+//   ): any {
+//     console.log(request);
+//     return response.json({ msg: 'Find All in users' });
+//   }
 
   @Get('docs') //ce bloc est juste un bloc demo a retirer
   @Redirect('https://docs.nestjs.com', 302)

@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import RoomInterface from '../interfaces/RoomInterface';
 import UserInterface from '../interfaces/UserInterface';
 import apiGetter from '../features/apicalls/apiGetter';
@@ -35,7 +34,6 @@ function Conversation({
     const getUsers = async () => {
       const res = await apiGetter('rooms/users/' + conversation.id);
       setUsers(res.data);
-      //   console.log(res.data);
     };
     getUsers();
   }, [conversation, currentUser]);
@@ -63,12 +61,6 @@ function Conversation({
   }, [users]);
 
   const handleJoinTemp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    handleJoin(conversation.id, privatePassword);
-    setPrivatePassword('');
-  };
-
-  const handleLeaveTemp = async (e: React.FormEvent) => {
     e.preventDefault();
     handleJoin(conversation.id, privatePassword);
     setPrivatePassword('');

@@ -1,19 +1,19 @@
-import axios from 'axios';
 import apiGetter from '../features/apicalls/apiGetter';
 import apiPoster from '../features/apicalls/apiPoster';
 import React, { useEffect, useRef, useState } from 'react';
-import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
+import { RootStateOrAny, useSelector } from 'react-redux';
 import ChatOnline from '../components/ChatOnline';
 import Conversation from '../components/Conversation';
 import Message from '../components/Message';
 import MessageInterface from '../interfaces/MessageInterface';
 import RoomInterface from '../interfaces/RoomInterface';
 import './chat.css';
-import { io, Socket } from 'socket.io-client';
 import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
@@ -54,16 +54,8 @@ function Chat({ socket }: any) {
   const [, updateState] = React.useState({});
   const forceUpdate = React.useCallback(() => updateState({}), []);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    // if (user) {
-    //   socket.current = io('http://localhost:3000/chat', {
-    //     query: { id: user.id },
-    //     transports: ['websocket', 'polling'],
-    //     forceNew: true,
-    //   });
-    // }
     socket.current?.on('getTransmitMessage', (data: any) => {
       console.log(
         'Socket message detected',
@@ -80,6 +72,10 @@ function Chat({ socket }: any) {
       console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
+    });
+    socket.current?.emit('transmitOnline');
+    socket.current?.on('getUsers', (u: any) => {
+      setOnlineUsers(u);
     });
     if (global.currentChat && global.currentChat?.admins?.length) {
       setRoleList(global.currentChat);
@@ -107,6 +103,25 @@ function Chat({ socket }: any) {
   }, [arrivalMessage, currentChat, messages]);
 
   useEffect(() => {
+    getConversations();
+    getConversationsCanJoin();
+    global.currentChat = undefined;
+    getIBlockList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const getMessages = async () => {
+      if (currentChat) {
+        try {
+          const res = await apiGetter('messages/' + currentChat?.id);
+          setMessages(res.data);
+        } catch (err) {
+          console.log("e", err);
+        }
+      }
+    };
+    getMessages();
     setRoleList(currentChat);
   }, [currentChat]);
 
@@ -117,16 +132,16 @@ function Chat({ socket }: any) {
   const getConversations = async () => {
     const res = await apiGetter('rooms/user/' + user.id);
     setConversations(res.data);
-    console.log('getConversations', global.currentChat);
+    // console.log('getConversations', global.currentChat);
     if (global.currentChat) {
-      console.log(1, 'updating current chat infos', res.data.length);
+      //   console.log(1, 'updating current chat infos', res.data.length);
       for (let i = 0; i < res.data.length; i++) {
         // console.log(1.5, 'updating current chat infos');
         if (res.data[i].id === global.currentChat?.id) {
           setCurrentChat(res.data[i]);
           global.currentChat = res.data[i];
           setRoleList(res.data[i]);
-          console.log(2, 'updating current chat infos', res.data[i].id);
+          //   console.log(2, 'updating current chat infos', res.data[i].id);
         }
       }
     }
@@ -155,28 +170,6 @@ function Chat({ socket }: any) {
     }
   };
 
-  useEffect(() => {
-    getConversations();
-    getConversationsCanJoin();
-    global.currentChat = undefined;
-    getIBlockList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const getMessages = async () => {
-      if (currentChat) {
-        try {
-          const res = await apiGetter('messages/' + currentChat?.id);
-          setMessages(res.data);
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    };
-    getMessages();
-  }, [currentChat]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -188,12 +181,16 @@ function Chat({ socket }: any) {
       message: newMessage,
     };
 
-    const res = await apiPoster('messages/', msg);
+    try {
+      const res = await apiPoster('messages/', msg);
+      if (res.data === '') return;
+      socket.current?.emit('transmitMessage', res.data);
 
-    socket.current?.emit('transmitMessage', res.data);
-
-    setMessages([...messages, res.data]);
-    setNewMessage('');
+      setMessages([...messages, res.data]);
+      setNewMessage('');
+    } catch {
+      return;
+    }
   };
 
   const inviteToPlay = async (e: React.FormEvent) => {
@@ -220,7 +217,6 @@ function Chat({ socket }: any) {
       channelId: 0,
       message: '-',
     });
-    console.log('SOCKET REFRESH');
   };
 
   const handleSubmitConv = async (e: React.FormEvent) => {
@@ -348,14 +344,11 @@ function Chat({ socket }: any) {
       setTimeout(getConversationsCanJoin, 250);
       global.currentChat = undefined;
       setCurrentChat(undefined);
+      refreshOthers();
     }
   };
 
   const handleBlockUser = async (e: React.FormEvent) => {
-    // e.preventDefault();
-    // dispatch(edit({ id: user.id, field: 'block', value: currentUser?.id }));
-    // return;
-
     let val: any = currentUser?.id ? currentUser?.id : 0;
     let alreadyBlocked;
 
@@ -461,10 +454,6 @@ function Chat({ socket }: any) {
           <div className="chatMenuWrapper">
             <div className="chatMenuTop">
               <h3>My Conversations</h3>
-              {/* <input
-                placeholder="Search For Friends"
-                className="chatMenuInput"
-              /> */}
               {conversations.map((c, i) => (
                 <div
                   onClick={() => {
@@ -491,10 +480,6 @@ function Chat({ socket }: any) {
             </div>
             <div className="chatMenuMiddle">
               <h3>Join Conversations</h3>
-              {/* <input
-                placeholder="Search For Friends"
-                className="chatMenuInput"
-              /> */}
               {conversationsCanJoin.map((c, i) => (
                 <div key={i}>
                   <Conversation
@@ -649,15 +634,6 @@ function Chat({ socket }: any) {
             {currentChat ? (
               <div className="chatOnlineBottom">
                 <h3>User Informations</h3>
-                {/* <p>
-                  {currentChatAdmins.length} admins: {currentChatAdmins}
-                </p>
-                <p>
-                  {currentChatMute.length} mute: {currentChatMute}
-                </p>
-                <p>
-                  {currentChatBan.length} ban: {currentChatBan}
-                </p> */}
                 {currentUser ? (
                   <>
                     <button

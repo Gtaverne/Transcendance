@@ -72,12 +72,19 @@ export class RoomsGateway
       return;
     }
 
+    const onlineList = this.usersOnlineList();
     this.session.push([socket.id, socket.handshake.query.id]);
+    if (!onlineList.includes(+socket.handshake.query.id))
+      this.server.emit('getUsers', this.usersOnlineList());
   }
 
   async handleDisconnect(socket: Socket) {
+    const onlineList = this.usersOnlineList();
     this.session = this.session.filter((u) => u[0] !== socket.id);
     console.log('Disconnected', socket.id);
+    const newOnlineList = this.usersOnlineList();
+    if (onlineList != newOnlineList)
+      this.server.emit('getUsers', newOnlineList);
 
     const user = this.socketToPlayer.get(socket.id);
     this.socketToPlayer.delete(socket.id);
@@ -93,9 +100,22 @@ export class RoomsGateway
     this.broadcast(socket.id, 'getTransmitMessage', msg, true, list);
   }
 
+  @SubscribeMessage('transmitOnline')
+  async handleTransmitOnline(socket: Socket) {
+	this.server.to(socket.id).emit('getUsers', this.usersOnlineList());
+  }
+
   @SubscribeMessage('newInfo')
   handleNewInfo(socket: Socket, msg: any) {
     this.broadcast(socket.id, 'getNewInfo', msg, false, undefined);
+  }
+
+  usersOnlineList(): number[] {
+    const list: number[] = [];
+    this.session.forEach((u) => {
+      if (!list.includes(+u[1])) list.push(+u[1]);
+    });
+    return list.sort();
   }
 
   private broadcast(

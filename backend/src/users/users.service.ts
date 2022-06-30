@@ -14,6 +14,7 @@ import { UserDTO } from './dto/user.dto';
 import { EditorDTO } from './dto/editor.dto';
 const jwt = require('jsonwebtoken');
 import * as speakeasy from 'speakeasy';
+import { RoomsGateway } from 'src/rooms/rooms.gateway';
 
 dotenv.config({ path: './.env' });
 
@@ -42,7 +43,6 @@ export class UsersService {
       .then((r) => {
         console.log('Set all users offline');
       });
-
   }
 
   //For testing, we seed the db with dummy users
