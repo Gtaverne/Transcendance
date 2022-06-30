@@ -47,6 +47,8 @@ function MainRooter() {
 
   useEffect(() => {
     if (user) {
+      if (socket.current)
+        socket.current?.disconnect();
       socket.current = io('http://localhost:3000/chat', {
         query: { id: user.id },
         transports: ['websocket', 'polling'],
