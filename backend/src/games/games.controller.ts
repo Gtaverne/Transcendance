@@ -1,4 +1,13 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
+import { GamesService } from './games.service';
+import { GamesEntity } from './games.entity';
 
 @Controller('games')
-export class GamesController {}
+export class GamesController {
+  constructor(private gamesServices: GamesService) {}
+
+  @Get('/history/:id')
+  findFriends(@Param() params): Promise<any[]> {
+    return this.gamesServices.getUserMatches(params.id);
+  }
+}

@@ -11,13 +11,15 @@ export class LoggerMiddleware implements NestMiddleware {
     //   console.log('Passing empty request')
     //   next()
     // }
-    const tkn = req.cookies.jwt;
+    let tkn = req.cookies.jwt;
+    if (!tkn || tkn === '')
+      tkn = req.query.jwt;
     if (!tkn || tkn === '') {
       console.log('Middleware: no token in that query: ', req.url);
       return res.status(403).end();
     } else {
       try {
-        const idFromToken = jwt.verify(req.query.jwt, TOKEN_SECRET);
+        const idFromToken = jwt.verify(tkn, TOKEN_SECRET);
         if (idFromToken > 0) {
           next();
         } else {
