@@ -7,9 +7,19 @@
     transition: all 0.2s ease;
 }
 
+.ownLeader
+{
+    background: rgb(211 196 213 / 9%);
+}
+
 .leaderboardUser:hover
 {
     background: rgba(0, 0, 0, 0.14);
+}
+
+.ownLeader:hover
+{
+    background: rgba(211 196 213 / 12%);
 }
 
 .leaderboardPic

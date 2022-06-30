@@ -8,7 +8,7 @@ function UserLeaderboard({ player }: { player: UserInterface }) {
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   return (
     <Link to={'/userprofile/' + player.id} style={{textDecoration: 'none' }}>
-      <div className="leaderboardUser">
+      <div className={player.id === user.id ? 'ownLeader leaderboardUser' : 'leaderboardUser'}>
         <div className="levelProfile ">{player.lvl}</div>
         <div className="leaderboardRow">
           <div

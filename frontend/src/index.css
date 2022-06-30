@@ -181,7 +181,7 @@ code {
   background-color: #999999;
   color: white;
   margin: 2px;
-  margin-top: 6px;
+  margin-top: 5px;
   transition: all 0.2s ease;
 }
 
@@ -391,4 +391,49 @@ code {
   vertical-align: top;
   margin-top: 10px;
   color: #101010;
+}
+
+.matchInfo
+{
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.matchInfo:hover
+{
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.matchInfo > *
+{
+  display: inline-block;
+  vertical-align: top;
+  color: white;
+  text-decoration: none;
+  font-family: PlayPretend;
+}
+
+.matchInfo img
+{
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  margin-right: 14px;
+  box-shadow: #00000040 1px 5px 14px;
+}
+
+.vsText
+{
+  font-size: 25px;
+  margin-top: 3px;
+  margin-left: 14px;
+}
+
+.vsText > div
+{
+  display: inline-block;
+  opacity: 0.5;
+  font-size: 1.4em;
 }

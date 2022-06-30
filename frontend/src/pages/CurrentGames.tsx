@@ -21,9 +21,13 @@ function CurrentGames() {
 
     socket.current?.on("gameInfo", (id, usernameA, avatarA, usernameB, avatarB) => {
       setGameMap(new Map(gameMap.set(id, <>
-        <Link to={'/game/' + id} key={id}>
-          <div>{id}</div>
-        </Link>
+      <Link to={'/game/' + id}>
+        <div key={id} className="matchInfo">
+          <img src={avatarA}></img>
+          <img src={avatarB}></img>
+          <div className="vsText">{usernameA} <div>VS</div> {usernameB}</div>
+        </div>
+      </Link>
       </>)));
     });
     socket.current?.on("gameRemove", (id) => {

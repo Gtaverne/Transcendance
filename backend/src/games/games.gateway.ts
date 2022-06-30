@@ -37,7 +37,7 @@ const TOKEN_SECRET = process.env.JWT_Secret;
 
 let lastIntSocket = 1000;
 
-const WIN_SCORE = 3;
+const WIN_SCORE = 20;
 
 @WebSocketGateway({
   namespace: 'games',
