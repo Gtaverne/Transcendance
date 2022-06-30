@@ -98,7 +98,7 @@ function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
             to={'/userprofile/' + targetid}
             style={{ textDecoration: 'none' }}
           >
-            <div className={ fetchedProfile.isOnline ? 'puceverte' : '' } style={{display: "inline-block"}}>
+            <div className={ fetchedProfile.isOnline ? 'picctn puceverte' : 'picctn' }>
               <img className="profilepic" src={fetchedProfile.avatar} alt="" />
 
             </div>

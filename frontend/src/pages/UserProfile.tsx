@@ -296,17 +296,11 @@ const UserProfile = (props: Props) => {
             </div>
           ) : (
             <>
-              <div>
-                <h3>{fetchedProfile.username}'s profile</h3>
+              <div className="profileHeader">
+                <h2>{fetchedProfile.username}'s profile</h2>
                 <button className="largeButton" onClick={onFollow}>
                   <FaUser />
                   {iFollowList.includes(fetchedProfile.id) ? 'un' : ''}follow
-                </button>
-              </div>
-              <div>
-                <button className="largeButton" onClick={onBlock}>
-                  <FaSignOutAlt />
-                  {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
                 </button>
               </div>
             </>
@@ -370,6 +364,18 @@ const UserProfile = (props: Props) => {
             </p>
           ) : (
             <></>
+          )}
+          {user && user.id && user.id === fetchedProfile?.id ? (
+            <></>
+          ) : (
+            <>
+              <div className="blocking">
+                <button className="largeButton" onClick={onBlock}>
+                  <FaSignOutAlt />
+                  {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
+                </button>
+              </div>
+            </>
           )}
         </div>
 
