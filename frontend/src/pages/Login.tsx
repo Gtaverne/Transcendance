@@ -100,7 +100,7 @@ function Login({}: Props) {
     return (
       <Overlay title={"2FA"}>
         <div className="userProfile">
-          <div>
+          <div className="marginTop">
             <input
               type="text"
               id="username"

@@ -416,3 +416,7 @@ code {
 .greyButton {
   background-color: rgba(0, 0, 0, 0.77);
 }
+
+.marginTop {
+  margin-top: 50px;
+}
