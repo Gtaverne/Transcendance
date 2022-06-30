@@ -58,8 +58,6 @@ code {
   height: 40px;
   border-radius: 15%;
   vertical-align: middle;
-  position: relative;
-  right: 5px;
 }
 
 .imgContainer
@@ -212,8 +210,9 @@ code {
   border-radius: 30%;
   position: absolute;
   z-index: 99;
-  margin-left: 28px;
-  margin-top: 34px;
+  right: -3px;
+  bottom: -2px;
+  box-shadow: #1693068f 0 0 11px 3px;
 }
 
 .profileHeader h2
@@ -240,8 +239,7 @@ code {
   border-radius: 7px;
 }
 .leaderboardMiniature {
-  display: grid;
-  grid-template-columns: 1fr 60px 40px 150px 1fr;
+  display: inline-flex;
 }
 
 .leaderboardMiniature:hover
@@ -250,12 +248,20 @@ code {
 }
 
 .leaderboardMiniature > div {
-  background: transparent;
-  margin: 10px;
+  padding: 10px;
   font-size: large;
-  margin-left: 10px;
   line-height: 36px;
   vertical-align: middle;
+  color: white;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.09);
+}
+
+.leaderboardMiniature
+
+.leaderboardMiniature .div:nth-child(2n)
+{
+  background: white;
 }
 
 .createButton
@@ -276,4 +282,42 @@ code {
 .createButton:hover
 {
   transform: scale(1.07);
+}
+
+@font-face {
+  font-family: PlayPretend;
+  src: url("./pages/assets/PlayPretend.otf") format("opentype");
+}
+
+.topScorer
+{
+  font-family: PlayPretend;
+  color: white;
+  margin: 35px;
+}
+
+.toptop
+{
+  display: inline-block;
+}
+
+.toptop h1
+{
+  font-size: 70px;
+  margin: 0;
+}
+.toptop h2
+{
+  font-size: 30px;
+  margin: 0;
+}
+.topImg
+{
+  width: 120px;
+  height: 120px;
+  background: white;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: 50%;
+  margin-right: 30px;
 }

@@ -92,15 +92,16 @@ function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
     return (
       <div className="miniUser">
         <div
-          className={
-            fetchedProfile.isOnline ? 'miniUserLink puceverte' : 'miniUserLink'
-          }
+          className='miniUserLink'
         >
           <Link
             to={'/userprofile/' + targetid}
             style={{ textDecoration: 'none' }}
           >
-            <img className="profilepic" src={fetchedProfile.avatar} alt="" />
+            <div className={ fetchedProfile.isOnline ? 'puceverte' : '' } style={{display: "inline-block"}}>
+              <img className="profilepic" src={fetchedProfile.avatar} alt="" />
+
+            </div>
             {fetchedProfile.username}
           </Link>
         </div>

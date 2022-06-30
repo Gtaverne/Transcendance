@@ -21,7 +21,18 @@ function Leaderboard() {
   }, []);
 
   return (
-    <Overlay title={'Leaderboard'}>
+    <Overlay title={'Leaderboard'} style={{backgroundColor: "#382d34"}}>
+
+      <div className="topScorer">
+        <img className="topImg" src={users[0]?.avatar}>
+
+        </img>
+        <div className="toptop">
+          <h1>#1</h1>
+          <h2>{users[0]?.username}</h2>
+        </div>
+      </div>
+
       {users?.map((c: any, i) => (
         <div key={i} >
           <UserLeaderboard player={c} />
