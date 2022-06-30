@@ -17,6 +17,7 @@ import LeaderboardIcon from '../components/Icons/LeaderboardIcon';
 import ChatIcon from '../components/Icons/ChatIcon';
 import LogoIcon from '../components/Icons/LogoIcon';
 import { logout, reset } from '../features/auth/authSlice';
+import CurrentGamesIcon from '../components/Icons/CurrentGamesIcon';
 
 function Home() {
     const [percX, setPercX] = useState(0);
@@ -90,7 +91,7 @@ function Home() {
                     </Link>
                     <Link to="/current">
                         <GlassButton title="CURRENT GAMES">
-                            <LeaderboardIcon/>
+                            <CurrentGamesIcon/>
                         </GlassButton>
                     </Link>
                 </div>
