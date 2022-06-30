@@ -22,11 +22,15 @@ function Page404({}: Props) {
       <img src={logo} style={{ width: '300px' }} />
 
       <div
-        style={{ padding: '40px', fontSize: '40px', fontFamily: 'Comic Sans' }}
-        // HAHAHAHAHAHHA
+        style={{
+          padding: '40px',
+          fontSize: '40px',
+          fontFamily: 'Helvetica',
+          fontWeight: 'bold',
+        }}
       >
-        <h1>404</h1>
-        <h2>You will be redirected soon, lost wanderer</h2>
+        <h1>404 Page not found</h1>
+        <h4>You will be redirected soon, lost wanderer</h4>
         {/* <h1>{counter}</h1> */}
       </div>
     </div>
