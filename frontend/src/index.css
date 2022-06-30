@@ -181,7 +181,7 @@ code {
   background-color: #999999;
   color: white;
   margin: 2px;
-  margin-top: 4px;
+  margin-top: 6px;
   transition: all 0.2s ease;
 }
 
@@ -196,7 +196,7 @@ code {
 
 .miniUser:hover
 {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.07);
 }
 
 .actionButton:hover
@@ -215,7 +215,7 @@ code {
 
 .miniUserLink a
 {
-  padding-top: 20px;
+  display: block;
 }
 
 .puceverte {
@@ -382,5 +382,13 @@ code {
 .picctn
 {
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 14px;
+}
+
+.miniUsername
+{
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 10px;
+  color: #101010;
 }
