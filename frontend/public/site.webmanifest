@@ -1,0 +1,14 @@
+{
+    "name": "Pongzi",
+    "short_name": "Pongzi",
+    "icons": [
+        {
+            "src": "/android-chrome-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#6b0771",
+    "background_color": "#6b0771",
+    "display": "standalone"
+}
