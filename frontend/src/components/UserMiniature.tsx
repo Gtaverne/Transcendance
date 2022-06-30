@@ -102,7 +102,7 @@ function UserMiniature({ targetid, blockable = 0, friendable = 0 }: Props) {
               <img className="profilepic" src={fetchedProfile.avatar} alt="" />
 
             </div>
-            {fetchedProfile.username}
+            <div className="miniUsername">{fetchedProfile.username}</div>
           </Link>
         </div>
         {fetchedProfile.currentGame !== 0 ? (
