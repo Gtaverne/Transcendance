@@ -18,6 +18,7 @@ import { Material } from 'three';
 import { Link, useParams } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import Cookies from 'js-cookie';
+import useAudio from '../features/game/useAudio';
 
 declare var global: {
   game: {
@@ -318,8 +319,8 @@ const Pong = () => {
   const [color, setColor] = useState(0);
 
 
-  var [play] = useSound(bouncesound, { volume: 0.4});
-  var [playGoal] = useSound(goalsound, { volume: 0.2});
+  var play = useAudio(bouncesound);
+  var playGoal = useAudio(goalsound);
 
   let lenghtBar = 7;
   let border = 3.2;
@@ -396,11 +397,18 @@ const Pong = () => {
       global.game.velX = velX;
       global.game.velY = velY;
       if (ballX > 10)
-        global.game.bounceB = Math.PI;
-      else if (ballX < -10)
-        global.game.bounceA = Math.PI;
-      else
       {
+        play();
+        global.game.bounceB = Math.PI;
+      }
+      else if (ballX < -10)
+      {
+        play();
+        global.game.bounceA = Math.PI;
+      }
+      else if (velX == 0 && velY == 0)
+      {
+        playGoal();
         global.game.localX = arenaWidth/2;
         global.game.opoX = arenaWidth/2;
       }
@@ -539,7 +547,6 @@ const Pong = () => {
 
           global.game.velX = 0;
           global.game.velY = 0;
-          playGoal();
         }
       }
       else

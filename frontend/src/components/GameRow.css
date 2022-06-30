@@ -35,4 +35,13 @@
   font-size: 22px;
   padding-top: 29px;
   padding-left: 20px;
+  padding-right: 20px;
+}
+
+.historyNameRight {
+  text-align: right;
+}
+
+.historyOpacity {
+  color: rgba(255, 255, 255, 0.5);
 }
