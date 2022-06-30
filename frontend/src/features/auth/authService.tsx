@@ -31,7 +31,10 @@ const login = async (code: string) => {
       };
     } else {
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      localStorage.setItem('didCreate', JSON.stringify(response.data.didCreate));
+      localStorage.setItem(
+        'didCreate',
+        JSON.stringify(response.data.didCreate),
+      );
       localStorage.setItem(
         'iFollowList',
         JSON.stringify(response.data.iFollowList),
@@ -80,32 +83,36 @@ const loginmfa = async (jwt: string, code: string) => {
 };
 
 const edit = async (id: number, field: string, value: any) => {
-  const data = { id: id, field: field, value: value};
+  const data = { id: id, field: field, value: value };
 
-  const response = await apiPoster('users/editprofile/', data);
+  try {
+    const response = await apiPoster('users/editprofile/', data);
 
-  if (response === null) {
-    console.log('Logout user');
-    logout();
-    return {};
+    if (response === null) {
+      console.log('Logout user');
+      logout();
+      return {};
+    }
+
+    if (response.data && response.data.user) {
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem(
+        'iFollowList',
+        JSON.stringify(response.data.iFollowList),
+      );
+      localStorage.setItem(
+        'iBlockedList',
+        JSON.stringify(response.data.iBlockedList),
+      );
+    } else {
+      console.log('Backend seems down');
+      response.data = {};
+    }
+
+    return response.data;
+  } catch (error) {
+    console.log('Edition error');
   }
-
-  if (response.data && response.data.user) {
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    localStorage.setItem(
-      'iFollowList',
-      JSON.stringify(response.data.iFollowList),
-    );
-    localStorage.setItem(
-      'iBlockedList',
-      JSON.stringify(response.data.iBlockedList),
-    );
-  } else {
-    console.log('Backend seems down');
-    response.data = {};
-  }
-
-  return response.data;
 };
 
 // Logout user
