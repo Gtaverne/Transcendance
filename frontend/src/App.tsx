@@ -25,6 +25,7 @@ import CurrentGames from './pages/CurrentGames';
 import Leaderboard from './pages/Leaderboard';
 import CreateProfile from './pages/CreateProfile';
 import MatchHistory from './pages/MatchHistory';
+import Page404 from './pages/Page404';
 
 function MainRooter() {
   const socket = useRef<Socket | undefined>(undefined);
@@ -48,8 +49,7 @@ function MainRooter() {
 
   useEffect(() => {
     if (user) {
-      if (socket.current)
-        socket.current?.disconnect();
+      if (socket.current) socket.current?.disconnect();
       socket.current = io('http://localhost:3000/chat', {
         query: { id: user.id },
         transports: ['websocket', 'polling'],
@@ -61,12 +61,42 @@ function MainRooter() {
   return (
     <div onMouseMove={({ clientX, clientY }) => onMouseMove(clientX, clientY)}>
       <div className="backgroundLayers">
-        <div className="layerZero" style={{transform: `scale(1.15) translateX(${percX*5}%) translateY(${percY*5}%)`}}></div>
-        <div className="layerOne" style={{transform: `scale(1.1) translateX(${percX*2.5}%) translateY(${percY*2.5}%)`}}></div>
-        <div className="layerTwo" style={{transform: `scale(1.05) translateX(${percX*1.25}%) translateY(${percY*1.25}%)`}}></div>
-        <div className="layerThree" style={{transform: `scale(1.025) translateX(${percX*0.625}%) translateY(${percY*0.625}%)`}}></div>
+        <div
+          className="layerZero"
+          style={{
+            transform: `scale(1.15) translateX(${percX * 5}%) translateY(${
+              percY * 5
+            }%)`,
+          }}
+        ></div>
+        <div
+          className="layerOne"
+          style={{
+            transform: `scale(1.1) translateX(${percX * 2.5}%) translateY(${
+              percY * 2.5
+            }%)`,
+          }}
+        ></div>
+        <div
+          className="layerTwo"
+          style={{
+            transform: `scale(1.05) translateX(${percX * 1.25}%) translateY(${
+              percY * 1.25
+            }%)`,
+          }}
+        ></div>
+        <div
+          className="layerThree"
+          style={{
+            transform: `scale(1.025) translateX(${percX * 0.625}%) translateY(${
+              percY * 0.625
+            }%)`,
+          }}
+        ></div>
       </div>
       <Routes>
+        {/* See https://stackoverflow.com/questions/67050966/how-to-build-a-404-page-with-react-router-dom-v6 */}
+        <Route path='*' element={<Page404 />} />
         <Route path="/" element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />
         </Route>
@@ -83,7 +113,7 @@ function MainRooter() {
           <Route path="/configure2fa/:id" element={<Configure2FA />} />
         </Route>
         <Route path="/chat" element={<PrivateRoute />}>
-          <Route path="/chat" element={<Chat socket={socket}/>} />
+          <Route path="/chat" element={<Chat socket={socket} />} />
         </Route>
         <Route path="/current" element={<PrivateRoute />}>
           <Route path="/current" element={<CurrentGames />} />
