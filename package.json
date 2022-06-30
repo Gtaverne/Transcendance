@@ -23,6 +23,7 @@
 	},
 	"homepage": "https://github.com/Gtaverne/Transcendance#readme",
 	"dependencies": {
+		"@types/howler": "^2.2.7",
 		"concurrently": "^7.1.0",
 		"react-dom": "^18.0.0",
 		"timeago.js": "^4.0.2",

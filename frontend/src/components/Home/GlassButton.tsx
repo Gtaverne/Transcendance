@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useSound from 'use-sound';
 
 import '../../pages/Home.css';
 
 import clicksound from './click.mp3';
 import clocksound from './clock.mp3';
+import useAudio from '../../features/game/useAudio';
 
 type GlassProps = {
   title: string;
@@ -14,8 +15,14 @@ type GlassProps = {
 
 function GlassButton({title, onClick, children}: GlassProps)
 {
-    const [play] = useSound(clicksound, { volume: 0.5});
-    const [playClock] = useSound(clocksound, { volume: 0.5});
+    const [clicked, setClicked] = useState(false);
+    const play = useAudio(clicksound);
+    const playClock = useAudio(clocksound);
+
+
+    window.addEventListener("click", () => {
+      setClicked(true);
+    });
 
     return (
         <div className="glassButton"  onMouseUp={onClick} onMouseEnter={() => play()} onMouseDown={() => playClock()}>
