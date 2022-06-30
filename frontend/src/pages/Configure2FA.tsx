@@ -100,7 +100,7 @@ function Configure2FA({}: Props) {
   return (
     <Overlay title={"Configure 2FA"}>
       <div className="userProfile">
-        <div>Configure2FA</div>
+        <div className="marginTop">Configure2FA</div>
         <button className="largeButton" onClick={onMFA}>
           2FA Google
         </button>
