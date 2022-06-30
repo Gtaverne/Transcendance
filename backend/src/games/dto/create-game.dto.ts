@@ -23,6 +23,12 @@ export class GameDTO {
   @IsOptional()
   @IsInt()
   readonly score2: number;
+  @IsOptional()
+  @IsInt()
+  readonly levelA: number;
+  @IsOptional()
+  @IsInt()
+  readonly levelB: number;
   @IsDate()
   @IsOptional()
   readonly createdAt: Date;

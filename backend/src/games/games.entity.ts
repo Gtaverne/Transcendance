@@ -12,4 +12,8 @@ export class GamesEntity extends BaseEntity {
   score1: number;
   @Column({ type: 'integer', nullable: false })
   score2: number;
+  @Column({ type: 'integer', nullable: false })
+  levelA: number;
+  @Column({ type: 'integer', nullable: false })
+  levelB: number;
 }

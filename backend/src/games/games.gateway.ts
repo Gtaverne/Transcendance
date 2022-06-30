@@ -10,6 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from '../users/users.entity';
 import { Repository } from 'typeorm';
+import { GamesEntity } from './games.entity';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
 
@@ -36,7 +37,7 @@ const TOKEN_SECRET = process.env.JWT_Secret;
 
 let lastIntSocket = 1000;
 
-const WIN_SCORE = 10;
+const WIN_SCORE = 3;
 
 @WebSocketGateway({
   namespace: 'games',
@@ -48,6 +49,8 @@ export class GamesGateway
   constructor(
     @InjectRepository(UsersEntity)
     private usersRepository: Repository<UsersEntity>,
+    @InjectRepository(GamesEntity)
+    private gamesRepository: Repository<GamesEntity>,
   ) {}
 
   @WebSocketServer()
@@ -257,14 +260,26 @@ export class GamesGateway
           const userB = this.socketToPlayer.get(game.userB.id);
           if (userA) this.usersRepository.update(userA.id!, { currentGame: 0 });
           if (userB) this.usersRepository.update(userB.id!, { currentGame: 0 });
-          /*
+
           if (game.scoreA >= WIN_SCORE)
             this.usersRepository.update(userA.id!, { lvl: userA.lvl + 1 });
           else if (game.scoreB >= WIN_SCORE)
             this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });
-            TODO: UPDATE LA MATCH HISTORY DES DEUX JOUEURS
-            
-            */
+
+          if (userA && userB) {
+            const gameEntity = new GamesEntity();
+            gameEntity.user1 = userA;
+            gameEntity.user2 = userB;
+            gameEntity.score1 = game.scoreA;
+            gameEntity.score2 = game.scoreB;
+            gameEntity.levelA = userA.lvl;
+            gameEntity.levelB = userB.lvl;
+
+            const newGame = this.gamesRepository.create(gameEntity);
+            this.gamesRepository.save(newGame).then(() => {
+              console.log("Saved!");
+            });
+          }
 
           this.games.delete(game.id);
           this.listen.forEach((value, key) => {
