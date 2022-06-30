@@ -271,6 +271,11 @@ const UserProfile = (props: Props) => {
     }
   };
 
+  const handleNavigate = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate('/matchhistory/' + fetchedProfile.id);
+  };
+
   // Beginning of the result
   if (!user?.id || !fetchedProfile?.id) {
     console.log('No data fetched');
@@ -310,11 +315,11 @@ const UserProfile = (props: Props) => {
             <>
               {preview ? (
                 <div className="imgContainer">
-                  <img className="profilepage" src={preview} alt=""/>
+                  <img className="profilepage" src={preview} alt="" />
                 </div>
               ) : (
                 <div className="imgContainer">
-                  <img className="profilepage" src={user.avatar} alt=""/>
+                  <img className="profilepage" src={user.avatar} alt="" />
                 </div>
               )}
 
@@ -329,7 +334,7 @@ const UserProfile = (props: Props) => {
             </>
           ) : (
             <div className="imgContainer">
-              <img className="profilepage" src={fetchedProfile.avatar} alt=""/>
+              <img className="profilepage" src={fetchedProfile.avatar} alt="" />
             </div>
           )}
           {/* Name */}
@@ -347,11 +352,17 @@ const UserProfile = (props: Props) => {
             </div>
           ) : (
             <div>
-              <p className="coolP"><b>Username</b>: {fetchedProfile.username}</p>
-              <p className="coolP"><b>Level</b>: {fetchedProfile.lvl}</p>
+              <p className="coolP">
+                <b>Username</b>: {fetchedProfile.username}
+              </p>
+              <p className="coolP">
+                <b>Level</b>: {fetchedProfile.lvl}
+              </p>
             </div>
           )}
-          <p className="coolP"><b>Email</b>: {fetchedProfile.email}</p>
+          <p className="coolP">
+            <b>Email</b>: {fetchedProfile.email}
+          </p>
           {user && user.id && editProfile && user.id === fetchedProfile.id ? (
             <p>
               Double Factor Authentication:
@@ -366,13 +377,23 @@ const UserProfile = (props: Props) => {
             <></>
           )}
           {user && user.id && user.id === fetchedProfile?.id ? (
-            <></>
+            <>
+              <button
+                className="largeButton greyButton"
+                onClick={handleNavigate}
+              >
+                Match History
+              </button>
+            </>
           ) : (
             <>
               <div className="blocking">
                 <button className="largeButton" onClick={onBlock}>
                   <FaSignOutAlt />
                   {iBlockedList.includes(fetchedProfile.id) ? 'un' : ''}block
+                </button>
+                <button className="largeButton" onClick={handleNavigate}>
+                  Match History
                 </button>
               </div>
             </>

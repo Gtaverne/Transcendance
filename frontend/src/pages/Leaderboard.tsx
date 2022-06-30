@@ -9,7 +9,7 @@ function Leaderboard() {
   const [users, setUsers] = useState<UserInterface[]>([]);
 
   useEffect(() => {
-    const getConversationsCanJoin = async () => {
+    const getLeaderboard = async () => {
       try {
         const res = await apiGetter('users/leaderboard');
         setUsers(res.data);
@@ -17,7 +17,7 @@ function Leaderboard() {
         console.log(err);
       }
     };
-    getConversationsCanJoin();
+    getLeaderboard();
   }, []);
 
   return (

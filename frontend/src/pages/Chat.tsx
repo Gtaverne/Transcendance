@@ -12,8 +12,6 @@ import UserInterface from '../interfaces/UserInterface';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 
 declare var global: { currentChat: RoomInterface | undefined };
 
@@ -117,7 +115,7 @@ function Chat({ socket }: any) {
           const res = await apiGetter('messages/' + currentChat?.id);
           setMessages(res.data);
         } catch (err) {
-          console.log("e", err);
+          console.log('e', err);
         }
       }
     };
