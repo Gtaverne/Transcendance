@@ -251,6 +251,7 @@ code {
   margin-bottom: 5px;
 
   border-radius: 7px;
+  min-width: 240px;
 }
 .leaderboardMiniature {
   display: inline-flex;
@@ -432,4 +433,10 @@ code {
 
 .marginTop {
   margin-top: 50px;
+}
+
+.matchCtn
+{
+  text-align: center;
+  padding: 10px;
 }

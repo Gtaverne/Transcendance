@@ -400,14 +400,14 @@ const UserProfile = (props: Props) => {
             <></>
           )}
           {user && user.id && user.id === fetchedProfile?.id ? (
-            <>
+            <div className="matchCtn">
               <button
                 className="largeButton greyButton"
                 onClick={handleNavigate}
               >
                 Match History
               </button>
-            </>
+            </div>
           ) : (
             <>
               <div className="blocking">
