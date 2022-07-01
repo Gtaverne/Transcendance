@@ -1,6 +1,5 @@
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Color } from 'three';
 import UserInterface from '../interfaces/UserInterface';
 import './UserLeaderboard.css';
 

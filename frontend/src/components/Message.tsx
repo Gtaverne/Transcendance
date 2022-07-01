@@ -2,6 +2,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import MessageInterface from '../interfaces/MessageInterface';
 import './message.css';
+
 const imageURL =
   'https://cdn.iconscout.com/icon/free/png-256/list-message-2367725-1976875.png';
 

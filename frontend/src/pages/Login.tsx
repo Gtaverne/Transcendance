@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { login, loginmfa, reset } from '../features/auth/authSlice';
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
 
 type Props = {};

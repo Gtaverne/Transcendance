@@ -1,18 +1,15 @@
-import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRoomDTO } from './dto/create-room.dto';
-import { RoomDTO } from './dto/room.dto';
 import { RoomsEntity } from './rooms.entity';
 import { UsersService } from 'src/users/users.service';
-import { identity } from 'rxjs';
 import { JoinRoomDTO } from './dto/join-room';
-import { hash, genSalt, compare } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 import { ChangeRoleDTO } from './dto/change-status.dto';
 import { MuteBanDTO } from './dto/mute-ban.dto';
 import { MuteEntity } from './mute.entity';
 import { BanEntity } from './ban.entity';
-import { RoomsGateway } from './rooms.gateway';
 
 var jwt = require('jsonwebtoken');
 const TOKEN_SECRET = process.env.JWT_Secret;

@@ -1,12 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsDate,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { UsersEntity } from 'src/users/users.entity';
 import { BanEntity } from '../ban.entity';

@@ -1,5 +1,5 @@
 import { BaseEntity } from '../../base.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { UsersEntity } from 'src/users/users.entity';
 import { RoomsEntity } from 'src/rooms/rooms.entity';
 

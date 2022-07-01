@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 

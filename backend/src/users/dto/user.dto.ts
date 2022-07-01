@@ -1,12 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsDate,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { AchievementsEntity } from 'src/achievements/achievements.entity';

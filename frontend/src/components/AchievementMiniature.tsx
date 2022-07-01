@@ -1,6 +1,3 @@
-import apiGetter from '../features/apicalls/apiGetter';
-import UserInterface from '../interfaces/UserInterface';
-
 type Props = {
   achievement: any;
 };

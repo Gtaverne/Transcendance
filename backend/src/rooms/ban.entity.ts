@@ -2,7 +2,6 @@ import { BaseEntity } from '../../base.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { RoomsEntity } from './rooms.entity';
 import { UsersEntity } from 'src/users/users.entity';
-import { type } from 'os';
 
 @Entity('ban')
 export class BanEntity extends BaseEntity {

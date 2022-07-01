@@ -1,4 +1,4 @@
-import { Get, Injectable, Param } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 const CDN_PATH = '/app/microcdn';

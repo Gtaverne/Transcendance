@@ -1,8 +1,7 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from '../users/users.entity';
 import { Repository } from 'typeorm';
-import { RoomsService } from '../rooms/rooms.service';
 import { GamesEntity } from './games.entity';
 
 type UserInfoProps = {

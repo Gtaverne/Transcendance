@@ -1,23 +1,12 @@
 // eslint-disable-next-line
 import { Link, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  Component,
-} from 'react';
+import React, { useState } from 'react';
 import GlassButton from '../components/Home/GlassButton';
 
 import './Home.css';
-import logo from './assets/logo.svg';
-import chatIcon from './assets/icons/chat.svg';
-import startIcon from './assets/icons/start.svg';
-import leaderboardIcon from './assets/icons/leaderboard.svg';
 import StartIcon from '../components/Icons/StartIcon';
 import LeaderboardIcon from '../components/Icons/LeaderboardIcon';
 import ChatIcon from '../components/Icons/ChatIcon';
