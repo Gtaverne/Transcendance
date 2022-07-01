@@ -285,9 +285,14 @@ export class GamesGateway
             gameEntity.levelB = userB.lvl;
 
             if (game.scoreA >= WIN_SCORE)
-              this.usersRepository.update(userA.id!, { lvl: userA.lvl + 1 });
+              gameEntity.levelA++;
             else if (game.scoreB >= WIN_SCORE)
-              this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });
+              gameEntity.levelB++;
+            
+            if (game.scoreA >= WIN_SCORE)
+              this.usersRepository.update(userA.id!, { lvl: gameEntity.levelA });
+            else if (game.scoreB >= WIN_SCORE)
+              this.usersRepository.update(userB.id!, { lvl: gameEntity.levelB });
 
             const newGame = this.gamesRepository.create(gameEntity);
             this.gamesRepository.save(newGame).then(() => {
