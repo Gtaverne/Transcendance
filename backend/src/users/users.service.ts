@@ -605,7 +605,6 @@ export class UsersService {
           username: login,
         });
       }
-      0;
       await this.usersRepository.update(data.id!, {
         username: login,
       });

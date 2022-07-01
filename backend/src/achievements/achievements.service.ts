@@ -5,6 +5,8 @@ import { ListCollectionsOptions, Repository } from 'typeorm';
 import { CreateAchievementDTO } from './dto/create-achievement.dto';
 import { AchievementsEntity } from './achievements.entity';
 
+
+// A modifier
 const CDN_PATH = 'http://localhost:3000/api/microcdn/content';
 
 @Injectable()
