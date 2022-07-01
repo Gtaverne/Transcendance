@@ -30,11 +30,25 @@ export class RoomsService {
   async invite(data: ChangeRoleDTO, token: String) {
     if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     const user = await this.usersService.findOneWithName(data.role);
+    const banList = await this.banList(data.channelId);
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
-      relations: ['accessList'],
+      relations: ['accessList', 'admins', 'owner'],
     });
+    const roomMembers = await this.findRoomUsersId(data.channelId);
     if (!user || !room) return false;
+    if (!roomMembers.includes(data.user.id)) return false;
+    const adminList: number[] = [];
+    for (let i = 0; i < room.admins.length; i++) {
+      adminList.push(room.admins[i].id);
+    }
+
+    //If the user is banned, only owner or admin can invite him
+    if (banList.includes(user.id)) {
+      if (!(room.owner.id == data.user.id || adminList.includes(data.user.id)))
+        return false;
+    }
+
     for (let i = 0; i < room.accessList.length; i++) {
       if (room.accessList[i].id === user.id) {
         console.log('User Already in the Room');

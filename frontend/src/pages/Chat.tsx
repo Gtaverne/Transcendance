@@ -264,12 +264,12 @@ function Chat({ socket }: any) {
     const res = await apiPoster('rooms/join/', joinDTO);
 
     if (res.data) {
-      console.log('Updating conv after join');
+      toast.success('Successfully Joined');
       refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     } else {
-      console.log('Access Unauthorized');
+      toast.error('Access Unauthorized');
     }
   };
 
@@ -439,10 +439,12 @@ function Chat({ socket }: any) {
       appointedId: 0,
       role: usernameInvite ? usernameInvite : '',
     });
-    if (res) {
+    if (res.data) {
       toast.success('Invitation Successfull');
       refreshOthers();
       setTimeout(getConversations, 250);
+    } else {
+      toast.error('Invitation Not Authorized');
     }
   };
 
@@ -698,7 +700,8 @@ function Chat({ socket }: any) {
                               type="number"
                               value={mute === 0 ? '' : mute}
                               onChange={(e) => {
-                                setMute(e.target.valueAsNumber);
+                                if (e.target.value === '') setMute(0);
+                                else setMute(e.target.valueAsNumber);
                               }}
                             />
                             <button onClick={handleMute}>Mute</button>
@@ -711,7 +714,8 @@ function Chat({ socket }: any) {
                               type="number"
                               value={ban === 0 ? '' : ban}
                               onChange={(e) => {
-                                setBan(e.target.valueAsNumber);
+                                if (e.target.value === '') setBan(0);
+                                else setBan(e.target.valueAsNumber);
                               }}
                             />
                             <button onClick={handleBan}>Ban</button>
