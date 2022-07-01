@@ -309,18 +309,16 @@ export class RoomsService {
     console.log(createRoom);
     const newRoom = await this.roomsRepository.create();
     const user1 = await this.usersService.findOne(createRoom.owner);
-    console.log(user1);
     if (createRoom.channelName.length > 30) return;
 
     if (createRoom.category === 'directMessage') {
       const user2 = await this.usersService.findOneWithName(
         createRoom.secondMemberDm,
       );
-      if (!user1 || !user2 || user1 === user2) {
-        console.log('One of the users is was not found or duplicate');
+      if (!user1 || !user2 || user1.id === user2.id) {
+        console.log('One of the users was not found or is duplicate');
         return;
       }
-      console.log(user2);
       newRoom.accessList = [user1, user2];
       newRoom.category = createRoom.category;
       newRoom.owner = user1;

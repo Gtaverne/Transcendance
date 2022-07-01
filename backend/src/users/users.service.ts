@@ -24,7 +24,7 @@ const Access_Token_URL = process.env.Access_Token_URL;
 const Client_ID = process.env.Client_ID;
 const Client_Secret = process.env.Client_Secret;
 const TOKEN_SECRET = process.env.JWT_Secret;
-const App_Name = 'Carlos Pongos';
+const App_Name = 'Pongzi';
 const FRONT_DOMAIN = process.env.FRONT_DOMAIN;
 
 @Injectable()
