@@ -13,7 +13,7 @@ import Configure2FA from './pages/Configure2FA';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 import PrivateRoute from './components/PrivateRoute';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { io, Socket } from 'socket.io-client';
 
