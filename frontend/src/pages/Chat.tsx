@@ -36,7 +36,7 @@ function Chat({ socket }: any) {
     message: '',
   });
   const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
-  const { user, iBlockList: iBlockListAuth } = useSelector(
+  const { user } = useSelector(
     (state: RootStateOrAny) => state.auth,
   );
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,7 @@ function Chat({ socket }: any) {
         console.log('Message in the current room');
       }
     });
-    socket.current?.on('getNewInfo', (data: any) => {
+    socket.current?.on('getNewInfo', () => {
       console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
@@ -121,6 +121,7 @@ function Chat({ socket }: any) {
     };
     getMessages();
     setRoleList(currentChat);
+    // eslint-disable-next-line
   }, [currentChat]);
 
   if (!user) {
@@ -317,7 +318,7 @@ function Chat({ socket }: any) {
   };
 
   const setRoleList = (c: RoomInterface | undefined) => {
-    if (!currentChat || c == undefined) return;
+    if (!currentChat || c === undefined) return;
     let now = new Date();
     let adminList: number[] = [];
     let muteList: number[] = [];
@@ -355,10 +356,7 @@ function Chat({ socket }: any) {
 
   const handleBlockUser = async (e: React.FormEvent) => {
     let val: any = currentUser?.id ? currentUser?.id : 0;
-    let alreadyBlocked;
-
-    if (iBlockList.includes(val)) alreadyBlocked = true;
-    else alreadyBlocked = false;
+    let alreadyBlocked = iBlockList.includes(val);
 
     const res = await apiPoster('users/blockuser/', {
       user,

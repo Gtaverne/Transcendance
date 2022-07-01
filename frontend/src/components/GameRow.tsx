@@ -1,4 +1,3 @@
-import { RootStateOrAny, useSelector } from 'react-redux';
 import './GameRow.css';
 
 type UserInfoProps = {
@@ -15,7 +14,6 @@ type GameCleanInfo = {
 };
 
 function GameRow({ game }: { game: GameCleanInfo }) {
-  const { user } = useSelector((state: RootStateOrAny) => state.auth);
   return (
     <>
       <div className="historyUser">
