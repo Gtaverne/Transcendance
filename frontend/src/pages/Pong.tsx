@@ -232,7 +232,7 @@ const PongFrame = ({prefix}: {prefix: string}) => {
         ball.position.z += (global.game.ballY - ball.position.z) * 0.4;
         ball.position.x += (global.game.ballX - ball.position.x) * 0.4;
 
-        ball.position.x = Math.max(-goal, Math.min(goal, ball.position.x));
+        ball.position.x = Math.max(- goal - 1, Math.min(goal + 1, ball.position.x));
 
         camera.position.x += (Math.min(Math.max((global.game.ballX/goal) * 3, -3), 3) - camera.position.x) * 0.006 * global.game.slow;
 
