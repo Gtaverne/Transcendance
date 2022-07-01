@@ -39,7 +39,7 @@ export class GamesService {
     const retGames: GameCleanInfo[] = [];
     games.forEach((game) => {
       if (!game.user1 || !game.user2) return;
-      retGames.push({
+      retGames.unshift({
         userA: {
           score: game.score1,
           level: game.levelA,
