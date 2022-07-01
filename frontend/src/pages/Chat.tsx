@@ -247,6 +247,8 @@ function Chat({ socket }: any) {
       refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
+    } else {
+      toast.error('Unauthorized');
     }
   };
 
