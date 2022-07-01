@@ -212,7 +212,15 @@ export class GamesGateway
     this.server
       .to(opponent.id)
       .emit('ball', -ballX, ARENA_WIDTH - ballY, -velX, -velY);
+
     const game = this.getUserGame(client.id);
+
+
+    const userA = this.socketToPlayer.get(game.userA.id);
+
+    console.log("hitBall a:", client.id == game.userA.id, ballX, ballY, velX, velY, userA.username);
+
+
     /* eslint-disable */
     if (client.id == game.userA.id)
       this.sendToSpectator(game, 'ball', ballX, ballY, velX, velY);

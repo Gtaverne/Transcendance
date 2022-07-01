@@ -7,7 +7,7 @@ import apiPoster from '../apicalls/apiPoster';
 // var jwt = require('jsonwebtoken')
 // import { encode, TAlgorithm } from "jwt-simple";
 
-const API_URL = process.env.REACT_APP_URL_BACK;
+const API_URL = process.env.REACT_APP_BASE_URL! + process.env.REACT_APP_API_PATH!;
 
 //Login user
 const login = async (code: string) => {

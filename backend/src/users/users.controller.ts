@@ -25,7 +25,7 @@ import { UsersService } from './users.service';
 
 var jwt = require('jsonwebtoken');
 const TOKEN_SECRET = process.env.JWT_Secret;
-const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
+const FRONT_DOMAIN = process.env.FRONT_DOMAIN;
 
 //retourne le premier endpoint qui match la route
 @Controller('users')
@@ -68,7 +68,7 @@ export class UsersController {
     @Query('code') code: Promise<string>,
   ): Promise<any> {
     const cd = await code;
-    console.log('callback, code: ', code);
+    console.log('callback, code: ', code, FRONT_DOMAIN);
     try {
       const user = await this.usersServices.login(cd);
       response.header({

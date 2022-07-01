@@ -30,7 +30,7 @@ function Verify2FA({}: Props) {
 
     try {
       const resMFA = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'users/mfaverify',
+        process.env.REACT_APP_BASE_URL! + process.env.REACT_APP_API_PATH! + 'users/mfaverify',
         {
           params: { jwt: Cookies.get('jwt'), code: writtenCode },
         },

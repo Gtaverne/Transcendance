@@ -1,23 +1,14 @@
-import logo from './logo.svg';
 import './Pong.css';
-
-import useSound from 'use-sound';
-
 import bouncesound from './assets/bounce.mp3';
 import goalsound from './assets/goal.mp3';
-
-
 import * as THREE from 'three';
-
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 
 
-import React, { useState, useEffect, useLayoutEffect, useRef, Component } from 'react';
-import RoomInterface from '../interfaces/RoomInterface';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Material } from 'three';
 import { Link, useParams } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
-import Cookies from 'js-cookie';
 import useAudio from '../features/game/useAudio';
 
 declare var global: {
@@ -39,12 +30,7 @@ declare var global: {
   requestId: number;
 };
 
-type GameUser = {
-  username: string;
-  avatar: string;
-};
-
-const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
+const PongFrame = ({prefix}: {prefix: string}) => {
 
   const mount = useRef<HTMLDivElement>(null);
 
@@ -224,7 +210,7 @@ const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
 
     var animate = function () {
 
-      if (renderer.domElement.width != window.innerWidth || renderer.domElement.height != window.innerHeight)
+      if (renderer.domElement.width !== window.innerWidth || renderer.domElement.height !== window.innerHeight)
       {
         setupCamera();
       }
@@ -245,6 +231,8 @@ const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
 
         ball.position.z += (global.game.ballY - ball.position.z) * 0.4;
         ball.position.x += (global.game.ballX - ball.position.x) * 0.4;
+
+        ball.position.x = Math.max(-goal, Math.min(goal, ball.position.x));
 
         camera.position.x += (Math.min(Math.max((global.game.ballX/goal) * 3, -3), 3) - camera.position.x) * 0.006 * global.game.slow;
 
@@ -289,7 +277,7 @@ const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
     return () => {
       window.cancelAnimationFrame(global.requestId);
     }
-  }, []);
+  }, [prefix]);
   return (
     <div className="back">
       <div ref={mount} className="game"/>
@@ -301,9 +289,7 @@ const PongFrame = ({color, prefix}: {color: number, prefix: string}) => {
 const Pong = () => {
 
   const params = useParams();
-  const isSpectating = params.id != undefined && params.id != null;
-
-  const mount = useRef<HTMLDivElement>(null);
+  const isSpectating = params.id !== undefined && params.id !== null;
 
   const [scores, setScores] = useState({scoreA: 0, scoreB: 0});
 
@@ -324,7 +310,6 @@ const Pong = () => {
 
   let lenghtBar = 7;
   let border = 3.2;
-  let ballSize = 1;
 
   let goal = 44.7;
 
@@ -367,7 +352,7 @@ const Pong = () => {
     if (socket.current)
       socket.current?.disconnect();
 
-    socket.current = io("http://localhost:3000/games");
+    socket.current = io(process.env.REACT_APP_BASE_URL! + "/games");
     socket.current?.on("connect", () => {
       console.log("Connected");
     });
@@ -406,7 +391,7 @@ const Pong = () => {
         play();
         global.game.bounceA = Math.PI;
       }
-      else if (velX == 0 && velY == 0)
+      else if (velX === 0 && velY === 0)
       {
         playGoal();
         global.game.localX = arenaWidth/2;
@@ -427,7 +412,7 @@ const Pong = () => {
       setGameover(true);
       setStarted(false);
     });
-    socket.current?.on("receivePoint", (opoX) => {
+    socket.current?.on("receivePoint", () => {
       global.game.scoreA++;
     });
 
@@ -461,16 +446,16 @@ const Pong = () => {
 
     const keyDownHandler = (e : KeyboardEvent) => {
       console.log(e.keyCode);
-      if(e.keyCode == 38)
+      if(e.keyCode === 38)
         upPressed = true;
-      else if(e.keyCode == 40)
+      else if(e.keyCode === 40)
         downPressed = true;
     }
 
     const keyUpHandler = (e : KeyboardEvent) => {
-      if(e.keyCode == 38)
+      if(e.keyCode === 38)
         upPressed = false;
-      else if(e.keyCode == 40)
+      else if(e.keyCode === 40)
         downPressed = false;
     }
 
@@ -485,7 +470,7 @@ const Pong = () => {
     function gameLoop()
     {
 
-      if (global.game.scoreA != scores.scoreA || global.game.scoreB != scores.scoreB)
+      if (global.game.scoreA !== scores.scoreA || global.game.scoreB !== scores.scoreB)
       {
         setScores({scoreA: global.game.scoreA, scoreB: global.game.scoreB});
       }
@@ -500,7 +485,7 @@ const Pong = () => {
         if (upPressed)
           global.game.localX = Math.max((global.game.localX - 1), lenghtBar / 2);
 
-        if (loopCount++ % 2 == 0)
+        if (loopCount++ % 2 === 0)
           socket.current?.emit('move', { localX: global.game.localX });
 
       }
@@ -518,7 +503,7 @@ const Pong = () => {
 
           let hit = global.game.ballY - global.game.localX;
           let angle = Math.atan2(global.game.velY, global.game.velX);
-          let size = Math.max(Math.sqrt(global.game.velX * global.game.velX + global.game.velY * global.game.velY) / 1, 0.5);
+          let size = Math.max(Math.sqrt(global.game.velX * global.game.velX + global.game.velY * global.game.velY), 0.5);
 
           if (hit > 2)
             angle = Math.min(angle + 0.5, 0.7);
@@ -535,23 +520,20 @@ const Pong = () => {
 
           socket.current?.emit('hitBall', {ballX: global.game.ballX, ballY: global.game.ballY, velX: global.game.velX, velY: global.game.velY});
         }
-        else if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
+        else if (global.game.ballX <= -(goal + 1))
         {
-          if (global.game.ballX <= -(goal + 1))
-          {
             socket.current?.emit('tookGoal');
             global.game.scoreB++;
             global.game.ballY = arenaWidth / 2;
             global.game.ballX = 0;
-          }
+            global.game.velX = 0;
+            global.game.velY = 0;
 
-          global.game.velX = 0;
-          global.game.velY = 0;
         }
       }
       else
       {
-        if (global.game.ballX <= -(goal + 1) || global.game.ballX >= (goal + 1))
+        if ((global.game.ballX <= -(goal + 1) && global.game.velX < 0) || (global.game.ballX >= (goal + 1) && global.game.velX > 0))
         {
           global.game.velX = 0;
           global.game.velY = 0;
@@ -559,7 +541,7 @@ const Pong = () => {
       }
 
 
-      if(new Date().getTime() - ballStopTime > 2000){
+      if(new Date().getTime() - ballStopTime > 2000 && !(global.game.ballX >= (goal + 1) && global.game.velX > 0)){
         global.game.ballX += global.game.velX;
         global.game.ballY += global.game.velY;
       }
@@ -573,12 +555,13 @@ const Pong = () => {
       document.removeEventListener("keyup", keyUpHandler);
       socket.current?.disconnect();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
   return (
     <div style={{filter: `hue-rotate(${color}deg)`}}>
-      <PongFrame color={color} prefix={ isSpectating ? '../' : '' }></PongFrame>
+      <PongFrame prefix={ isSpectating ? '../' : '' }></PongFrame>
 
       <div className="backButton">
         <Link to={"/"}>Exit</Link>
@@ -608,15 +591,15 @@ const Pong = () => {
             <fieldset>
               <legend>Select a theme:</legend>
               <div>
-                <input type="radio" id="purple" name="drone" value="huey" checked={color == 0} onChange={() => setColor(0)}/>
+                <input type="radio" id="purple" name="drone" value="huey" checked={color === 0} onChange={() => setColor(0)}/>
                   <label htmlFor="purple">PURPLE</label>
               </div>
               <div>
-                <input type="radio" id="blue" name="drone" value="dewey" checked={color == 290} onChange={() => setColor(290)}/>
+                <input type="radio" id="blue" name="drone" value="dewey" checked={color === 290} onChange={() => setColor(290)}/>
                   <label htmlFor="blue">BLUE</label>
               </div>
               <div>
-                <input type="radio" id="blue" name="drone" value="louie" checked={color == 66} onChange={() => setColor(66)}/>
+                <input type="radio" id="blue" name="drone" value="louie" checked={color === 66} onChange={() => setColor(66)}/>
                   <label htmlFor="blue">RED</label>
               </div>
             </fieldset>
