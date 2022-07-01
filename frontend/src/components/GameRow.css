@@ -33,7 +33,7 @@
   flex: 1;
   background: rgba(0, 0, 0, 0.14);
   font-size: 22px;
-  padding-top: 29px;
+  padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -44,4 +44,13 @@
 
 .historyOpacity {
   color: rgba(255, 255, 255, 0.5);
+}
+
+.historyLevel
+{
+  font-size: 14px;
+  font-family: Helvetica;
+  opacity: 0.5;
+  font-style: italic;
+
 }

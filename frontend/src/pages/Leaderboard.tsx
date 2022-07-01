@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Overlay from '../components/Overlay';
 import UserLeaderboard from '../components/UserLeaderboard';
-import UserMiniature from '../components/UserMiniature';
 import apiGetter from '../features/apicalls/apiGetter';
 import UserInterface from '../interfaces/UserInterface';
 

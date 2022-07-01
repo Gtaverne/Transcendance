@@ -1,26 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Header,
-  HttpCode,
-  Param,
-  Post,
-  Put,
-  Query,
-  Redirect,
-  StreamableFile,
-  Req,
-  Res,
-  UseInterceptors,
-  UploadedFile,
-} from '@nestjs/common';
-import { query, Request, response, Response } from 'express';
+import { Controller, Get, Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MicrocdnService } from './microcdn.service';
 import * as fs from 'fs';
-import { Readable } from 'typeorm/platform/PlatformTools';
+
 var jwt = require('jsonwebtoken');
 const TOKEN_SECRET = process.env.JWT_Secret;
 const CDN_PATH = '/app/microcdn';

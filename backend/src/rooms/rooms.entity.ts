@@ -1,5 +1,5 @@
 import { BaseEntity } from '../../base.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { MuteEntity } from './mute.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { BanEntity } from './ban.entity';

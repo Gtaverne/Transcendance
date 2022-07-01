@@ -1,8 +1,4 @@
-import {
-  IsInt,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 import { UsersEntity } from 'src/users/users.entity';
 
 export class MuteBanDTO {

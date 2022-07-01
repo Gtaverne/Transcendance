@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import { login, logout, reset } from '../features/auth/authSlice';
-import useWindowSize from '../hooks/useWindowSize';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
+import { logout, reset } from '../features/auth/authSlice';
 import logo from '../pages/assets/logo.png';
 
 //const API_42 = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID!}&redirect_uri=${encodeURI(process.env.REACT_APP_BASE_URL!)}%2Flogin&response_type=code`;

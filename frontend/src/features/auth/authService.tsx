@@ -1,7 +1,5 @@
 import axios from 'axios';
-import apiGetter from '../apicalls/apiGetter';
 import Cookies from 'js-cookie';
-import UserInterface from '../../interfaces/UserInterface';
 import apiPoster from '../apicalls/apiPoster';
 
 // var jwt = require('jsonwebtoken')

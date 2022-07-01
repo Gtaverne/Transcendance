@@ -1,10 +1,8 @@
-import React from 'react';
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { edit, reset, logout } from '../features/auth/authSlice';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
 

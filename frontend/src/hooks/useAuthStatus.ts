@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { RootStateOrAny, useSelector, useDispatch} from 'react-redux';
+import { useEffect, useState } from 'react';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import { login, edit, reset, logout } from '../features/auth/authSlice';
-import UserInterface from '../interfaces/UserInterface';
+import { logout } from '../features/auth/authSlice';
 
 
 // import Cookies from 'js-cookie';

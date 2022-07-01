@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Howl } from "howler";
+import { Howl } from 'howler';
 import { useEffect, useRef, useState } from 'react';
 
 

@@ -2,13 +2,13 @@ import './Pong.css';
 import bouncesound from './assets/bounce.mp3';
 import goalsound from './assets/goal.mp3';
 import * as THREE from 'three';
+import { Material } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 
 
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { Material } from 'three';
-import { Link, useParams } from 'react-router-dom';
-import { Socket, io } from 'socket.io-client';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client';
 import useAudio from '../features/game/useAudio';
 
 declare var global: {
@@ -232,7 +232,7 @@ const PongFrame = ({prefix}: {prefix: string}) => {
         ball.position.z += (global.game.ballY - ball.position.z) * 0.4;
         ball.position.x += (global.game.ballX - ball.position.x) * 0.4;
 
-        ball.position.x = Math.max(-goal, Math.min(goal, ball.position.x));
+        ball.position.x = Math.max(- goal - 1, Math.min(goal + 1, ball.position.x));
 
         camera.position.x += (Math.min(Math.max((global.game.ballX/goal) * 3, -3), 3) - camera.position.x) * 0.006 * global.game.slow;
 
@@ -303,6 +303,8 @@ const Pong = () => {
   const [gameUserB, setGameUserB] = useState({username: '', avatar: ''});
 
   const [color, setColor] = useState(0);
+
+  const navigate = useNavigate();
 
 
   var play = useAudio(bouncesound);
@@ -415,7 +417,9 @@ const Pong = () => {
     socket.current?.on("receivePoint", () => {
       global.game.scoreA++;
     });
-
+    socket.current?.on("cannotSpectate", () => {
+      navigate('/current');
+    });
     if (isSpectating)
       socket.current?.emit('spectate', { gameId: params.id });
     else
