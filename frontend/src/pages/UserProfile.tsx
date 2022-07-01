@@ -14,8 +14,7 @@ import UserInterface from '../interfaces/UserInterface';
 import '../components/Overlay.css';
 import Overlay from '../components/Overlay';
 
-const STORAGE_PATH =
-  process.env.REACT_APP_STORAGE_PATH || 'http://localhost:5050/microcdn';
+const STORAGE_PATH = process.env.REACT_APP_STORAGE_PATH!;
 if (STORAGE_PATH === '') {
   console.log('Missing STORAGE_PATH in .env');
 }

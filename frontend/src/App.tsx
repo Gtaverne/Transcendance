@@ -2,13 +2,10 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Header from './components/Header';
 import Chat from './pages/Chat';
-import Game from './pages/Game';
 import Pong from './pages/Pong';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
@@ -29,10 +26,9 @@ import Page404 from './pages/Page404';
 
 function MainRooter() {
   const socket = useRef<Socket | undefined>(undefined);
-  const location = useLocation();
   const [percX, setPercX] = useState(0);
   const [percY, setPercY] = useState(0);
-  const { user, iBlockList: iBlockListAuth } = useSelector(
+  const { user } = useSelector(
     (state: RootStateOrAny) => state.auth,
   );
 
@@ -50,7 +46,7 @@ function MainRooter() {
   useEffect(() => {
     if (user) {
       if (socket.current) socket.current?.disconnect();
-      socket.current = io('http://localhost:3000/chat', {
+      socket.current = io(process.env.REACT_APP_BASE_URL! + '/chat', {
         query: { id: user.id },
         transports: ['websocket', 'polling'],
         forceNew: true,
@@ -133,8 +129,6 @@ function MainRooter() {
 }
 
 function App() {
-  const { user } = useSelector((state: RootStateOrAny) => state.auth);
-
   return (
     <>
       <Router>

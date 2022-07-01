@@ -14,7 +14,7 @@ function CurrentGames() {
 
   useEffect(() => {
 
-    socket.current = io("http://localhost:3000/games");
+    socket.current = io(process.env.REACT_APP_BASE_URL! + "/games");
     socket.current?.on("connect", () => {
       console.log("Connected");
     });

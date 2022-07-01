@@ -25,7 +25,7 @@ const Client_ID = process.env.Client_ID;
 const Client_Secret = process.env.Client_Secret;
 const TOKEN_SECRET = process.env.JWT_Secret;
 const App_Name = 'Carlos Pongos';
-const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
+const FRONT_DOMAIN = process.env.FRONT_DOMAIN;
 
 @Injectable()
 export class UsersService {
@@ -297,7 +297,6 @@ export class UsersService {
   //Generate a token, put it in the user db
   async secret(token: string): Promise<string> {
     console.log('The token', token);
-
     try {
       const idFromToken = jwt.verify(token, TOKEN_SECRET);
 

@@ -5,18 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from './assets/logo.svg';
 
 
-var API_42 =
-  'https://api.intra.42.fr/oauth/authorize?client_id=defe35a8d7ed70945036caa7f7b042c6c98ab8f01b768c3adcd9e54d5d301d9f&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
-
-const Client_ID = process.env.REACT_APP_CLIENT_ID;
-
-if (Client_ID) {
-  API_42 =
-    'https://api.intra.42.fr/oauth/authorize?client_id=' +
-    Client_ID +
-    '&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
-}
-
+const API_42 = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID!}&redirect_uri=${encodeURI(process.env.REACT_APP_BASE_URL!)}%2Flogin&response_type=code`;
 
 type Props = {};
 

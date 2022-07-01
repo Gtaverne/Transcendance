@@ -4,19 +4,7 @@ import { login, logout, reset } from '../features/auth/authSlice';
 import useWindowSize from '../hooks/useWindowSize';
 import logo from '../pages/assets/logo.png';
 
-var API_42 =
-  'https://api.intra.42.fr/oauth/authorize?client_id=defe35a8d7ed70945036caa7f7b042c6c98ab8f01b768c3adcd9e54d5d301d9f&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
-
-const Client_ID = process.env.REACT_APP_CLIENT_ID;
-
-if (Client_ID) {
-  API_42 =
-    'https://api.intra.42.fr/oauth/authorize?client_id=' +
-    Client_ID +
-    '&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code';
-}
-
-//const logo = 'https://cdn.discordapp.com/attachments/778668594086936616/972774969593442354/Artboard.png';
+//const API_42 = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID!}&redirect_uri=${encodeURI(process.env.REACT_APP_BASE_URL!)}%2Flogin&response_type=code`;
 
 
 function Header() {
@@ -59,9 +47,7 @@ function Header() {
             </li>
           </>
         ) : (
-          <li>
-            <a href={API_42}>Login</a>
-          </li>
+          <></>
         )}
       </ul>
     </header>

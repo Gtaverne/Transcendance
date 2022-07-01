@@ -33,7 +33,7 @@ function Configure2FA({}: Props) {
       console.log('User already configurated 2fa');
     } else {
       const code = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'users/mfasetup',
+        process.env.REACT_APP_BASE_URL! + process.env.REACT_APP_API_PATH! + 'users/mfasetup',
         {
           params: { jwt: Cookies.get('jwt') },
         },
@@ -60,7 +60,7 @@ function Configure2FA({}: Props) {
 
     try {
       const resMFA = await axios.get(
-        process.env.REACT_APP_URL_BACK + 'users/mfaverify',
+        process.env.REACT_APP_BASE_URL! + process.env.REACT_APP_API_PATH! + 'users/mfaverify',
         {
           params: { jwt: Cookies.get('jwt'), code: writtenCode },
         },

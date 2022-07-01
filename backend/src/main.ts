@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 
 import * as cookieParser from 'cookie-parser';
 
-const FRONT_DOMAIN = process.env.FRONT_DOMAIN || 'http://localhost:3000';
 const BACKEND_PORT = process.env.BACKEND_PORT || 5050;
 
 async function bootstrap() {
