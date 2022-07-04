@@ -160,7 +160,7 @@ const PongFrame = ({prefix}: {prefix: string}) => {
       const geometry = new RoundedBoxGeometry( 100, 200, 50, 10, 2.7 );
       const materialCanvas = new THREE.MeshBasicMaterial( { color: 0x470243 } );
       let meshFrame = new THREE.Mesh( geometry, materialCanvas );
-      meshFrame.position.y = -100.3;
+      meshFrame.position.y = -100.8;
       meshFrame.position.x = 0.14;
       meshFrame.position.z = 25 - 3.7;
       scene.add( meshFrame )
@@ -463,6 +463,32 @@ const Pong = () => {
         downPressed = false;
     }
 
+    const handleStart = (e: TouchEvent) => {
+      const touches = e.changedTouches;
+      for (let i = 0; i < touches.length; i++) {
+        let t = touches[i];
+        if (t.pageX < window.innerWidth / 2)
+          upPressed = true;
+        else
+          downPressed = true;
+      }
+    }
+
+    const handleEnd = (e: TouchEvent) => {
+      const touches = e.changedTouches;
+      for (let i = 0; i < touches.length; i++) {
+        let t = touches[i];
+        if (t.pageX < window.innerWidth / 2)
+          upPressed = false;
+        else
+          downPressed = false;
+      }
+    }
+
+    document.addEventListener('touchstart', handleStart);
+    document.addEventListener('touchend', handleEnd);
+    document.addEventListener('touchcancel', handleEnd);
+
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
 
@@ -557,6 +583,9 @@ const Pong = () => {
       clearInterval(loop);
       document.removeEventListener("keydown", keyDownHandler);
       document.removeEventListener("keyup", keyUpHandler);
+      document.removeEventListener('touchstart', handleStart);
+      document.removeEventListener('touchend', handleEnd);
+      document.removeEventListener('touchcancel', handleEnd);
       socket.current?.disconnect();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
