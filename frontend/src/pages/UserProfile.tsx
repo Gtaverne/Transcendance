@@ -202,7 +202,7 @@ const UserProfile = (props: Props) => {
             }),
           );
           //Search if there is a more elegant way to remove a picture from cache -_-
-          window.location.reload();
+          //window.location.reload();
         } catch (error) {
           console.log('Avatar upload failed');
           dispatch(
