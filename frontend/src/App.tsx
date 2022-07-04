@@ -26,9 +26,7 @@ function MainRooter() {
   const [percX, setPercX] = useState(0);
   const [percY, setPercY] = useState(0);
 
-  const { user } = useSelector(
-    (state: RootStateOrAny) => state.auth,
-  );
+  const { user } = useSelector((state: RootStateOrAny) => state.auth);
 
   const onMouseMove = (clientX: number, clientY: number) => {
     let ratioX = clientX / window.innerWidth;
@@ -44,9 +42,8 @@ function MainRooter() {
   useEffect(() => {
     if (user && user.username) {
       if (socket.current) socket.current?.disconnect();
-      const redo = () => setTimeout(() => {
-        if (!Cookies.get("jwt") || Cookies.get("jwt") === '')
-        {
+      const connect = () => {
+        if (!Cookies.get('jwt') || Cookies.get('jwt') === '') {
           redo();
           return;
         }
@@ -55,15 +52,19 @@ function MainRooter() {
           transports: ['websocket', 'polling'],
           forceNew: true,
         });
-      }, 500);
-      redo();
+      };
+
+      const redo = () => setTimeout(connect, 500);
+      if (!Cookies.get('jwt') || Cookies.get('jwt') === '') redo();
+      else connect();
     }
   }, [user]);
 
   return (
     <div onMouseMove={({ clientX, clientY }) => onMouseMove(clientX, clientY)}>
       <div className="backgroundLayers">
-        <div className="layerZero"
+        <div
+          className="layerZero"
           style={{
             transform: `scale(1.15) translateX(${percX * 5}%) translateY(${
               percY * 5
@@ -97,7 +98,7 @@ function MainRooter() {
       </div>
       <Routes>
         {/* See https://stackoverflow.com/questions/67050966/how-to-build-a-404-page-with-react-router-dom-v6 */}
-        <Route path='*' element={<Page404 />} />
+        <Route path="*" element={<Page404 />} />
         <Route path="/" element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />
         </Route>
@@ -107,7 +108,7 @@ function MainRooter() {
         <Route path="/userprofile/:id" element={<PrivateRoute />}>
           <Route path="/userprofile/:id" element={<UserProfile />} />
         </Route>
-		<Route path="/matchhistory/:id" element={<PrivateRoute />}>
+        <Route path="/matchhistory/:id" element={<PrivateRoute />}>
           <Route path="/matchhistory/:id" element={<MatchHistory />} />
         </Route>
         <Route path="/configure2fa/:id" element={<PrivateRoute />}>
