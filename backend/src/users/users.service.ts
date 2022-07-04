@@ -161,18 +161,10 @@ export class UsersService {
       select: ['id', 'username', 'avatar', 'lvl', 'createdAt', 'avatar'],
       relations: [
         'iFollowList',
-        'followingMeList',
-        'iBlockedList',
-        'blockedMeList',
         'messagesList',
         'achievementsList',
-        'accessToList',
         'gamePlayer1',
         'gamePlayer2',
-        'ownedRooms',
-        'administratingRooms',
-        'mutedInARoom',
-        'bannedInARoom',
       ],
     });
     return user;
