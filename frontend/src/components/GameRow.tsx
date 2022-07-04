@@ -25,7 +25,7 @@ function GameRow({ game }: { game: GameCleanInfo }) {
         <div className="historyLevelProfile historyOpacity">VS</div>
         <div className="historyLevelProfile">{game.userB.score}</div>
         <div className="historyName historyNameRight">
-          {game.userB.username}<div className="historyLevel">Level: {game.userA.level}</div>
+          {game.userB.username}<div className="historyLevel">Level: {game.userB.level}</div>
         </div>
         <div className="historyRow">
           <img className="historyPic" src={game.userB.avatar} alt="" />
