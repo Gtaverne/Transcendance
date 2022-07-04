@@ -31,15 +31,14 @@ export class MicrocdnService {
   }
 
   getAvatarPath(id: number): string {
-    const path = CDN_PATH + `/avatar/${id}.jpg`;
-    // console.log('Get avatar of id: ', id, ' trying path: ', path);
-    // console.log('PAth exists? ', fs.existsSync(path));
-
+    const path = CDN_PATH + `/avatar/${id}.`;
     try {
-      if (fs.existsSync(path)) {
-        // console.log('Picture found');
-
-        return path;
+      if (fs.existsSync(path+'jpg')) {  
+        return path+'jpg';
+      } else if (fs.existsSync(path+'gif')) {  
+        return path+'gif';
+      } else if (fs.existsSync(path+'png')) {  
+        return path+'png';
       } else {
         console.log('Return default picture');
         return '/app/microcdn/avatar/default.jpg';
@@ -47,7 +46,7 @@ export class MicrocdnService {
     } catch (error) {
       console.log('Error in path: ', error);
 
-      return '/app/microcdn/avatar/1.jpg';
+      return '/app/microcdn/avatar/default.jpg';
     }
   }
 }

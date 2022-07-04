@@ -80,8 +80,8 @@ services:
     networks:
       - trans_network
     # A retirer en production
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
 
 
   adminer:
@@ -109,12 +109,6 @@ volumes:
   #     device: ./frontend/
   db_data:
 
-  # cdn:
-  #   driver: local
-  #   driver_opts:
-  #       type: 'none'
-  #       o: 'bind'
-  #       device: './microcdn'
 
 networks:
   trans_network:

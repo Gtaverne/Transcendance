@@ -7,7 +7,11 @@ import { AchievementsEntity } from './achievements.entity';
 
 
 // A modifier
-const CDN_PATH = 'http://localhost:3000/api/microcdn/content';
+// const CDN_PATH = 'http://localhost:3000/api/microcdn/content';
+const FRONT_DOMAIN = process.env.FRONT_DOMAIN;
+
+const CDN_PATH = FRONT_DOMAIN+'/api/microcdn/content';
+
 
 @Injectable()
 export class AchievementsService {

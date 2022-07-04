@@ -158,9 +158,13 @@ const UserProfile = (props: Props) => {
     console.log('In onEdition');
 
     if (editProfile === true && user.id === fetchedProfile.id) {
-      if (fetchedProfile.username.length > 15 || !isUserNameValid(fetchedProfile.username) ) {
-        toast.error('Please choose a shorter username, without weird characters');
-        
+      if (
+        fetchedProfile.username.length > 15 ||
+        !isUserNameValid(fetchedProfile.username)
+      ) {
+        toast.error(
+          'Please choose a shorter username, without weird characters',
+        );
       } else {
         dispatch(
           edit({
@@ -213,12 +217,15 @@ const UserProfile = (props: Props) => {
     setEditProfile((prevState) => !prevState);
   };
 
-  const onNewpp = (e: React.FormEvent) => {
+  const onNewpp = async (e: React.FormEvent) => {
     const files = (e.target as HTMLInputElement).files;
-
-    console.log('We received this picture: ', files);
-    if (files && files.length > 0) {
-      setProfilePic(files[0]);
+    if (!files || !files[0] || files[0].size > 1500001) {
+      toast.error('Invalid picture, try a smaller .jpg or .png')
+    } else {
+      console.log('We received this picture: ', files);
+      if (files && files.length > 0) {
+        setProfilePic(files[0]);
+      }
     }
   };
 
@@ -259,7 +266,7 @@ const UserProfile = (props: Props) => {
     const res = /^[A-Za-z0-9_\.]+$/.exec(username);
     const valid = !!res;
     return valid;
-  }
+  };
 
   const onFollow = async () => {
     if (user) {
@@ -298,13 +305,9 @@ const UserProfile = (props: Props) => {
     return <Spinner />;
   }
 
-
   if (+params.id! !== fetchedProfile.id) {
-    return (<Overlay title="Loading" style={{ overflowY: 'overlay' }}>
-
-    </Overlay>)
+    return <Overlay title="Loading" style={{ overflowY: 'overlay' }}>wait</Overlay>;
   }
-
 
   return (
     <Overlay title="User Profile" style={{ overflowY: 'overlay' }}>
@@ -351,7 +354,7 @@ const UserProfile = (props: Props) => {
               <input
                 type="file"
                 id="file"
-                accept="image/jpg"
+                accept=".jpg, .gif, .png"
                 onChange={onNewpp}
               />
             </>

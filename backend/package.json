@@ -41,8 +41,11 @@
     "class-validator": "^0.13.2",
     "cookie": "^0.5.0",
     "cookie-parser": "^1.4.6",
+    "core-js": "^3.23.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
+    "file-type": "^17.1.2",
+    "image-type": "^4.1.0",
     "json-stringify": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
@@ -100,5 +103,6 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "main": "index.js"
 }

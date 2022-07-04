@@ -21,6 +21,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { MicrocdnService } from './microcdn.service';
 import * as fs from 'fs';
 import { Readable } from 'typeorm/platform/PlatformTools';
+const imageType = require('image-type');
+
 var jwt = require('jsonwebtoken');
 const TOKEN_SECRET = process.env.JWT_Secret;
 const CDN_PATH = '/app/microcdn';
@@ -52,6 +54,7 @@ export class MicrocdnController {
       const path = this.microcdnService.getAvatarPath(params.id);
       // console.log('Microcdn path: ', path)
       const data = fs.createReadStream(path);
+
       response.type('image/png');
       data.pipe(response);
       return;
@@ -63,7 +66,7 @@ export class MicrocdnController {
 
   @Post('upload/:id')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(
+  async uploadFile(
     @UploadedFile() file: any,
     @Param() params: any,
     @Query('jwt') token: string,
@@ -72,7 +75,15 @@ export class MicrocdnController {
     console.log('Post received something from id: ', idFromToken);
     if (params.id === idFromToken) {
       try {
-        const path = CDN_PATH + `/avatar/${params.id}.jpg`;
+        const previous = this.microcdnService.getAvatarPath(params.id)
+        if (!previous.endsWith('default.jpg')) {
+          console.log('Deleting previous picture')
+          fs.unlinkSync(previous)
+        }
+        const tpe = await imageType(file.buffer)
+        console.log('File Type: ', tpe)
+        const path = CDN_PATH + `/avatar/${params.id}.${tpe.ext}`;
+
         console.log('Here we write the file: ', path);
         fs.writeFileSync(path, file.buffer);
       } catch (error) {
