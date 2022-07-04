@@ -103,8 +103,10 @@ function MainRooter() {
           <Route path="/" element={<Home />} />
         </Route>
         <Route path="/landing" element={<Landing />} />
-        <Route path="/create" element={<CreateProfile />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/create" element={<PrivateRoute />}>
+          <Route path="/create" element={<CreateProfile />} />
+        </Route>
         <Route path="/userprofile/:id" element={<PrivateRoute />}>
           <Route path="/userprofile/:id" element={<UserProfile />} />
         </Route>
