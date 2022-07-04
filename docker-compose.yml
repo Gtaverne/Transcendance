@@ -7,7 +7,11 @@ services:
     restart: always
     ports:
       - 3000:80
-      # - 443:443 NOT WORKING ON SCHOOL COMPUTERS
+      # - 443:443 NOT WORKING ON SCHOOL COMPU
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - trans_network
     depends_on:
       - backend
       - frontend
