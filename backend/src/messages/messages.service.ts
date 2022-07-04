@@ -26,10 +26,16 @@ export class MessagesService {
     const room = await this.roomsService.findOne(createMessage.channelId);
     newMessage.owner = owner;
     newMessage.room = room;
-    if (createMessage.message.length >= 300) return;
+    if (createMessage.message.length >= 300 || !owner || !room) return;
     const muteList = await this.roomsService.muteList(room.id);
     const banList = await this.roomsService.banList(room.id);
-    if (muteList.includes(owner.id) || banList.includes(owner.id)) return;
+    const accessList = await this.roomsService.findRoomUsersId(owner.id);
+    if (
+      muteList.includes(owner.id) ||
+      banList.includes(owner.id) ||
+      !accessList.includes(createMessage.channelId)
+    )
+      return;
     newMessage.message = createMessage.message;
 
     await this.messagesRepository.save(newMessage);

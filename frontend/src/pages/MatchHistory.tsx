@@ -42,7 +42,6 @@ function MatchHistory() {
         try {
           const res = await apiGetter('games/history/' + params.id);
           setHistory(res.data);
-        //   console.log(123, res.data);
         } catch (err) {
           console.log(err);
         }
@@ -50,9 +49,7 @@ function MatchHistory() {
     };
     getHistory();
     // eslint-disable-next-line 
-  }, []);
-  // @Benjamin, check
-// }, [params.id]);
+  }, [params.id]);
 
 
   return (

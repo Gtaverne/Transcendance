@@ -96,7 +96,9 @@ export class RoomsGateway
   async handleTransmitMessage(socket: Socket, msg: MessagesEntity) {
     if (msg.message.length >= 300) return;
     console.log('New message detected:', msg.message);
+	const muteList = await this.roomsService.muteList(msg.room.id);
     const list = await this.roomsService.findRoomUsersId(msg.room.id);
+	if (muteList.includes(+msg.owner.id)) return;
     this.broadcast(socket.id, 'getTransmitMessage', msg, true, list);
   }
 
