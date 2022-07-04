@@ -359,7 +359,8 @@ export class RoomsService {
       if (
         createRoom.channelName === '-' ||
         createRoom.channelName.length >= 300 ||
-        createRoom.password.length >= 200
+        createRoom.password.length >= 200 ||
+        createRoom.password.length === 0
       ) {
         console.log('Wrong Data');
         return;

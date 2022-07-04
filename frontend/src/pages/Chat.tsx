@@ -55,19 +55,19 @@ function Chat({ socket }: any) {
 
   useEffect(() => {
     socket.current?.on('getTransmitMessage', (data: any) => {
-      console.log(
-        'Socket message detected',
-        data.room.id,
-        global.currentChat?.id,
-        data,
-      );
+    //   console.log(
+    //     'Socket message detected',
+    //     data.room.id,
+    //     global.currentChat?.id,
+    //     data,
+    //   );
       setArrivalMessage(data);
-      if (global.currentChat && global.currentChat.id === data.room.id) {
-        console.log('Message in the current room');
-      }
+    //   if (global.currentChat && global.currentChat.id === data.room.id) {
+    //     console.log('Message in the current room');
+    //   }
     });
     socket.current?.on('getNewInfo', () => {
-      console.log('Socket getNewInfo detected', global.currentChat);
+    //   console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     });
