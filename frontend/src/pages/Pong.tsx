@@ -160,7 +160,7 @@ const PongFrame = ({prefix}: {prefix: string}) => {
       const geometry = new RoundedBoxGeometry( 100, 200, 50, 10, 2.7 );
       const materialCanvas = new THREE.MeshBasicMaterial( { color: 0x470243 } );
       let meshFrame = new THREE.Mesh( geometry, materialCanvas );
-      meshFrame.position.y = -100.8;
+      meshFrame.position.y = -101;
       meshFrame.position.x = 0.14;
       meshFrame.position.z = 25 - 3.7;
       scene.add( meshFrame )
@@ -593,7 +593,7 @@ const Pong = () => {
 
 
   return (
-    <div style={{filter: `hue-rotate(${color}deg)`}}>
+    <div className"wholeGame" style={{filter: `hue-rotate(${color}deg)`}}>
       <PongFrame prefix={ isSpectating ? '../' : '' }></PongFrame>
 
       <div className="backButton">

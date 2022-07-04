@@ -317,4 +317,7 @@ how to remove the virtical space around the range input in IE*/
 }
 
 
-
+.wholeGame
+{
+    user-select: none;
+}
