@@ -398,7 +398,8 @@ export class RoomsService {
     // const hashedPassword = await hash(join.password, salt);
     // console.log(3, hashedPassword);
     const res = await compare(join.password, room.password);
-    if (room.password.length !== 0 && (!res || join.password.length === 0)) {
+    // console.log(room.password.length !== 0, "mdp:", room.password);
+    if (room.password.length !== 0 && !res) {
       console.log('Wrong Password, Access to the Room Denied');
       return;
     }

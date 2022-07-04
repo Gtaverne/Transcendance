@@ -9,7 +9,7 @@ import { UsersEntity } from 'src/users/users.entity';
 export class RoomsEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   channelName: string;
-  @Column({ type: 'varchar', length: 300, default: true, nullable: true })
+  @Column({ type: 'varchar', length: 300, default: '', nullable: true })
   password: string;
   @Column({ type: 'varchar', length: 300, nullable: true })
   category: string;
