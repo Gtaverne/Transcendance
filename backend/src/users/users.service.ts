@@ -1,20 +1,17 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Timestamp } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UsersEntity } from './users.entity';
-import * as fs from 'fs';
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as qs from 'qs';
 import * as dotenv from 'dotenv';
-import { response } from 'express';
 import { RoomsService } from 'src/rooms/rooms.service';
 // import { useJwt } from 'react-jwt';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
-import { UserDTO } from './dto/user.dto';
 import { EditorDTO } from './dto/editor.dto';
-const jwt = require('jsonwebtoken');
 import * as speakeasy from 'speakeasy';
-import { RoomsGateway } from 'src/rooms/rooms.gateway';
+
+const jwt = require('jsonwebtoken');
 
 dotenv.config({ path: './.env' });
 

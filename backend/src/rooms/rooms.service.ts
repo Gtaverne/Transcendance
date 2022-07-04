@@ -1,18 +1,15 @@
-import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRoomDTO } from './dto/create-room.dto';
-import { RoomDTO } from './dto/room.dto';
 import { RoomsEntity } from './rooms.entity';
 import { UsersService } from 'src/users/users.service';
-import { identity } from 'rxjs';
 import { JoinRoomDTO } from './dto/join-room';
-import { hash, genSalt, compare } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 import { ChangeRoleDTO } from './dto/change-status.dto';
 import { MuteBanDTO } from './dto/mute-ban.dto';
 import { MuteEntity } from './mute.entity';
 import { BanEntity } from './ban.entity';
-import { RoomsGateway } from './rooms.gateway';
 
 var jwt = require('jsonwebtoken');
 const TOKEN_SECRET = process.env.JWT_Secret;
@@ -33,11 +30,25 @@ export class RoomsService {
   async invite(data: ChangeRoleDTO, token: String) {
     if (jwt.verify(token, TOKEN_SECRET) != data.user.id) return false;
     const user = await this.usersService.findOneWithName(data.role);
+    const banList = await this.banList(data.channelId);
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
-      relations: ['accessList'],
+      relations: ['accessList', 'admins', 'owner'],
     });
+    const roomMembers = await this.findRoomUsersId(data.channelId);
     if (!user || !room) return false;
+    if (!roomMembers.includes(data.user.id)) return false;
+    const adminList: number[] = [];
+    for (let i = 0; i < room.admins.length; i++) {
+      adminList.push(room.admins[i].id);
+    }
+
+    //If the user is banned, only owner or admin can invite him
+    if (banList.includes(user.id)) {
+      if (!(room.owner.id == data.user.id || adminList.includes(data.user.id)))
+        return false;
+    }
+
     for (let i = 0; i < room.accessList.length; i++) {
       if (room.accessList[i].id === user.id) {
         console.log('User Already in the Room');

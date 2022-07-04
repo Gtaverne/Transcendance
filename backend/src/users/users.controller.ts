@@ -1,25 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Header,
-  HttpCode,
-  Param,
-  Post,
-  Put,
-  Query,
-  Redirect,
-  Req,
-  Res,
-} from '@nestjs/common';
-import { strictEqual } from 'assert';
-import cookieParser from 'cookie-parser';
+import { Body, Controller, Get, Param, Post, Query, Redirect, Req, Res } from '@nestjs/common';
 // import * as cookie from 'cookie';
-import { query, Request, response, Response } from 'express';
+import { Request, Response } from 'express';
 import { ChangeRoleDTO } from 'src/rooms/dto/change-status.dto';
 import { EditorDTO } from './dto/editor.dto';
-import { UserDTO } from './dto/user.dto';
 import { UsersEntity } from './users.entity';
 import { UsersService } from './users.service';
 

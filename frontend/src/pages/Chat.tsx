@@ -36,7 +36,7 @@ function Chat({ socket }: any) {
     message: '',
   });
   const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
-  const { user, iBlockList: iBlockListAuth } = useSelector(
+  const { user } = useSelector(
     (state: RootStateOrAny) => state.auth,
   );
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,7 @@ function Chat({ socket }: any) {
         console.log('Message in the current room');
       }
     });
-    socket.current?.on('getNewInfo', (data: any) => {
+    socket.current?.on('getNewInfo', () => {
       console.log('Socket getNewInfo detected', global.currentChat);
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
@@ -121,6 +121,7 @@ function Chat({ socket }: any) {
     };
     getMessages();
     setRoleList(currentChat);
+    // eslint-disable-next-line
   }, [currentChat]);
 
   if (!user) {
@@ -263,12 +264,12 @@ function Chat({ socket }: any) {
     const res = await apiPoster('rooms/join/', joinDTO);
 
     if (res.data) {
-      console.log('Updating conv after join');
+      toast.success('Successfully Joined');
       refreshOthers();
       setTimeout(getConversations, 250);
       setTimeout(getConversationsCanJoin, 250);
     } else {
-      console.log('Access Unauthorized');
+      toast.error('Access Unauthorized');
     }
   };
 
@@ -317,7 +318,7 @@ function Chat({ socket }: any) {
   };
 
   const setRoleList = (c: RoomInterface | undefined) => {
-    if (!currentChat || c == undefined) return;
+    if (!currentChat || c === undefined) return;
     let now = new Date();
     let adminList: number[] = [];
     let muteList: number[] = [];
@@ -355,10 +356,7 @@ function Chat({ socket }: any) {
 
   const handleBlockUser = async (e: React.FormEvent) => {
     let val: any = currentUser?.id ? currentUser?.id : 0;
-    let alreadyBlocked;
-
-    if (iBlockList.includes(val)) alreadyBlocked = true;
-    else alreadyBlocked = false;
+    let alreadyBlocked = iBlockList.includes(val);
 
     const res = await apiPoster('users/blockuser/', {
       user,
@@ -441,10 +439,12 @@ function Chat({ socket }: any) {
       appointedId: 0,
       role: usernameInvite ? usernameInvite : '',
     });
-    if (res) {
+    if (res.data) {
       toast.success('Invitation Successfull');
       refreshOthers();
       setTimeout(getConversations, 250);
+    } else {
+      toast.error('Invitation Not Authorized');
     }
   };
 
@@ -700,7 +700,8 @@ function Chat({ socket }: any) {
                               type="number"
                               value={mute === 0 ? '' : mute}
                               onChange={(e) => {
-                                setMute(e.target.valueAsNumber);
+                                if (e.target.value === '') setMute(0);
+                                else setMute(e.target.valueAsNumber);
                               }}
                             />
                             <button onClick={handleMute}>Mute</button>
@@ -713,7 +714,8 @@ function Chat({ socket }: any) {
                               type="number"
                               value={ban === 0 ? '' : ban}
                               onChange={(e) => {
-                                setBan(e.target.valueAsNumber);
+                                if (e.target.value === '') setBan(0);
+                                else setBan(e.target.valueAsNumber);
                               }}
                             />
                             <button onClick={handleBan}>Ban</button>

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GameRow from '../components/GameRow';
 import Overlay from '../components/Overlay';
-import UserLeaderboard from '../components/UserLeaderboard';
 import apiGetter from '../features/apicalls/apiGetter';
 import UserInterface from '../interfaces/UserInterface';
 

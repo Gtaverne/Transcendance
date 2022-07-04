@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import authService from './authService';
-import UserInterface from '../../interfaces/UserInterface';
 
 //Get user from localstorage
 const getItem = (item: string) => {

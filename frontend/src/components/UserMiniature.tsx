@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import apiGetter from '../features/apicalls/apiGetter';
 import UserInterface from '../interfaces/UserInterface';
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import { login, edit, reset } from '../features/auth/authSlice';
-import {
-  FaSignOutAlt,
-  FaEye,
-  FaLock,
-  FaUnlock,
-  FaHeart,
-  FaHeartBroken,
-} from 'react-icons/fa';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
+import { edit, reset } from '../features/auth/authSlice';
+import { FaEye, FaHeart, FaHeartBroken, FaLock, FaUnlock } from 'react-icons/fa';
 
 type Props = {
   targetid: number;

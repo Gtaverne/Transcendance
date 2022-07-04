@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import { edit, reset, logout } from '../features/auth/authSlice';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
+import { edit, logout, reset } from '../features/auth/authSlice';
 import qrcode from 'qrcode';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';

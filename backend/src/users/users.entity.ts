@@ -1,12 +1,5 @@
 import { BaseEntity } from '../../base.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { GamesEntity } from 'src/games/games.entity';
 import { MessagesEntity } from 'src/messages/messages.entity';
 import { AchievementsEntity } from 'src/achievements/achievements.entity';

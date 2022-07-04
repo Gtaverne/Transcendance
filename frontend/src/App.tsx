@@ -1,8 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Chat from './pages/Chat';
@@ -13,7 +9,7 @@ import Configure2FA from './pages/Configure2FA';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 import PrivateRoute from './components/PrivateRoute';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { io, Socket } from 'socket.io-client';
 
@@ -23,11 +19,13 @@ import Leaderboard from './pages/Leaderboard';
 import CreateProfile from './pages/CreateProfile';
 import MatchHistory from './pages/MatchHistory';
 import Page404 from './pages/Page404';
+import Cookies from 'js-cookie';
 
 function MainRooter() {
   const socket = useRef<Socket | undefined>(undefined);
   const [percX, setPercX] = useState(0);
   const [percY, setPercY] = useState(0);
+
   const { user } = useSelector(
     (state: RootStateOrAny) => state.auth,
   );
@@ -44,21 +42,28 @@ function MainRooter() {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && user.username) {
       if (socket.current) socket.current?.disconnect();
-      socket.current = io(process.env.REACT_APP_BASE_URL! + '/chat', {
-        query: { id: user.id },
-        transports: ['websocket', 'polling'],
-        forceNew: true,
-      });
+      const redo = () => setTimeout(() => {
+        if (!Cookies.get("jwt") || Cookies.get("jwt") === '')
+        {
+          redo();
+          return;
+        }
+        socket.current = io(process.env.REACT_APP_BASE_URL! + '/chat', {
+          query: { id: user.id },
+          transports: ['websocket', 'polling'],
+          forceNew: true,
+        });
+      }, 500);
+      redo();
     }
   }, [user]);
 
   return (
     <div onMouseMove={({ clientX, clientY }) => onMouseMove(clientX, clientY)}>
       <div className="backgroundLayers">
-        <div
-          className="layerZero"
+        <div className="layerZero"
           style={{
             transform: `scale(1.15) translateX(${percX * 5}%) translateY(${
               percY * 5

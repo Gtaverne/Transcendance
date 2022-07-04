@@ -151,6 +151,10 @@ export class GamesGateway
       this.server.to(client.id).emit('setScore', game.scoreA, game.scoreB);
       /* eslint-enable */
     }
+    else
+    {
+      this.server.to(client.id).emit('cannotSpectate');
+    }
   }
 
   @SubscribeMessage('listen')
@@ -271,12 +275,7 @@ export class GamesGateway
           if (userA) this.usersRepository.update(userA.id!, { currentGame: 0 });
           if (userB) this.usersRepository.update(userB.id!, { currentGame: 0 });
 
-          if (game.scoreA >= WIN_SCORE)
-            this.usersRepository.update(userA.id!, { lvl: userA.lvl + 1 });
-          else if (game.scoreB >= WIN_SCORE)
-            this.usersRepository.update(userB.id!, { lvl: userB.lvl + 1 });
-
-          if (userA && userB) {
+          if (userA && userB && userA.id != userB.id) {
             const gameEntity = new GamesEntity();
             gameEntity.user1 = userA;
             gameEntity.user2 = userB;
@@ -284,6 +283,16 @@ export class GamesGateway
             gameEntity.score2 = game.scoreB;
             gameEntity.levelA = userA.lvl;
             gameEntity.levelB = userB.lvl;
+
+            if (game.scoreA >= WIN_SCORE)
+              gameEntity.levelA++;
+            else if (game.scoreB >= WIN_SCORE)
+              gameEntity.levelB++;
+            
+            if (game.scoreA >= WIN_SCORE)
+              this.usersRepository.update(userA.id!, { lvl: gameEntity.levelA });
+            else if (game.scoreB >= WIN_SCORE)
+              this.usersRepository.update(userB.id!, { lvl: gameEntity.levelB });
 
             const newGame = this.gamesRepository.create(gameEntity);
             this.gamesRepository.save(newGame).then(() => {

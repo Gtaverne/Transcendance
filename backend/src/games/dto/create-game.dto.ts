@@ -1,12 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsDate,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDate, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { UsersEntity } from 'src/users/users.entity';
 
 export class GameDTO {

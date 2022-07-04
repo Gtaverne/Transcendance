@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react'
-import {RootStateOrAny, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react';
+import { RootStateOrAny, useSelector } from 'react-redux';
 
 export const useAuthStatus = () => {
     const [loggedIn, setLoggedIn] = useState(false)

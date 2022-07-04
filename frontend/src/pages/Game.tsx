@@ -1,5 +1,4 @@
 import React from 'react';
-import Sketch from 'react-p5';
 import p5Types from 'p5'; //Import this for typechecking and intellisense
 import useWindowSize from '../hooks/useWindowSize';
 import MyCircle from '../features/game/MyCircle';

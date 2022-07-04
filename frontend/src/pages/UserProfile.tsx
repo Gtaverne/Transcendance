@@ -1,10 +1,10 @@
-import { RootStateOrAny, useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import apiGetter from '../features/apicalls/apiGetter';
 import { edit, reset } from '../features/auth/authSlice';
 import Cookies from 'js-cookie';
-import { FaSignOutAlt, FaUser, FaLock } from 'react-icons/fa';
+import { FaLock, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import UserMiniature from '../components/UserMiniature';
 import AchievementMiniature from '../components/AchievementMiniature';
 import Spinner from '../components/Spinner';
@@ -403,14 +403,14 @@ const UserProfile = (props: Props) => {
             <></>
           )}
           {user && user.id && user.id === fetchedProfile?.id ? (
-            <>
+            <div className="matchCtn">
               <button
                 className="largeButton greyButton"
                 onClick={handleNavigate}
               >
                 Match History
               </button>
-            </>
+            </div>
           ) : (
             <>
               <div className="blocking">
