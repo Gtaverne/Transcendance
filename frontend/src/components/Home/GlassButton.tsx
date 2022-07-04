@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import '../../pages/Home.css';
 
@@ -14,14 +14,8 @@ type GlassProps = {
 
 function GlassButton({title, onClick, children}: GlassProps)
 {
-    const [clicked, setClicked] = useState(false);
     const play = useAudio(clicksound);
     const playClock = useAudio(clocksound);
-
-
-    window.addEventListener("click", () => {
-      setClicked(true);
-    });
 
     return (
         <div className="glassButton"  onMouseUp={onClick} onMouseEnter={() => play()} onMouseDown={() => playClock()}>

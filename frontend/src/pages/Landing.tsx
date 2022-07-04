@@ -7,9 +7,7 @@ import logo from './assets/logo.svg';
 
 const API_42 = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID!}&redirect_uri=${encodeURI(process.env.REACT_APP_BASE_URL!)}%2Flogin&response_type=code`;
 
-type Props = {};
-
-function Landing({}: Props) {
+function Landing() {
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   const navigate = useNavigate();
 
@@ -17,13 +15,13 @@ function Landing({}: Props) {
     if (user?.username ) {
       navigate('/');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   // const plop = jwt.sign('','')
 
   return (
     <div className="landingPage">
-      <img src={logo} style={{width: "300px"}}></img>
+      <img src={logo} style={{width: "300px"}} alt="Logo"></img>
 
       <div style={{padding: "40px"}}>
         <p>You are not logged in</p>
