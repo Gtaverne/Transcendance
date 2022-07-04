@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { RootStateOrAny, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import logo from './assets/logo.svg';
 
@@ -16,7 +15,7 @@ function Page404() {
 
   return (
     <div className="landingPage">
-      <img src={logo} style={{ width: '300px' }} />
+      <img src={logo} style={{ width: '300px' }} alt="" />
 
       <div
         style={{
