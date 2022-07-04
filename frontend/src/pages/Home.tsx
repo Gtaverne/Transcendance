@@ -15,22 +15,7 @@ import { logout, reset } from '../features/auth/authSlice';
 import CurrentGamesIcon from '../components/Icons/CurrentGamesIcon';
 
 function Home() {
-  // @Tom pourquoi faire un usestate si tu fais un let apres ?
-  const [percX, setPercX] = useState(0);
-  const [percY, setPercY] = useState(0);
-
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
-
-  const onMouseMove = (clientX: number, clientY: number) => {
-    let ratioX = clientX / window.innerWidth;
-    let ratioY = clientY / window.innerHeight;
-
-    let percX = 1 - ratioX * 2;
-    let percY = 1 - ratioY * 2;
-
-    setPercX(percX);
-    setPercY(percY);
-  };
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,7 +32,7 @@ function Home() {
   // }
 
   return (
-    <div onMouseMove={({ clientX, clientY }) => onMouseMove(clientX, clientY)}>
+    <div>
       <div className="background">
         <div className="statusbar">
           <div className="bigLogo">
