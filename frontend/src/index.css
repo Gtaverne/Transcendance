@@ -449,6 +449,7 @@ code {
   border: 9px solid #929292;
   animation: spinner-bulqg1 0.8s infinite linear alternate,
   spinner-oaa3wk 1.6s infinite linear;
+  margin: auto;
 }
 
 @keyframes spinner-bulqg1 {
