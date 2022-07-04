@@ -1,8 +1,7 @@
 import React from 'react';
 
-type Props = {}
 
-function Spinner({}: Props) {
+function Spinner() {
   return (
     <div>Veuillez patienter</div>
   )

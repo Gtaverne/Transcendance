@@ -46,6 +46,7 @@ const UserProfile = (props: Props) => {
 
   useEffect(() => {
     if (noloop === 0) {
+       /* eslint-disable */
       noloop = 1;
       const fetchUser = async () => {
         try {
@@ -128,7 +129,7 @@ const UserProfile = (props: Props) => {
     } else {
     }
     // console.log('achievementsList: ', achievementsList);
-  }, [params.id]);
+  }, [params.id, fetchedProfile.id]);
 
   const onMutate = (e: any) => {
     setFetchedProfile((prevState: any) => ({
@@ -220,7 +221,7 @@ const UserProfile = (props: Props) => {
   const onNewpp = async (e: React.FormEvent) => {
     const files = (e.target as HTMLInputElement).files;
     if (!files || !files[0] || files[0].size > 1500001) {
-      toast.error('Invalid picture, try a smaller .jpg or .png')
+      toast.error('Invalid picture, try a smaller .jpg or .png');
     } else {
       console.log('We received this picture: ', files);
       if (files && files.length > 0) {
@@ -263,6 +264,7 @@ const UserProfile = (props: Props) => {
       - Dots (.)
       - Underscores (_)
     */
+     /* eslint-disable */
     const res = /^[A-Za-z0-9_\.]+$/.exec(username);
     const valid = !!res;
     return valid;
@@ -306,7 +308,11 @@ const UserProfile = (props: Props) => {
   }
 
   if (+params.id! !== fetchedProfile.id) {
-    return <Overlay title="Loading" style={{ overflowY: 'overlay' }}>wait</Overlay>;
+    return (
+      <Overlay title="Loading" style={{ overflowY: 'overlay' }}>
+        wait
+      </Overlay>
+    );
   }
 
   return (
@@ -350,7 +356,6 @@ const UserProfile = (props: Props) => {
               )}
 
               <div>Upload your avatar</div>
-              {/* <form onSubmit={onUpload}> */}
               <input
                 type="file"
                 id="file"

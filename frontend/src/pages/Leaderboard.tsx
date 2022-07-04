@@ -23,7 +23,7 @@ function Leaderboard() {
     <Overlay title={'Leaderboard'} style={{backgroundColor: "#382d34"}}>
 
       <div className="topScorer">
-        <img className="topImg" src={users[0]?.avatar}>
+        <img className="topImg" src={users[0]?.avatar} alt="">
 
         </img>
         <div className="toptop">

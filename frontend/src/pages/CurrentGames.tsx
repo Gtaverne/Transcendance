@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import Overlay from '../components/Overlay';
 import { io, Socket } from 'socket.io-client';
 import { Link } from 'react-router-dom';
+// @Tom verifie si c'est réellement inutile
+// eslint-disable-next-line
+import { ToneMapping } from 'three';
 
 
 function CurrentGames() {
@@ -22,8 +25,8 @@ function CurrentGames() {
       setGameMap(new Map(gameMap.set(id, <>
       <Link to={'/game/' + id}>
         <div key={id} className="matchInfo">
-          <img src={avatarA}></img>
-          <img src={avatarB}></img>
+          <img src={avatarA} alt="avatar"></img>
+          <img src={avatarB} alt="avatar"></img>
           <div className="vsText">{usernameA} <div>VS</div> {usernameB}</div>
         </div>
       </Link>
@@ -38,7 +41,10 @@ function CurrentGames() {
     {
       socket.current?.disconnect();
     }
+    // eslint-disable-next-line 
   }, []);
+  // @Tom, check s'il faut inclure gameMap
+// }, [gameMap]);
 
   return (
     <Overlay title={"Current Games"} style={{backgroundColor: "#554658"}}>

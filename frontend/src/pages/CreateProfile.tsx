@@ -19,7 +19,7 @@ function CreateProfile() {
 
   return (
     <div className="landingPage">
-      <img src={logo} style={{width: "300px"}}></img>
+      <img src={logo} style={{width: "300px"}} alt=""></img>
 
       <div style={{padding: "40px"}}>
         <p>Please complete your profile on your profile page or continue</p>

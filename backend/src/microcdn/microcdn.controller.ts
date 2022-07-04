@@ -1,9 +1,19 @@
-import { Controller, Get, Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MicrocdnService } from './microcdn.service';
 import * as fs from 'fs';
 import { Readable } from 'typeorm/platform/PlatformTools';
+import { type } from 'os';
 const imageType = require('image-type');
 
 var jwt = require('jsonwebtoken');
@@ -58,17 +68,19 @@ export class MicrocdnController {
     console.log('Post received something from id: ', idFromToken);
     if (params.id === idFromToken) {
       try {
-        const previous = this.microcdnService.getAvatarPath(params.id)
+        const previous = this.microcdnService.getAvatarPath(params.id);
         if (!previous.endsWith('default.jpg')) {
-          console.log('Deleting previous picture')
-          fs.unlinkSync(previous)
+          console.log('Deleting previous picture');
+          fs.unlinkSync(previous);
         }
-        const tpe = await imageType(file.buffer)
-        console.log('File Type: ', tpe)
-        const path = CDN_PATH + `/avatar/${params.id}.${tpe.ext}`;
+        const incomming = await imageType(file.buffer);
+        console.log('File Type: ', incomming);
+        if (incomming.ext !== '') {
+          const path = CDN_PATH + `/avatar/${params.id}.${incomming.ext}`;
 
-        console.log('Here we write the file: ', path);
-        fs.writeFileSync(path, file.buffer);
+          console.log('Here we write the file: ', path);
+          fs.writeFileSync(path, file.buffer);
+        }
       } catch (error) {
         console.log('Upload error');
       }

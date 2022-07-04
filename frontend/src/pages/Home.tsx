@@ -15,6 +15,7 @@ import { logout, reset } from '../features/auth/authSlice';
 import CurrentGamesIcon from '../components/Icons/CurrentGamesIcon';
 
 function Home() {
+  // @Tom pourquoi faire un usestate si tu fais un let apres ?
   const [percX, setPercX] = useState(0);
   const [percY, setPercY] = useState(0);
 

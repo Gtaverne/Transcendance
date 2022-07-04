@@ -49,12 +49,16 @@ function MatchHistory() {
       }
     };
     getHistory();
+    // eslint-disable-next-line 
   }, []);
+  // @Benjamin, check
+// }, [params.id]);
+
 
   return (
     <Overlay title={'Match History'} style={{ backgroundColor: '#382d34' }}>
       <div className="topScorer">
-        <img className="topImg" src={userHistory?.avatar}></img>
+        <img className="topImg" src={userHistory?.avatar} alt=""></img>
         <div className="toptoptop">
           <h1>{userHistory?.username}</h1>
           <h2>Match History</h2>

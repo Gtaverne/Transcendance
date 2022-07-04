@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { login, loginmfa, reset } from '../features/auth/authSlice';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import Overlay from '../components/Overlay';
 
-type Props = {};
-
-function Login({}: Props) {
+function Login() {
   const [searchParams] = useSearchParams();
   const code: string = searchParams.get('code') || '';
   const [firstLoop, setFirstLoop] = useState(true);
   let noloop = 0;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
   const [mfaRequired, setMFARequired] = useState(false);
   const [writtenCode, setWrittenCode] = useState('');
@@ -47,6 +45,8 @@ function Login({}: Props) {
   };
 
   useEffect(() => {
+    // Check if still needed
+    /* eslint-disable */
     noloop = noloop + 1;
 
     if (firstLoop === false || noloop > 1) {
@@ -84,6 +84,7 @@ function Login({}: Props) {
 
     dispatch(reset());
     //Voir si une de ces conditions doit être virée
+    /* eslint-disable */
   }, [dispatch, user, isError, isLoading, isSuccess, message]);
 
   if (!code) {
@@ -96,7 +97,7 @@ function Login({}: Props) {
 
   if (mfaRequired) {
     return (
-      <Overlay title={"2FA"}>
+      <Overlay title={'2FA'}>
         <div className="userProfile">
           <div className="marginTop">
             <input

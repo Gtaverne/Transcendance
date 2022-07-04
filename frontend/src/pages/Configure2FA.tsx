@@ -8,9 +8,7 @@ import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
 
-type Props = {};
-
-function Configure2FA({}: Props) {
+function Configure2FA() {
   const { user } = useSelector((state: RootStateOrAny) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
