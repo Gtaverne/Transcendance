@@ -6,9 +6,10 @@ RUN apk add --no-cache build-base
 
 WORKDIR /app
 
-#COPY . .
+#Prod mode
+COPY . .
+RUN yarn install && yarn build
+CMD ["node", "dist/src/main.js"]
 
-#RUN yarn install && yarn build
-
-#CMD ["node", "dist/src/main.js"]
-ENTRYPOINT yarn install; yarn run start:dev
+#Test et debug mode
+# ENTRYPOINT yarn install; yarn run start:dev
