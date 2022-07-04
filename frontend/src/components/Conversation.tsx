@@ -77,7 +77,7 @@ function Conversation({
           : 'conversation'
       }
     >
-      <img className="conversationImg" src={image} />
+      <img className="conversationImg" src={image} alt="" />
       <span className="conversationName">{conversationName}</span>
       {join && conversation.category === 'passwordProtected' && (
         <input
