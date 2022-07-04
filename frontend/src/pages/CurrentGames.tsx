@@ -23,8 +23,8 @@ function CurrentGames() {
 
     socket.current?.on("gameInfo", (id, usernameA, avatarA, usernameB, avatarB) => {
       setGameMap(new Map(gameMap.set(id, <>
-      <Link to={'/game/' + id}>
-        <div key={id} className="matchInfo">
+      <Link to={'/game/' + id} key={id}>
+        <div className="matchInfo">
           <img src={avatarA} alt="avatar"></img>
           <img src={avatarB} alt="avatar"></img>
           <div className="vsText">{usernameA} <div>VS</div> {usernameB}</div>
@@ -41,7 +41,7 @@ function CurrentGames() {
     {
       socket.current?.disconnect();
     }
-    // eslint-disable-next-line 
+    // eslint-disable-next-line
   }, []);
   // @Tom, check s'il faut inclure gameMap
 // }, [gameMap]);
