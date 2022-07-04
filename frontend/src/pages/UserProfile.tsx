@@ -310,7 +310,9 @@ const UserProfile = (props: Props) => {
   if (+params.id! !== fetchedProfile.id) {
     return (
       <Overlay title="Loading" style={{ overflowY: 'overlay' }}>
-        wait
+        <div className={"spinnerBox"}>
+          <div className="spinner"></div>
+        </div>
       </Overlay>
     );
   }
