@@ -593,7 +593,7 @@ const Pong = () => {
 
 
   return (
-    <div className"wholeGame" style={{filter: `hue-rotate(${color}deg)`}}>
+    <div className="wholeGame" style={{filter: `hue-rotate(${color}deg)`}}>
       <PongFrame prefix={ isSpectating ? '../' : '' }></PongFrame>
 
       <div className="backButton">
