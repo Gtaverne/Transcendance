@@ -33,7 +33,7 @@ export class MessagesService {
     if (
       muteList.includes(owner.id) ||
       banList.includes(owner.id) ||
-      !accessList.includes(createMessage.channelId)
+      !accessList.includes(+createMessage.channelId)
     )
       return;
     newMessage.message = createMessage.message;
