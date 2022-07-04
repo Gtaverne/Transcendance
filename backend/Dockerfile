@@ -11,4 +11,5 @@ WORKDIR /app
 #RUN yarn install && yarn build
 
 #CMD ["node", "dist/src/main.js"]
-ENTRYPOINT yarn install; yarn run start:dev
+# ENTRYPOINT yarn install; yarn run start:dev
+ENTRYPOINT yarn install; yarn run start:prod
