@@ -3,10 +3,7 @@ import { RootStateOrAny, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import logo from './assets/logo.svg';
 
-type Props = {};
-
-function Page404({}: Props) {
-  const { user } = useSelector((state: RootStateOrAny) => state.auth);
+function Page404() {
   const navigate = useNavigate();
   const [counter, setCounter] = useState(5);
 
@@ -15,7 +12,7 @@ function Page404({}: Props) {
     if (counter <= 0) {
       navigate('/');
     }
-  }, [counter]);
+  }, [counter, navigate]);
 
   return (
     <div className="landingPage">

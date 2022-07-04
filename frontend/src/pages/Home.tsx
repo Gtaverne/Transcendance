@@ -2,8 +2,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
-
-import React, { useState } from 'react';
+import React from 'react';
 import GlassButton from '../components/Home/GlassButton';
 
 import './Home.css';

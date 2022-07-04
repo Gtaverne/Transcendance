@@ -40,7 +40,7 @@ function Conversation({
   }, [conversation, currentUser]);
 
   useEffect(() => {
-    if (users.length == 2 && conversation.isDm === true) {
+    if (users.length === 2 && conversation.isDm) {
       if (users[0].username === currentUser.username) {
         setConversationName(users[1].username);
         if (users[1].avatar !== 'oui') setImage(users[1].avatar);
