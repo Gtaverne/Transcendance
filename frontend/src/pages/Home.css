@@ -254,6 +254,7 @@
     height: 80px;
     background-color: white;
     background-size: cover;
+    background-position: center center;
     border-radius: 20px;
     vertical-align: middle;
     margin: 30px;
