@@ -237,6 +237,8 @@ export class RoomsService {
   }
 
   async leaveRoom(data: ChangeRoleDTO) {
+    // const clg = await this.findRoomUsersId(data.channelId);
+    // console.log(123, 'LEAVE ROOM', clg);
     const room = await this.roomsRepository.findOne({
       where: { id: data.channelId },
       relations: ['accessList', 'owner', 'admins'],
@@ -261,6 +263,8 @@ export class RoomsService {
           }
         }
         await this.roomsRepository.save(room);
+        // const clg2 = await this.findRoomUsersId(data.channelId);
+        // console.log(222, 'LEAVE ROOM', clg2);
         return true;
       }
     }

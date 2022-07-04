@@ -29,7 +29,8 @@ export class MessagesService {
     if (createMessage.message.length >= 300 || !owner || !room) return;
     const muteList = await this.roomsService.muteList(room.id);
     const banList = await this.roomsService.banList(room.id);
-    const accessList = await this.roomsService.findRoomUsersId(owner.id);
+    const accessList = await this.roomsService.findRoomUsersId(room.id);
+    // console.log('BanList', banList, 'AccessList:', accessList);
     if (
       muteList.includes(owner.id) ||
       banList.includes(owner.id) ||
