@@ -221,9 +221,9 @@ const UserProfile = (props: Props) => {
   const onNewpp = async (e: React.FormEvent) => {
     const files = (e.target as HTMLInputElement).files;
     if (!files || !files[0] || files[0].size > 1500001) {
-      toast.error('Invalid picture, try a smaller .jpg or .png');
+      toast.error('Invalid picture, try a .jpg, .gif or .png. Max size: 1.5mb');
     } else {
-      console.log('We received this picture: ', files);
+      // console.log('We received this picture: ', files);
       if (files && files.length > 0) {
         setProfilePic(files[0]);
       }
