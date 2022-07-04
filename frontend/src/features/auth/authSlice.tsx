@@ -53,6 +53,10 @@ export const loginmfa = createAsyncThunk(
     // console.log(code);
     try {
       const profile = await authService.loginmfa(input.jwt, input.code);
+      console.log('ypyp', profile);
+      if (input.feedback) {
+        input.feedback(profile.user && profile.user.id);
+      }
       return profile;
     } catch (error) {
       console.log('We caught an error', error);

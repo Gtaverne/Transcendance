@@ -4,6 +4,7 @@ import { login, loginmfa, reset } from '../features/auth/authSlice';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import Overlay from '../components/Overlay';
+import { toast } from 'react-toastify';
 
 function Login() {
   const [searchParams] = useSearchParams();
@@ -32,14 +33,11 @@ function Login() {
       const MFAParams = {
         jwt: Cookies.get('jwt'),
         code: writtenCode,
+        feedback: (success: boolean) => {
+          if (!success) toast.error('Wrong code');
+        },
       };
       dispatch(loginmfa(MFAParams));
-
-      if (!user || !user.username) {
-        //popup: Please retry code
-        
-      } else {
-      }
     } catch (error) {
       console.log('Request to MFA validation failed');
     }
