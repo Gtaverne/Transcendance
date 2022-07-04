@@ -50,7 +50,7 @@ export class UsersService {
       login: 'dudule',
       lvl: 41,
       image_url:
-        'https://i.kym-cdn.com/entries/icons/original/000/001/030/DButt.jpg',
+        'https://media.giphy.com/media/7SrHwak3yoO9a/giphy.gif',
     };
 
     this.userFromDB(Dudule);
