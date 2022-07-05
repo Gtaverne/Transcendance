@@ -27,10 +27,6 @@ services:
       - backend
     build:
       context: ./frontend/.
-      args:
-        - REACT_APP_CLIENT_ID=${CLIENT_ID}
-        - REACT_APP_URL_BACK=http://localhost:3000/api/
-        - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn/
     restart: always
     networks:
       - trans_network
