@@ -14,7 +14,7 @@ function CurrentGames() {
 
     socket.current = io(process.env.REACT_APP_BASE_URL! + "/games");
     socket.current?.on("connect", () => {
-      console.log("Connected");
+      //console.log("Connected");
     });
 
     socket.current?.on("gameInfo", (id, usernameA, avatarA, usernameB, avatarB) => {

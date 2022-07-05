@@ -38,7 +38,7 @@ export class UsersService {
       .set({ isOnline: false, currentGame: 0 })
       .execute()
       .then((r) => {
-        console.log('Set all users offline');
+        //console.log('Set all users offline');
       });
   }
 
@@ -679,10 +679,10 @@ export class UsersService {
   }
 
   isUserNameValid(username: string) {
-    /* 
-      Usernames can only have: 
-      - Lowercase Letters (a-z) 
-      - Uppercase Letters (A-Z) 
+    /*
+      Usernames can only have:
+      - Lowercase Letters (a-z)
+      - Uppercase Letters (A-Z)
       - Numbers (0-9)
       - Dots (.)
       - Underscores (_)
