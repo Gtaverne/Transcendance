@@ -31,11 +31,12 @@ export class AppModule {
       .exclude(
         // FOR DEV ONLY !!!
         // { path: '', method: RequestMethod.ALL },
-        
+
         // Next paths should be in the exclusion list in production too
         { path: 'api/users/callback', method: RequestMethod.GET },
         { path: 'api/users/login2fa', method: RequestMethod.ALL },
         { path: 'api/users/seed', method: RequestMethod.ALL },
+		{ path: 'api/users/ping', method: RequestMethod.ALL },
         { path: 'api/microcdn/(.*)', method: RequestMethod.ALL },
       )
       .forRoutes('*');

@@ -13,8 +13,10 @@ services:
     networks:
       - trans_network
     depends_on:
-      - backend
-      - frontend
+      frontend:
+          condition: service_healthy
+      backend:
+          condition: service_healthy
     logging:
       driver: none
 
@@ -34,7 +36,10 @@ services:
       - trans_network
     volumes:
       - ./frontend:/app/
-
+    healthcheck:
+        test: ["CMD", "service", "nginx", "status"]
+        timeout: 10s
+        interval: 5s
   backend:
     container_name: backend
     hostname: backend
@@ -65,6 +70,11 @@ services:
         core:
             hard: 0
             soft: 0
+    healthcheck:
+        test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:3000/api/users/ping"]
+        timeout: 5s
+        interval: 5s
+
   db:
     container_name: db
     hostname: database
