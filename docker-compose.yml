@@ -74,6 +74,7 @@ services:
         test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:3000/api/users/ping"]
         timeout: 5s
         interval: 5s
+        retries: 60
 
   db:
     container_name: db
