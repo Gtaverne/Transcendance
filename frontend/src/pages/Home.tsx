@@ -26,6 +26,7 @@ function Home() {
     window.location.reload();
   };
 
+  // eslint-disable-next-line
   if (localStorage.getItem("didCreate") == "true")
   {
 	return <Navigate to = '/create' />;
