@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import React from 'react';
@@ -25,6 +25,12 @@ function Home() {
     navigate('/landing');
     window.location.reload();
   };
+
+  // eslint-disable-next-line
+  if (localStorage.getItem("didCreate") == "true")
+  {
+	return <Navigate to = '/create' />;
+  }
 
   // if (user && user.avatar && !user.avatar.includes('microcdn')) {
   //   toast.success('Welcome !\nYou can personnalize your avatar and pseudo in your profile page')

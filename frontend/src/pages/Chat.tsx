@@ -125,7 +125,7 @@ function Chat({ socket }: any) {
   }, [currentChat]);
 
   if (!user) {
-    console.log("Don't forget to login");
+    //console.log("Don't forget to login");
   }
 
   const getConversations = async () => {

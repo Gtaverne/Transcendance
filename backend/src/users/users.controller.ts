@@ -44,6 +44,11 @@ export class UsersController {
     return 'Seeding';
   }
 
+  @Get('/ping')
+  async ping(): Promise<string> {
+    return 'Pong';
+  }
+
   //Pour le login depuis l'intra 42
   @Get('/callback')
   async callback(

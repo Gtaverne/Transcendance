@@ -9,11 +9,6 @@ const PrivateRoute = () => {
       return (<Spinner />)
   }
 
-  if (localStorage.getItem("didCreate") == "true")
-  {
-    return <Navigate to = '/create' />;
-  }
-
   return loggedIn ? <Outlet /> : <Navigate to = '/landing' />
 }
 

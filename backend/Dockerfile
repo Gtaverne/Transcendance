@@ -7,7 +7,7 @@ RUN apk add --no-cache build-base
 WORKDIR /app
 
 #Prod mode
-ENTRYPOINT yarn install; yarn run start:prod
+ENTRYPOINT yarn install; yarn build; yarn run start:prod
 
 #Test et debug mode
 # ENTRYPOINT yarn install; yarn run start:dev

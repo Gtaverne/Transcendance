@@ -13,8 +13,10 @@ services:
     networks:
       - trans_network
     depends_on:
-      - backend
-      - frontend
+      frontend:
+          condition: service_healthy
+      backend:
+          condition: service_healthy
     logging:
       driver: none
 
@@ -25,16 +27,15 @@ services:
       - backend
     build:
       context: ./frontend/.
-      args:
-        - REACT_APP_CLIENT_ID=${CLIENT_ID}
-        - REACT_APP_URL_BACK=http://localhost:3000/api/
-        - REACT_APP_STORAGE_PATH=http://localhost:3000/api/microcdn/
     restart: always
     networks:
       - trans_network
     volumes:
       - ./frontend:/app/
-
+    healthcheck:
+        test: ["CMD", "service", "nginx", "status"]
+        timeout: 10s
+        interval: 5s
   backend:
     container_name: backend
     hostname: backend
@@ -65,6 +66,12 @@ services:
         core:
             hard: 0
             soft: 0
+    healthcheck:
+        test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:3000/api/users/ping"]
+        timeout: 5s
+        interval: 5s
+        retries: 60
+
   db:
     container_name: db
     hostname: database

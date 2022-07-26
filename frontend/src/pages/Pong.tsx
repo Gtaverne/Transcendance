@@ -38,8 +38,6 @@ const PongFrame = ({prefix}: {prefix: string}) => {
 
   useEffect(() => {
 
-    console.log("CALLLL");
-
     var scene = new THREE.Scene();
 
     scene.fog = new THREE.FogExp2( 0x000000, 0.006 );
@@ -181,7 +179,6 @@ const PongFrame = ({prefix}: {prefix: string}) => {
       scene.add( meshFrame );
 
       setLoaded(true);
-      console.log("SET LOADED");
     });
 
     var shineObject: THREE.Mesh;
@@ -356,7 +353,7 @@ const Pong = () => {
 
     socket.current = io(process.env.REACT_APP_BASE_URL! + "/games");
     socket.current?.on("connect", () => {
-      console.log("Connected");
+      //console.log("Connected");
     });
     socket.current?.on("disconnect",() => {
       setQueueing(false);
@@ -435,7 +432,7 @@ const Pong = () => {
       startQueue();
     }
 
-    console.log("CALLLL");
+    //console.log("CALLLL");
 
     var scene = new THREE.Scene();
 

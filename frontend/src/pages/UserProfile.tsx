@@ -186,14 +186,14 @@ const UserProfile = (props: Props) => {
         try {
           // Axios does not work with uploadform
           console.log('STORAGE_PATH: ', STORAGE_PATH);
-          await fetch(
+          let res = await fetch(
             STORAGE_PATH + `upload/${user.id}?jwt=` + Cookies.get('jwt'),
             {
               method: 'POST',
               body: myData,
             },
           );
-          console.log('Profile picture edition');
+          if (res.status === 413) throw Error();
           dispatch(
             edit({
               id: user.id,
@@ -204,14 +204,7 @@ const UserProfile = (props: Props) => {
           //Search if there is a more elegant way to remove a picture from cache -_-
           //window.location.reload();
         } catch (error) {
-          console.log('Avatar upload failed');
-          dispatch(
-            edit({
-              id: user.id,
-              field: 'avatar',
-              value: STORAGE_PATH + `/avatar/default`,
-            }),
-          );
+          toast.error('Invalid picture, try a .jpg, .gif or .png. Max size: 1.5mb');
         }
       }
     }
