@@ -23,9 +23,9 @@ docker-compose up --build
 - Communication between clients in the Game ant chat with socket.io
 
 ## .env :
-You need a .env file with the following informations:
+You need the following 3 .env files:
 
-You need to get the cliend id and the client secret from the 42 intranet
+You need to get the cliend id and the client secret from the 42 intranet.
 
 In the project folder:
 ```
