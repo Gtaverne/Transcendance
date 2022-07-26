@@ -1,47 +1,70 @@
-<!--
-install postgres: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
-npm install --save @nestjs/typeorm typeorm pg
-//better to set synchronize false if in production in orm.config
-
-
-GTAVERNE:
-todo:
-- Les Alertes avec le 2FA
-
-
--->
 # ft_transcendence
 
-by gtaverne, ttranche and bmerchin
-
-Last project of the 42 Paris curriculum.
+This is the last project of the 42 Paris curriculum.
 
 It is a fullstack web application.
 
-### Main components :
-- Register with oauth 2.0 using the 42 API
-- Multiplayer game of pong
-- Possibility to create chat rooms
-- Simply laungh the project with a single call to a docker compose
+We validated the project with 100% and full outstanding.
 
-### Technology used :
-- Frontend in react with typescrypt
-- Backend with nestjs, nodejs and postgreSQL
-
-### Launch :
+## Launch :
 ```
 docker-compose up --build
 ```
 
-### .env :
-You need to add an API Key from the 42 intranet
-When launching with docker-compose, you need a .env file containing the following info:
+## Main components :
+- Multiplayer game of pong
+- Create different types of chat rooms with permissions
+- Register with oauth 2.0 using the 42 API
+- Simply launch the project with a single call to a docker compose
+## Technology used :
+- Frontend in React with typescrypt
+- Backend with nestjs
+- Database with postgreSQL
+- Communication between clients in the Game ant chat with socket.io
 
+## .env :
+You need a .env file with the following informations:
+
+You need to get the cliend id and the client secret from the 42 intranet
+
+In the project folder:
+```
 POSTGRES_PASSWORD=postgres
-JWT_Secret=AWonderfulSecret
-Client_ID=SEE THE DOCUMENTATION OF 42
-Client_Secret=SEE THE DOCUMENTATION OF 42
+JWT_SECRET=AWonderfulSecret
+CLIENT_ID= <----- FROM THE 42 INTRA
+CLIENT_SECRET= <----- FROM THE 42 INTRA
+```
+In the frontend folder:
+```
+REACT_APP_CLIENT_ID= <----- FROM THE 42 INTRA
+REACT_APP_BASE_URL=http://localhost:3000
+REACT_APP_API_PATH=/api/
+REACT_APP_STORAGE_PATH=/api/microcdn/
+```
+In the backend folder:
+```
+#Database
+POSTGRES_HOST='127.0.0.1'
+POSTGRES_PORT=5432
+POSTGRES_USER='postgres'
+POSTGRES_PASSWORD='postgres'
+POSTGRES_DATABASE='transcendance_db'
+
+#API 42
+INTRA_API= "https://api.intra.42.fr/oauth/token"
+Auth_URL= "https://api.intra.42.fr/oauth/authorize"
+Access_Token_URL= "https://api.intra.42.fr/oauth/token"
+Client_ID= "..." <----- FROM THE 42 INTRA
+Client_Secret= "..." <----- FROM THE 42 INTRA
+
+JWT_Secret='DuduleToken'
+FRONT_DOMAIN='http://localhost:3000'
+```
 
 Enjoy :)
 
-Current deadline : May 12th 2023.
+## Authors
+
+- [@gtaverne](https://www.github.com/Gtaverne)
+- [@ttranche](https://www.github.com/ttranche)
+- [@benjaminmerchin](https://www.github.com/benjaminmerchin)
